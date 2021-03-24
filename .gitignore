@@ -1,3 +1,9 @@
+## MacOS generated files
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
