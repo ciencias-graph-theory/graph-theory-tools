@@ -10,12 +10,12 @@ type MatrixGraph struct {
 // NewMatrixGraph initializes a graph modelled by its adjacency matrix.
 func NewMatrixGraph(adjacency [][]byte) *MatrixGraph {
 	return &MatrixGraph{
-		adjacency: adjacency,
+		adjacency:      adjacency,
 		degreeSequence: nil,
 	}
 }
 
-// Adjacency returns the adjacency matris of the graph.
+// Adjacency returns the adjacency matrix of the graph.
 func (g *MatrixGraph) Adjacency() [][]byte {
 	return g.adjacency
 }
