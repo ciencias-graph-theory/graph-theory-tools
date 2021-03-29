@@ -7,11 +7,11 @@ import (
 	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
 )
 
-// TestAdjacency calls NewMarixGraph with an
+// TestAdjacency calls NewMatrixGraph with an
 // adjacency matrix, and then compares this
 // adjacency matrix with the one returned by
 // Adjacency()
-func TestAdjacency(t *testing.T) {
+func TestDigraphAdjacency(t *testing.T) {
 	adjacency := [][]byte{
 		{0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
 		{1, 0, 1, 0, 0, 0, 1, 0, 0, 0},
