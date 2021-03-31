@@ -31,6 +31,29 @@ func EqualByteMatrix(a, b [][]byte) bool {
 	return true
 }
 
+// NextNonZero returns the position of the next non-zero entry from a given
+// position, or -1 if either there are less than two non-zero entries.
+func NextNonZero(a []byte, i int) int {
+	l := len(a)
+	var j int
+	if i+1 < l {
+		j = i + 1
+	} else {
+		j = 0
+	}
+	for a[j] == 0 && j != i {
+		if j+1 < l {
+			j++
+		} else {
+			j = 0
+		}
+	}
+	if j == i {
+		return -1
+	}
+	return j
+}
+
 // Foldl takes a function, and initial argument, and a slice. It applies
 // the function with the initial argument as the first parameter and the
 // first element of the slice as the second parameter. The result is then

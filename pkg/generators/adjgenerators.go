@@ -2,6 +2,7 @@ package generators
 
 import (
 	"github.com/Japodrilo/graph-theory-tools/pkg/graph"
+	"github.com/Japodrilo/graph-theory-tools/pkg/sliceutils"
 )
 
 // IsCompleteMatrixGraph checks whether a graph is a complete graph or not. A
@@ -32,6 +33,48 @@ func CompleteMatrixGraph(n int) *graph.MatrixGraph {
 				a[i][j] = 1
 			}
 		}
+	}
+	return graph.NewMatrixGraph(a)
+}
+
+// IsCycleMatrixGraph checks whether a graph is an irreflexive cycle or not.
+func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
+	d := g.DegreeSequence()
+	for _, v := range d {
+		if v != 2 {
+			return false
+		}
+	}
+	a := g.Adjacency()
+	n := len(d)
+	i := 0
+	j := sliceutils.NextNonZero(a[i], 0)
+	k := j
+	l := sliceutils.NextNonZero(a[k], i)
+	var t int
+	m := 0
+	for k != i && l != j && m < n {
+		t = k
+		k = l
+		l = sliceutils.NextNonZero(a[k], t)
+		m++
+	}
+	return m+1 == n
+}
+
+// CycleMatrixGraph returns an irreflexive cycle of order n.
+func CycleMatrixGraph(n int) *graph.MatrixGraph {
+	a := make([][]byte, n, n)
+	a[0] = make([]byte, n, n)
+	a[0][1] = 1
+	a[0][n-1] = 1
+	a[n-1] = make([]byte, n, n)
+	a[n-1][0] = 1
+	a[n-1][n-2] = 1
+	for i := 1; i < n-1; i++ {
+		a[i] = make([]byte, n, n)
+		a[i][i-1] = 1
+		a[i][i+1] = 1
 	}
 	return graph.NewMatrixGraph(a)
 }
