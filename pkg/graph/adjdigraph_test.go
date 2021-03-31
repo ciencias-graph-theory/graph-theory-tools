@@ -48,20 +48,91 @@ func TestDigraphOrder(t *testing.T) {
 	}
 }
 
-// TestDigraphDegreeSequence tests that degree sequence is
-// computed correctly for digraphs.
-// Example digraph is a triangle:
-// 0 -> 1 <-> 2 -> 0
+// TestDigraphDegreeSequence tests that degree, indegree, and
+// outdegree sequences are computed correctly for digraphs.
+// First example digraph is C3*.
+// Second is from page 11 of article "3-transitive digraphs" by
+// Cesar Hernandez-Cruz, with loops added on vertices 4 and 5.
 func TestDigraphDegreeSequence(t *testing.T) {
-	adjacency := [][]byte{
+	adjacency1 := [][]byte{
 		{0, 1, 0},
 		{0, 0, 1},
 		{1, 1, 0},
 	}
-	digraph := NewMatrixDigraph(adjacency)
-	want := []int{2, 3, 3}
-	got := digraph.DegreeSequence()
-	if !sliceutils.EqualIntSlice(want, got) {
-		t.Errorf("Expected %v, got %v", want, got)
+	adjacency2 := [][]byte{
+		{0, 1, 0, 0, 1, 0},
+		{0, 0, 1, 1, 0, 1},
+		{0, 0, 0, 0, 1, 0},
+		{0, 1, 0, 0, 1, 0},
+		{0, 0, 1, 0, 1, 1},
+		{0, 0, 0, 0, 0, 1},
+	}
+	digraph1 := NewMatrixDigraph(adjacency1)
+	digraph2 := NewMatrixDigraph(adjacency2)
+	want1 := []int{2, 3, 3}
+	want2 := []int{2, 5, 3, 3, 7, 4}
+
+	// Indegree and outdegree sequences have not yet been
+	// computed.
+	if digraph1.indegreeSequence != nil {
+		t.Errorf("In digraph 1, indegree" +
+			"sequence was expected to be nil")
+	}
+	if digraph1.outdegreeSequence != nil {
+		t.Errorf("In digraph 1, outdegree" +
+			"sequence was expected to be nil")
+	}
+	if digraph2.indegreeSequence != nil {
+		t.Errorf("In digraph 2, indegree" +
+			"sequence was expected to be nil")
+	}
+	if digraph2.outdegreeSequence != nil {
+		t.Errorf("In digraph 2, outdegree" +
+			"sequence was expected to be nil")
+	}
+
+	got1 := digraph1.DegreeSequence()
+	got2 := digraph2.DegreeSequence()
+
+	// Testing DegreeSequence
+	if !sliceutils.EqualIntSlice(want1, got1) {
+		t.Errorf("In graph 1, expected %v, got %v", want1,
+			got1)
+	}
+	if !sliceutils.EqualIntSlice(want2, got2) {
+		t.Errorf("In graph 2, expected %v, got %v", want2,
+			got2)
+	}
+
+	want1 = []int{1, 2, 1}
+	want2 = []int{0, 2, 2, 1, 4, 3}
+
+	got1 = digraph1.IndegreeSequence()
+	got2 = digraph2.IndegreeSequence()
+
+	// Testing IndegreeSequence
+	if !sliceutils.EqualIntSlice(want1, got1) {
+		t.Errorf("In graph 1, expected %v, got %v", want1,
+			got1)
+	}
+	if !sliceutils.EqualIntSlice(want2, got2) {
+		t.Errorf("In graph 2, expected %v, got %v", want2,
+			got2)
+	}
+
+	want1 = []int{1, 1, 2}
+	want2 = []int{2, 3, 1, 2, 3, 1}
+
+	got1 = digraph1.OutdegreeSequence()
+	got2 = digraph2.OutdegreeSequence()
+
+	// Testing IndegreeSequence
+	if !sliceutils.EqualIntSlice(want1, got1) {
+		t.Errorf("In graph 1, expected %v, got %v", want1,
+			got1)
+	}
+	if !sliceutils.EqualIntSlice(want2, got2) {
+		t.Errorf("In graph 2, expected %v, got %v", want2,
+			got2)
 	}
 }
