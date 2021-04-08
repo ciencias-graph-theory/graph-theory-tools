@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Japodrilo/graph-theory-tools/pkg/sliceutils"
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
 )
 
 // TestAdjacency calls NewMarixGraph with an
