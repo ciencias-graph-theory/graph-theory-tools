@@ -1,8 +1,8 @@
 package generators
 
 import (
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
 	"github.com/Japodrilo/graph-theory-tools/pkg/graph"
-	"github.com/Japodrilo/graph-theory-tools/pkg/sliceutils"
 )
 
 // IsCompleteMatrixGraph checks whether a graph is a complete graph or not. A
