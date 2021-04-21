@@ -1,9 +1,30 @@
 package sliceutils
 
 import (
+	"math/rand"
 	"testing"
 )
 
+// TestFoldl tests the function Foldl.
+func TestFoldl(t *testing.T) {
+	pow2 := make([]int, 20)
+	for i := 0; i < 20; i++ {
+		pow2[i] = 2
+	}
+	one := Foldl(func(a, b int) int { return a / b }, 1048576, pow2)
+	if one != 1 {
+		t.Errorf("Expected %d, got %d", 1, one)
+	}
+	empty := []int{}
+	value := rand.Intn(100)
+	res := Foldl(func(a, b int) int { return 0 }, value, empty)
+	if res != value {
+		t.Errorf("Expected %d, got %d", res, value)
+	}
+
+}
+
+// TestSumIntSlice tests the function SumIntSlice.
 func TestSumIntSlice(t *testing.T) {
 	empty := []int{}
 	same := []int{2, 2, 2, 2, 2, 2, 2}
