@@ -1,5 +1,9 @@
 package graph
 
+import (
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+)
+
 // A MatrixDigraph represents a digraph modelled by its adjacency
 // matrix. The adjacency matrix is a two-dimensional byte array.
 // Bytes were chosen for future compatibility with weighted

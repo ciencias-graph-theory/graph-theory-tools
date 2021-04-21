@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/Japodrilo/graph-theory-tools/pkg/sliceutils"
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
 )
 
 // A MatrixGraph represents a graph, modelled by its adjacency matrix.

@@ -98,5 +98,4 @@ func TestSize(t *testing.T) {
 	if !sliceutils.EqualIntSlice(wantD, gotD) {
 		t.Errorf("Expected %v, got %v", wantD, gotD)
 	}
-
 }

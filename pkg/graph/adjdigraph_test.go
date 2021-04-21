@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Japodrilo/graph-theory-tools/pkg/sliceutils"
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
 )
 
 // TestAdjacency calls NewMatrixDigraph with an
@@ -134,5 +134,51 @@ func TestDigraphDegreeSequence(t *testing.T) {
 	if !sliceutils.EqualIntSlice(want2, got2) {
 		t.Errorf("In graph 2, expected %v, got %v", want2,
 			got2)
+	}
+}
+
+// TestSize tests that size of digraph is computed correctly. This test is
+// very similar to the one for MatrixGraphs.
+func TestDigraphSize(t *testing.T) {
+	adjacency := [][]byte{
+		{0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 1, 0, 0, 0},
+		{0, 1, 0, 1, 0, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 1, 0, 0, 0, 1, 0},
+		{1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 1, 1, 0},
+		{0, 1, 0, 0, 0, 0, 0, 0, 1, 1},
+		{0, 0, 1, 0, 0, 1, 0, 0, 0, 1},
+		{0, 0, 0, 1, 0, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
+	}
+	petersen := NewMatrixDigraph(adjacency)
+	if petersen.indegreeSequence != nil {
+		t.Errorf("The indegree sequence was expected to be nil")
+	}
+	if petersen.outdegreeSequence != nil {
+		t.Errorf("The outdegree sequence was expected to be nil")
+	}
+	want := (10 * 3)
+	got := petersen.Size()
+	if want != got {
+		t.Errorf("Expected %d, got %d", want, got)
+	}
+	// Testing twice because size is computed differently depending on
+	// whether we have degree sequence or not.
+	got = petersen.Size()
+	if want != got {
+		t.Errorf("Expected %d, got %d", want, got)
+	}
+	if petersen.indegreeSequence == nil {
+		t.Errorf("The indegree sequence was not expected to be nil")
+	}
+	if petersen.outdegreeSequence == nil {
+		t.Errorf("The outdegree sequence was not expected to be nil")
+	}
+	wantD := []int{6, 6, 6, 6, 6, 6, 6, 6, 6, 6}
+	gotD := petersen.DegreeSequence()
+	if !sliceutils.EqualIntSlice(wantD, gotD) {
+		t.Errorf("Expected %v, got %v", wantD, gotD)
 	}
 }
