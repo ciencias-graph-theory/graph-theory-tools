@@ -36,7 +36,7 @@ func EqualByteMatrix(a, b [][]byte) bool {
 // first element of the slice as the second parameter. The result is then
 // operated with the second element of the slice and so on.
 // TODO: Make the function usable for any type.
-func Foldl(f func(int, int) int, init int, s []int) int{
+func Foldl(f func(int, int) int, init int, s []int) int {
 	rv := init
 	for _, v := range s {
 		rv = f(rv, v)
@@ -48,5 +48,3 @@ func Foldl(f func(int, int) int, init int, s []int) int{
 func SumIntSlice(s []int) int {
 	return Foldl(func(a, b int) int { return a + b }, 0, s)
 }
-
- 
