@@ -78,3 +78,23 @@ func CycleMatrixGraph(n int) *graph.MatrixGraph {
 	}
 	return graph.NewMatrixGraph(a)
 }
+
+// CirculantMatrixDigraph returns a circulant digraph of order n
+// with set of integer jumps s.
+func CirculantMatrixDigraph(n int, jumps map[int]bool) *graph.MatrixDigraph {
+	a := make([][]byte, n, n)
+	var k int
+	for i := range a {
+		a[i] = make([]byte, n)
+		for j := range jumps {
+			if 0 < j && j < n {
+				k = (i + j) % n
+				a[i][k] = 1
+			} else if j < 0 && -n < j {
+				k = (i + n + j) % n
+				a[i][k] = 1
+			}
+		}
+	}
+	return graph.NewMatrixDigraph(a)
+}
