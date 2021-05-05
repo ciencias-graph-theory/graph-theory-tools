@@ -30,3 +30,21 @@ func EqualByteMatrix(a, b [][]byte) bool {
 	}
 	return true
 }
+
+// Foldl takes a function, and initial argument, and a slice. It applies
+// the function with the initial argument as the first parameter and the
+// first element of the slice as the second parameter. The result is then
+// operated with the second element of the slice and so on.
+// TODO: Make the function usable for any type.
+func Foldl(f func(int, int) int, init int, s []int) int {
+	rv := init
+	for _, v := range s {
+		rv = f(rv, v)
+	}
+	return rv
+}
+
+// AddIntSlice adds the elements of a slice of ints.
+func SumIntSlice(s []int) int {
+	return Foldl(func(a, b int) int { return a + b }, 0, s)
+}

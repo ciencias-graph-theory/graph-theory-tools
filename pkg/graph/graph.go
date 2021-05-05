@@ -8,4 +8,7 @@ type Graph interface {
 
 	// DegreeSequence returns the degree sequence of the graph.
 	DegreeSequence() []int
+
+	// Size returns the size of the graph.
+	Size() int
 }

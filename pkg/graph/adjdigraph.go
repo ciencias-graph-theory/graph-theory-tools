@@ -1,5 +1,9 @@
 package graph
 
+import (
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+)
+
 // A MatrixDigraph represents a digraph modelled by its adjacency
 // matrix. The adjacency matrix is a two-dimensional byte array.
 // Bytes were chosen for future compatibility with weighted
@@ -79,4 +83,28 @@ func (d *MatrixDigraph) OutdegreeSequence() []int {
 		d.computeDegreeSequences()
 	}
 	return d.outdegreeSequence
+}
+
+// Size computes the size (number of arcs) of the digraph.
+func (d *MatrixDigraph) Size() int {
+	if d.indegreeSequence == nil || d.outdegreeSequence == nil {
+		size := 0
+		inSequence := make([]int, len(d.adjacency))
+		outSequence := make([]int, len(d.adjacency))
+		for i, v := range d.adjacency {
+			for j, n := range v {
+				if n != 0 {
+					outSequence[i]++
+					inSequence[j]++
+					size++
+				}
+			}
+		}
+		d.indegreeSequence = inSequence
+		d.outdegreeSequence = outSequence
+		return size
+	} else {
+		return (sliceutils.SumIntSlice(d.indegreeSequence) +
+			sliceutils.SumIntSlice(d.outdegreeSequence)) / 2
+	}
 }

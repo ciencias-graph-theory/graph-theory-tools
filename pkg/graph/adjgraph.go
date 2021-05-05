@@ -1,5 +1,9 @@
 package graph
 
+import (
+	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+)
+
 // A MatrixGraph represents a graph, modelled by its adjacency matrix.
 // The adjacency matrix is a two-dimensional byte array.
 type MatrixGraph struct {
@@ -42,4 +46,24 @@ func (g *MatrixGraph) DegreeSequence() []int {
 		g.degreeSequence = degreeSequence
 		return degreeSequence
 	}
+}
+
+// Size returns the size (number of edges) of a matrix graph.
+func (g *MatrixGraph) Size() int {
+	if g.degreeSequence != nil {
+		return sliceutils.SumIntSlice(g.degreeSequence) / 2
+	}
+	size := 0
+	degreeSequence := make([]int, len(g.adjacency))
+	for i, v := range g.adjacency {
+		for j := 0; j < i+1; j++ {
+			if v[j] != 0 {
+				degreeSequence[i]++
+				degreeSequence[j]++
+				size++
+			}
+		}
+	}
+	g.degreeSequence = degreeSequence
+	return size
 }
