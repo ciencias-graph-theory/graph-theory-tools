@@ -62,7 +62,7 @@ func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
 	return m+1 == n
 }
 
-// CycleMatrixGraph returns an irreflexive cycle of order n.
+// CycleMatrixGraph returns an irreflexive cycle of order n in canonical order.
 func CycleMatrixGraph(n int) *graph.MatrixGraph {
 	a := make([][]byte, n, n)
 	a[0] = make([]byte, n, n)
@@ -70,6 +70,62 @@ func CycleMatrixGraph(n int) *graph.MatrixGraph {
 	a[0][n-1] = 1
 	a[n-1] = make([]byte, n, n)
 	a[n-1][0] = 1
+	a[n-1][n-2] = 1
+	for i := 1; i < n-1; i++ {
+		a[i] = make([]byte, n, n)
+		a[i][i-1] = 1
+		a[i][i+1] = 1
+	}
+	return graph.NewMatrixGraph(a)
+}
+
+// IsPathMatrixGraph checks whether a graph is an irreflexive path or not.
+func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
+	d := g.DegreeSequence()
+	start := -1
+	end := -1
+	for i, v := range d {
+		if v == 1 {
+			if start == -1 {
+				start = i
+			} else if end == -1 {
+				end = i
+			} else {
+				return false
+			}
+		} else if v != 2 {
+			return false
+		}
+	}
+	if end == -1 {
+		return false
+	}
+	a := g.Adjacency()
+	n := len(d)
+	i := start
+	var j int
+	if a[i][0] == 1 {
+		j = 0
+	} else {
+		j = sliceutils.NextNonZero(a[start], 0)
+	}
+	var t int
+	m := 0
+	for i != end && m < n {
+		t = i
+		i = j
+		j = sliceutils.NextNonZero(a[i], t)
+		m++
+	}
+	return m+1 == n
+}
+
+// PathMatrixGraph returns an irreflexive path of order n in canonical order.
+func PathMatrixGraph(n int) *graph.MatrixGraph {
+	a := make([][]byte, n, n)
+	a[0] = make([]byte, n, n)
+	a[0][1] = 1
+	a[n-1] = make([]byte, n, n)
 	a[n-1][n-2] = 1
 	for i := 1; i < n-1; i++ {
 		a[i] = make([]byte, n, n)
