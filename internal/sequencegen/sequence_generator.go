@@ -17,6 +17,15 @@ func Weight(n, w int) func() []bool {
 			return make([]bool, n)
 		}
 	}
+	if w == n {
+		return func() []bool {
+			r := make([]bool, n)
+			for i := 0; i < n; i++ {
+				r[i] = true
+			}
+			return r
+		}
+	}
 	init := true
 	x := 1
 	y := 0

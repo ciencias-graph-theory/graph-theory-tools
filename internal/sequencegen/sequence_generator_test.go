@@ -47,4 +47,36 @@ func TestWeight(t *testing.T) {
 	if !found {
 		t.Errorf("%v is not in sequence %v", elem, got2)
 	}
+	// Test 3: weight 2
+	got3 := make([][]bool, 3)
+	gen = Weight(3, 2)
+	for i := 0; i < 3; i++ {
+		got3[i] = gen()
+	}
+	elem = []bool{false, true, true}
+	found = contains(got3, elem)
+	if !found {
+		t.Errorf("%v is not in sequence %v", elem, got3)
+	}
+	elem = []bool{true, false, true}
+	found = contains(got3, elem)
+	if !found {
+		t.Errorf("%v is not in sequence %v", elem, got3)
+	}
+	elem = []bool{true, true, false}
+	found = contains(got3, elem)
+	if !found {
+		t.Errorf("%v is not in sequence %v", elem, got3)
+	}
+	// Test 4: Weight 3
+	gen = Weight(3, 3)
+	res = []bool{true, true, true}
+	got = gen()
+	if !reflect.DeepEqual(res, got) {
+		t.Errorf("Expected %v, got %v", res, got)
+	}
+	got = gen()
+	if !reflect.DeepEqual(res, got) {
+		t.Errorf("Expected %v, got %v", res, got)
+	}
 }
