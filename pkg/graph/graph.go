@@ -20,3 +20,11 @@ type PropertyCheck interface {
 	// Act checks whether a property for an induced subgraph is true.
 	Check(g Graph, s []bool) bool
 }
+
+// PropertyCheck is an interface for checking a specific property in an
+// induced subgraph.
+type PropertyCheck interface {
+
+	// Act checks whether a property for an induced subgraph is true.
+	Check(g Graph, s []bool) bool
+}
