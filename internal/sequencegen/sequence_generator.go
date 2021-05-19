@@ -11,6 +11,8 @@ func makeInitial(n, w int) []bool {
 	return b
 }
 
+// Weight returns a closure that acts as an iterator of binary sequences of size
+// n and weight w
 func Weight(n, w int) func() []bool {
 	if w == 0 {
 		return func() []bool {
