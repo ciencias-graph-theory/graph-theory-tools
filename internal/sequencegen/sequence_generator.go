@@ -81,9 +81,6 @@ func Binary(n int) func() []bool {
 			init = false
 			return b
 		}
-		b2 := make([]bool, n)
-		copy(b2, b)
-		b = b2
 		if y < n {
 			b[x] = false
 			b[y] = true
@@ -100,6 +97,10 @@ func Binary(n int) func() []bool {
 			} else if x != y && !b[x] {
 				b[x] = true
 				b[0] = false
+				if y > 1{
+					x = 1
+				}
+				y = 0
 			}
 			return b
 		} else {

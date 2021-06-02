@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// contains tells us whether a matrix contains a specific row.
 func contains(s [][]bool, e []bool) bool {
 	for _, a := range s {
 		if reflect.DeepEqual(a, e) {
@@ -14,6 +15,7 @@ func contains(s [][]bool, e []bool) bool {
 	return false
 }
 
+// TestWeight is a test for the Weight function.
 func TestWeight(t *testing.T) {
 	size := 3
 	// Test 1: weight 0
@@ -82,4 +84,52 @@ func TestWeight(t *testing.T) {
 	if !reflect.DeepEqual(res, got) {
 		t.Errorf("Expected %v, got %v", res, got)
 	}
+}
+
+// TestBinary is a test for the Binary function.
+func TestBinary(t *testing.T) {
+	gen := Binary(5)
+	want := make([][]bool, 32)
+	want[0] = []bool{true, true, true, true, true}
+	for i := 1; i < 6; i++ {
+		want[i] = []bool{true, true, true, true, true}
+		want[i][i-1] = false
+	}
+	want[6] = []bool{false, false, true, true, true}
+	want[7] = []bool{false, true, false, true, true}
+	want[8] = []bool{false, true, true, false, true}
+	want[9] = []bool{false, true, true, true, false}
+	want[10] = []bool{true, false, false, true, true}
+	want[11] = []bool{true, false, true, false, true}
+	want[12] = []bool{true, false, true, true, false}
+	want[13] = []bool{true, true, false, false, true}
+	want[14] = []bool{true, true, false, true, false}
+	want[15] = []bool{true, true, true, false, false}
+	want[16] = []bool{true, true, false, false, false}
+	want[17] = []bool{true, false, true, false, false}
+	want[18] = []bool{true, false, false, true, false}
+	want[19] = []bool{true, false, false, false, true}
+	want[20] = []bool{false, true, true, false, false}
+	want[21] = []bool{false, true, false, true, false}
+	want[22] = []bool{false, true, false, false, true}
+	want[23] = []bool{false, false, true, true, false}
+	want[24] = []bool{false, false, true, false, true}
+	want[25] = []bool{false, false, false, true, true}
+	for i := 26; i < 31; i++ {
+		want[i] = []bool{false, false, false, false, false}
+		want[i][i-26] = true
+	}
+	want[31] = []bool{false, false, false, false, false}
+	got := make([][]bool, 32)
+	for i := 0; i < 32; i++ {
+		got[i] = make([]bool, 5)
+		copy(got[i], gen())
+	}
+
+	for i := 0; i < 32; i++ {
+		if !contains(got, want[i]) {
+			t.Errorf("%v is not in sequence %v", want[i], got)
+		}
+	}
+
 }
