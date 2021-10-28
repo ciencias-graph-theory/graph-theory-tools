@@ -201,6 +201,155 @@ func TestCycleMatrixGraph(t *testing.T) {
 	}
 }
 
+// TestIsPathMatrixGraph calls IsPathMatrixGraph with different hardcoded
+// graphs, including cycles of different lengths, linear forests,
+// and other non-cycle graphs.
+func TestIsPathMatrixGraph(t *testing.T) {
+	a := [][]byte{
+		{0, 1, 0, 0, 0, 0, 0, 1},
+		{1, 0, 1, 0, 0, 0, 0, 0},
+		{0, 1, 0, 1, 0, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 1, 0},
+		{0, 0, 0, 0, 0, 1, 0, 1},
+		{1, 0, 0, 0, 0, 0, 1, 0},
+	}
+	b := [][]byte{
+		{0, 0, 1},
+		{0, 0, 1},
+		{1, 1, 0},
+	}
+	c := [][]byte{
+		{0, 0, 1, 0, 0, 1, 0},
+		{0, 0, 0, 1, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0},
+		{0, 1, 0, 0, 0, 1, 0},
+		{0, 0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 1, 0, 0, 0},
+		{0, 1, 0, 0, 1, 0, 0},
+	}
+	d := [][]byte{
+		{0, 1, 0, 1, 0, 0, 0, 0},
+		{1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 1, 0, 1, 0},
+		{0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 1, 0, 1, 0},
+	}
+	e := [][]byte{
+		{0, 1, 0, 0, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 0, 0},
+		{0, 1, 0, 1, 0, 0, 0, 0},
+		{0, 0, 1, 1, 1, 0, 0, 0},
+		{0, 0, 0, 1, 0, 1, 0, 0},
+		{0, 0, 0, 0, 1, 0, 1, 0},
+		{0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 0, 0, 1, 0},
+	}
+	f := [][]byte{
+		{0, 1, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0},
+		{0, 1, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0},
+		{0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 1, 0},
+	}
+	g := graph.NewMatrixGraph(a)
+	h := graph.NewMatrixGraph(b)
+	i := graph.NewMatrixGraph(c)
+	j := graph.NewMatrixGraph(d)
+	k := graph.NewMatrixGraph(e)
+	l := graph.NewMatrixGraph(f)
+	if !IsPathMatrixGraph(g) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsPathMatrixGraph(g),
+		)
+	}
+	if !IsPathMatrixGraph(h) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsPathMatrixGraph(h),
+		)
+	}
+	if !IsPathMatrixGraph(i) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsPathMatrixGraph(i),
+		)
+	}
+	if IsPathMatrixGraph(j) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsPathMatrixGraph(j),
+		)
+	}
+	if IsPathMatrixGraph(k) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsPathMatrixGraph(k),
+		)
+	}
+	if IsPathMatrixGraph(l) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsPathMatrixGraph(k),
+		)
+	}
+}
+
+// TestPathMatrixGraph calls PathMatrixGraph with five different
+// randomly generated numbers, and checks each of them to be a path by
+// exploring their adjacency matrices.
+func TestPathMatrixGraph(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		n := rand.Intn(1000)
+		if n > 2 {
+			c := PathMatrixGraph(n)
+			d := c.DegreeSequence()
+			for i, v := range d {
+				if i == 0 || i == n-1 {
+					if v != 1 {
+						t.Error("First or last vertex does not have degree 1")
+					}
+				} else if v != 2 {
+					t.Error("The graph is not 2-regular")
+				}
+			}
+			a := c.Adjacency()
+			if a[0][1] != 1 || a[0][n-1] != 0 {
+				t.Errorf(
+					"Adjacencies of vertex %v are not as expected",
+					0,
+				)
+			}
+			if a[n-1][0] != 0 || a[n-1][n-2] != 1 {
+				t.Errorf(
+					"Adjacencies of vertex %v are not as expected",
+					n-1,
+				)
+			}
+			for i := 1; i < n-1; i++ {
+				if a[i][i-1] != 1 || a[i][i+1] != 1 {
+					t.Errorf(
+						"Adjacencies of vertex %v are not as expected",
+						i,
+					)
+				}
+			}
+		}
+	}
+}
+
 // TestCirculantMatrixDigraph randomly generates five circulant digraphs by
 // constructing their adjacency matrices from a set of randomly generated
 // jumps.   Then, calls the CirculantMatrixDigraph function with the same set
