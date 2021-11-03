@@ -72,6 +72,93 @@ func TestCompleteMatrixGraph(t *testing.T) {
 	}
 }
 
+func TestIsCompleteBipartiteMatrixGraph(t *testing.T) {
+	a := [][]byte{
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{1, 1, 1, 1, 0, 0},
+		{1, 1, 1, 1, 0, 0},
+	}
+	b := [][]byte{
+		{0, 1, 1},
+		{1, 1, 1},
+		{1, 1, 0},
+	}
+	c := [][]byte{
+		{0, 0, 1},
+		{1, 0, 1},
+		{1, 1, 0},
+	}
+	d := [][]byte{
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1},
+		{1, 1, 1, 1, 0, 0},
+		{0, 1, 1, 1, 0, 0},
+	}
+	k := graph.NewMatrixGraph(a)
+	l := graph.NewMatrixGraph(b)
+	m := graph.NewMatrixGraph(c)
+	n := graph.NewMatrixGraph(d)
+	if !IsCompleteBipartiteMatrixGraph(k) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsCompleteBipartiteMatrixGraph(k),
+		)
+	}
+	if IsCompleteBipartiteMatrixGraph(l) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsCompleteBipartiteMatrixGraph(k),
+		)
+	}
+	if IsCompleteBipartiteMatrixGraph(m) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsCompleteBipartiteMatrixGraph(k),
+		)
+	}
+	if IsCompleteBipartiteMatrixGraph(n) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsCompleteBipartiteMatrixGraph(k),
+		)
+	}
+}
+
+// TestCompleteBipartiteMatrixGraph calls CompleteBipartiteMatrixGraph with five
+// different randomly generated graphs, and checks each of them to be a complete
+// bipartite graph by exploring their adjacency matrices.
+func TestCompleteBipartiteMatrixGraph(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		n := rand.Intn(1000)
+		m := rand.Intn(1000)
+		k := CompleteBipartiteMatrixGraph(n, m)
+		a := k.Adjacency()
+		for i := range a {
+			for j := range a[i] {
+				if i == j && a[i][j] != 0 {
+					t.Error("Graph is not irreflexive")
+				} else if i != j {
+					if (i < n && n-1 < j && a[i][j] != 1) ||
+						(n-1 < i && j < n && a[i][j] != 1) {
+						t.Errorf("No adjacency between %v and %v", i, j)
+					}
+				} else if a[i][j] != 0 {
+					t.Errorf("Unexpected adjacency between %v and %v", i, j)
+				}
+			}
+		}
+	}
+}
+
 // TestIsCycleMatrixGraph calls IsCycleMatrixGraph with different hardcoded
 // graphs, including cycles of different lengths, disconnected 2-regular graphs,
 // and other non-cycle graphs.
