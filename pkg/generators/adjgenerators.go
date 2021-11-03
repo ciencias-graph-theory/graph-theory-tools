@@ -37,6 +37,58 @@ func CompleteMatrixGraph(n int) *graph.MatrixGraph {
 	return graph.NewMatrixGraph(a)
 }
 
+// IsCompleteBipartiteMatrixGraph checks whether a graph is a complete bipartite
+// graph or not.
+func IsCompleteBipartiteMatrixGraph(g *graph.MatrixGraph) bool {
+	a := g.Adjacency()
+	x := make([]int, 0)
+	y := make([]int, 0)
+	for i := range a[0] {
+		if a[0][i] == 0 {
+			x = append(x, i)
+		} else if a[0][i] == 1 {
+			y = append(y, i)
+		} else {
+			return false
+		}
+	}
+	for _, v := range x {
+		for _, w := range y {
+			if a[v][w] != 1 || a[w][v] != 1 {
+				return false
+			}
+		}
+		for _, w := range x {
+			if a[v][w] != 0 {
+				return false
+			}
+		}
+	}
+	for _, v := range y {
+		for _, w := range y {
+			if a[v][w] != 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// CompleteBipartiteMatrixGraph returns a complete bipartite graph with parts of
+// cardinality n and m.
+func CompleteBipartiteMatrixGraph(n, m int) *graph.MatrixGraph {
+	a := make([][]byte, n+m, n+m)
+	for i := range a {
+		a[i] = make([]byte, n+m)
+		for j := range a[i] {
+			if i != j && ((i < n && n-1 < j) || (n-1 < i && j < n)) {
+				a[i][j] = 1
+			}
+		}
+	}
+	return graph.NewMatrixGraph(a)
+}
+
 // IsCycleMatrixGraph checks whether a graph is an irreflexive cycle or not.
 func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
 	d := g.DegreeSequence()
