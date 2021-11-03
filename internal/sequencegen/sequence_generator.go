@@ -60,6 +60,7 @@ func Weight(n, w int) func() []bool {
 	}
 }
 
+// makeInitialB makes the initial element for Binary.
 func makeInitialB(n int) []bool {
 	b := make([]bool, n)
 	// First element is 01^n-1
@@ -111,3 +112,29 @@ func Binary(n int) func() []bool {
 		}
 	}
 }
+
+// Range returns a closure that acts as an iterator of all binary sequences of
+// size n from weights l to u.
+func Range(n, l, u int) func() []bool {
+	m := u
+	if n-1 < u{
+		m = n-1
+	}
+	init := true
+	b := makeInitialW(n, m)
+	x := 1
+	y := 0
+	return func() []bool {
+		if init {
+			init = false
+			return b
+		}
+		if x != y || y <= u {
+			b[x] = false
+			b[y] = true
+			x++
+			y++
+			if x == n && y != n {
+				if l == 
+			}
+		}
