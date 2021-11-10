@@ -26,6 +26,9 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
+          name: "Format with go fmt"
+          command: "! go fmt ./... 2>&1 | read"
+      - run:
           name: Run tests
           command: |
             mkdir -p /tmp/test-reports
