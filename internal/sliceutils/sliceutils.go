@@ -31,8 +31,10 @@ func EqualByteMatrix(a, b [][]byte) bool {
 	return true
 }
 
-// NextNonZero returns the position of the next non-zero entry from a given
-// position, or -1 if either there are less than two non-zero entries.
+// NextNonZero returns the position of the next non-zero entry to the right from
+// a given position in a slice, starting over if the end of the slice is
+// reached.   If no non-zero entry is found (different from the initial
+// position), -1 is returned.
 func NextNonZero(a []byte, i int) int {
 	l := len(a)
 	var j int
