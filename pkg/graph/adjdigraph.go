@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
 // A MatrixDigraph represents a digraph modelled by its adjacency
@@ -35,7 +35,7 @@ func (d *MatrixDigraph) Order() int {
 	return len(d.adjacency)
 }
 
-// Computes indegree and outdegree sequences of the digraph
+// Computes in-degree and out-degree sequences of the digraph
 func (d *MatrixDigraph) computeDegreeSequences() {
 	inSequence := make([]int, len(d.adjacency))
 	outSequence := make([]int, len(d.adjacency))
@@ -52,8 +52,8 @@ func (d *MatrixDigraph) computeDegreeSequences() {
 }
 
 // DegreeSequence returns the degree sequence of the digraph.
-// The degreee sequence of the digraph is the sum of the indegree
-// sequence and the outdegree sequence.
+// The degree sequence of the digraph is the sum of the in-degree
+// sequence and the out-degree sequence.
 func (d *MatrixDigraph) DegreeSequence() []int {
 	if d.indegreeSequence == nil ||
 		d.outdegreeSequence == nil {
@@ -67,7 +67,7 @@ func (d *MatrixDigraph) DegreeSequence() []int {
 	return degreeSequence
 }
 
-// IndegreeSequence returns the indegree sequence of the digraph
+// IndegreeSequence returns the in-degree sequence of the digraph
 // in non-increasing order.
 func (d *MatrixDigraph) IndegreeSequence() []int {
 	if d.indegreeSequence == nil {
@@ -76,7 +76,7 @@ func (d *MatrixDigraph) IndegreeSequence() []int {
 	return d.indegreeSequence
 }
 
-// OutdegreeSequence returns the outdegree sequence of the
+// OutdegreeSequence returns the out-degree sequence of the
 // digraph in non-increasing order.
 func (d *MatrixDigraph) OutdegreeSequence() []int {
 	if d.outdegreeSequence == nil {
