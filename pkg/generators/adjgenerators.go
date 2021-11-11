@@ -1,12 +1,13 @@
 package generators
 
 import (
-	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
-	"github.com/Japodrilo/graph-theory-tools/pkg/graph"
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
+	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
+	"log"
 )
 
 // IsCompleteMatrixGraph checks whether a graph is a complete graph or not. A
-// complete graph is a loopless graph where every pair or different vertices is
+// complete graph is a loopless graph where every pair of different vertices is
 // adjacent.
 func IsCompleteMatrixGraph(g *graph.MatrixGraph) bool {
 	a := g.Adjacency()
@@ -23,7 +24,7 @@ func IsCompleteMatrixGraph(g *graph.MatrixGraph) bool {
 }
 
 // CompleteMatrixGraph returns a complete graph of order n. A complete graph is
-// a loopless graph where every pair or different vertices is adjacent.
+// a loopless graph where every pair of different vertices is adjacent.
 func CompleteMatrixGraph(n int) *graph.MatrixGraph {
 	a := make([][]byte, n, n)
 	for i := range a {
@@ -116,24 +117,20 @@ func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
 
 // CycleMatrixGraph returns an irreflexive cycle of order n in canonical order.
 func CycleMatrixGraph(n int) *graph.MatrixGraph {
-	a := make([][]byte, n, n)
-	a[0] = make([]byte, n, n)
-	a[0][1] = 1
-	a[0][n-1] = 1
-	a[n-1] = make([]byte, n, n)
-	a[n-1][0] = 1
-	a[n-1][n-2] = 1
-	for i := 1; i < n-1; i++ {
-		a[i] = make([]byte, n, n)
-		a[i][i-1] = 1
-		a[i][i+1] = 1
+	c := PathMatrixGraph(n)
+	err := c.AddEdge(0, n-1)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return graph.NewMatrixGraph(a)
+	return c
 }
 
 // IsPathMatrixGraph checks whether a graph is an irreflexive path or not.
 func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
 	d := g.DegreeSequence()
+	if len(d) == 1 && d[0] == 0 {
+		return true
+	}
 	start := -1
 	end := -1
 	for i, v := range d {
@@ -176,13 +173,15 @@ func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
 func PathMatrixGraph(n int) *graph.MatrixGraph {
 	a := make([][]byte, n, n)
 	a[0] = make([]byte, n, n)
-	a[0][1] = 1
-	a[n-1] = make([]byte, n, n)
-	a[n-1][n-2] = 1
-	for i := 1; i < n-1; i++ {
-		a[i] = make([]byte, n, n)
-		a[i][i-1] = 1
-		a[i][i+1] = 1
+	if n > 1 {
+		a[0][1] = 1
+		a[n-1] = make([]byte, n, n)
+		a[n-1][n-2] = 1
+		for i := 1; i < n-1; i++ {
+			a[i] = make([]byte, n, n)
+			a[i][i-1] = 1
+			a[i][i+1] = 1
+		}
 	}
 	return graph.NewMatrixGraph(a)
 }
