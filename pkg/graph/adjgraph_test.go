@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
 // TestAdjacency calls NewMatrixGraph with an

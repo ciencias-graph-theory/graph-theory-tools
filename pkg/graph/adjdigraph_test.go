@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
 // TestAdjacency calls NewMatrixDigraph with an
@@ -48,8 +48,8 @@ func TestDigraphOrder(t *testing.T) {
 	}
 }
 
-// TestDigraphDegreeSequence tests that degree, indegree, and
-// outdegree sequences are computed correctly for digraphs.
+// TestDigraphDegreeSequence tests that degree, in-degree, and
+// out-degree sequences are computed correctly for digraphs.
 // First example digraph is C3*.
 // Second is from page 11 of article "3-transitive digraphs" by
 // Cesar Hernandez-Cruz, with loops added on vertices 4 and 5.
@@ -72,22 +72,21 @@ func TestDigraphDegreeSequence(t *testing.T) {
 	want1 := []int{2, 3, 3}
 	want2 := []int{2, 5, 3, 3, 7, 4}
 
-	// Indegree and outdegree sequences have not yet been
-	// computed.
+	// In-degree and out-degree sequences have not yet been computed.
 	if digraph1.indegreeSequence != nil {
-		t.Errorf("In digraph 1, indegree" +
+		t.Errorf("In digraph 1, in-degree" +
 			"sequence was expected to be nil")
 	}
 	if digraph1.outdegreeSequence != nil {
-		t.Errorf("In digraph 1, outdegree" +
+		t.Errorf("In digraph 1, out-degree" +
 			"sequence was expected to be nil")
 	}
 	if digraph2.indegreeSequence != nil {
-		t.Errorf("In digraph 2, indegree" +
+		t.Errorf("In digraph 2, in-degree" +
 			"sequence was expected to be nil")
 	}
 	if digraph2.outdegreeSequence != nil {
-		t.Errorf("In digraph 2, outdegree" +
+		t.Errorf("In digraph 2, out-degree" +
 			"sequence was expected to be nil")
 	}
 
@@ -157,9 +156,9 @@ func TestDigraphSize(t *testing.T) {
 		t.Errorf("The indegree sequence was expected to be nil")
 	}
 	if petersen.outdegreeSequence != nil {
-		t.Errorf("The outdegree sequence was expected to be nil")
+		t.Errorf("The out-degree sequence was expected to be nil")
 	}
-	want := (10 * 3)
+	want := 10 * 3
 	got := petersen.Size()
 	if want != got {
 		t.Errorf("Expected %d, got %d", want, got)
@@ -174,7 +173,7 @@ func TestDigraphSize(t *testing.T) {
 		t.Errorf("The indegree sequence was not expected to be nil")
 	}
 	if petersen.outdegreeSequence == nil {
-		t.Errorf("The outdegree sequence was not expected to be nil")
+		t.Errorf("The out-degree sequence was not expected to be nil")
 	}
 	wantD := []int{6, 6, 6, 6, 6, 6, 6, 6, 6, 6}
 	gotD := petersen.DegreeSequence()
