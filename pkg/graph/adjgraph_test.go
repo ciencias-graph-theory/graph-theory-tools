@@ -31,8 +31,9 @@ func TestDigraphAdjacency(t *testing.T) {
 	}
 }
 
-// TestNewMatrixGraphSequence calls NewMatrixGraph
-// with an adjacency matrix
+// TestNewMatrixGraphSequence calls NewMatrixGraph with a fixed adjacency
+// matrix, then compares the sequence obtained from DegreeSequence and the
+// (previously known) degree sequence corresponding to the adjacency matrix.
 func TestNewMatrixGraphSequence(t *testing.T) {
 	adjacency := [][]byte{
 		{0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
@@ -58,6 +59,50 @@ func TestNewMatrixGraphSequence(t *testing.T) {
 	got = petersen.degreeSequence
 	if !sliceutils.EqualIntSlice(want, got) {
 		t.Errorf("Expected %v, got %v", want, got)
+	}
+}
+
+// TestAddEdge calls AddEdge with different invalid values and check that an
+// error is successfully thrown.   Then, it calls AddEdge with a valid value,
+// and checks that the given edge was added successfully.
+func TestAddEdge(t *testing.T) {
+	adjacency := [][]byte{
+		{0, 1, 0, 0, 1},
+		{1, 0, 1, 0, 0},
+		{0, 1, 0, 1, 0},
+		{0, 0, 1, 0, 1},
+		{1, 0, 0, 1, 0},
+	}
+	g := NewMatrixGraph(adjacency)
+	err := g.AddEdge(-1, 2)
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	err = g.AddEdge(1, 5)
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	err = g.AddEdge(-1, -2)
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	err = g.AddEdge(-1, 6)
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	err = g.AddEdge(19, 25)
+	if err == nil {
+		t.Errorf("Expected an error, got nil")
+	}
+	err = g.AddEdge(0, 2)
+	if err != nil {
+		t.Errorf("Expected nil, got %v", err)
+	}
+	if g.adjacency[0][2] != 1 || g.adjacency[2][0] != 1 {
+		t.Errorf("The edge was not successfully added")
+	}
+	if g.adjacency[0][1] != 1 || g.adjacency[1][0] != 1 {
+		t.Errorf("The edge was not successfully added")
 	}
 }
 
