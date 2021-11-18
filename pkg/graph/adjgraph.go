@@ -1,7 +1,9 @@
 package graph
 
 import (
-	"github.com/Japodrilo/graph-theory-tools/internal/sliceutils"
+	"errors"
+
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
 // A MatrixGraph represents a graph, modelled by its adjacency matrix.
@@ -46,6 +48,19 @@ func (g *MatrixGraph) DegreeSequence() []int {
 		g.degreeSequence = degreeSequence
 		return degreeSequence
 	}
+}
+
+// AddEdge adds the edge between two given vertices. When the input does not
+// correspond to two (possibly equal) vertices of the graph, an error is
+// returned.
+func (g *MatrixGraph) AddEdge(u, v int) error {
+	o := g.Order()
+	if u < 0 || v < 0 || o-1 < u || o-1 < v {
+		return errors.New("not a valid vertex pair")
+	}
+	g.adjacency[u][v] = 1
+	g.adjacency[v][u] = 1
+	return nil
 }
 
 // Size returns the size (number of edges) of a matrix graph.
