@@ -98,7 +98,7 @@ func Binary(n int) func() []bool {
 			} else if x != y && !b[x] {
 				b[x] = true
 				b[0] = false
-				if y > 1{
+				if y > 1 {
 					x = 1
 				}
 				y = 0
@@ -117,8 +117,8 @@ func Binary(n int) func() []bool {
 // size n from weights l to u.
 func Range(n, l, u int) func() []bool {
 	m := u
-	if n-1 < u{
-		m = n-1
+	if n-1 < u {
+		m = n - 1
 	}
 	init := true
 	b := makeInitialW(n, m)
@@ -129,12 +129,37 @@ func Range(n, l, u int) func() []bool {
 			init = false
 			return b
 		}
-		if x != y || y <= u {
+		if x != y || y < u {
 			b[x] = false
 			b[y] = true
 			x++
 			y++
 			if x == n && y != n {
-				if l == 
+
+				if l == 0 && !b[1] {
+					b[0] = false
+				}
+				if !b[l] {
+					y = l
+					x = l
+				} else {
+					b[0] = false
+					y = 0
+					x = 1
+				}
+			} else if x != y && !b[x] {
+				b[x] = true
+				b[0] = false
+				if y > 1 {
+					x = 1
+				}
+				y = 0
 			}
+		} else {
+			b = makeInitialW(n, m)
+			x = 1
+			y = 0
 		}
+		return b
+	}
+}
