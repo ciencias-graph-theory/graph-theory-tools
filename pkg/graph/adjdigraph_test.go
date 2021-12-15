@@ -11,7 +11,7 @@ import (
 // TestAdjacency calls NewMatrixDigraph with an
 // adjacency matrix, and then compares this
 // adjacency matrix with the one returned by
-// Adjacency(). This test is identical to the one for regular
+// Matrix(). This test is identical to the one for regular
 // graphs.
 func TestAdjacency(t *testing.T) {
 	adjacency := [][]byte{
