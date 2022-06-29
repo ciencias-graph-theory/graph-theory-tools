@@ -3,14 +3,13 @@ package generators
 import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
-	"log"
 )
 
 // IsCompleteMatrixGraph checks whether a graph is a complete graph or not. A
 // complete graph is a loopless graph where every pair of different vertices is
 // adjacent.
-func IsCompleteMatrixGraph(g *graph.MatrixGraph) bool {
-	a := g.Adjacency()
+func IsCompleteMatrixGraph(g *graph.StaticGraph) bool {
+	a := g.Matrix()
 	for i := range a {
 		for j := range a[i] {
 			if i == j && a[i][j] != 0 {
@@ -25,7 +24,7 @@ func IsCompleteMatrixGraph(g *graph.MatrixGraph) bool {
 
 // CompleteMatrixGraph returns a complete graph of order n. A complete graph is
 // a loopless graph where every pair of different vertices is adjacent.
-func CompleteMatrixGraph(n int) *graph.MatrixGraph {
+func CompleteMatrixGraph(n int) *graph.StaticGraph {
 	a := make([][]byte, n, n)
 	for i := range a {
 		a[i] = make([]byte, n)
@@ -35,13 +34,13 @@ func CompleteMatrixGraph(n int) *graph.MatrixGraph {
 			}
 		}
 	}
-	return graph.NewMatrixGraph(a)
+	return graph.NewGraphFromMatrixU(a)
 }
 
 // IsCompleteBipartiteMatrixGraph checks whether a graph is a complete bipartite
 // graph or not.
-func IsCompleteBipartiteMatrixGraph(g *graph.MatrixGraph) bool {
-	a := g.Adjacency()
+func IsCompleteBipartiteMatrixGraph(g *graph.StaticGraph) bool {
+	a := g.Matrix()
 	x := make([]int, 0)
 	y := make([]int, 0)
 	for i := range a[0] {
@@ -77,7 +76,7 @@ func IsCompleteBipartiteMatrixGraph(g *graph.MatrixGraph) bool {
 
 // CompleteBipartiteMatrixGraph returns a complete bipartite graph with parts of
 // cardinality n and m.
-func CompleteBipartiteMatrixGraph(n, m int) *graph.MatrixGraph {
+func CompleteBipartiteMatrixGraph(n, m int) *graph.StaticGraph {
 	a := make([][]byte, n+m, n+m)
 	for i := range a {
 		a[i] = make([]byte, n+m)
@@ -87,18 +86,18 @@ func CompleteBipartiteMatrixGraph(n, m int) *graph.MatrixGraph {
 			}
 		}
 	}
-	return graph.NewMatrixGraph(a)
+	return graph.NewGraphFromMatrixU(a)
 }
 
 // IsCycleMatrixGraph checks whether a graph is an irreflexive cycle or not.
-func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
+func IsCycleMatrixGraph(g *graph.StaticGraph) bool {
 	d := g.DegreeSequence()
 	for _, v := range d {
 		if v != 2 {
 			return false
 		}
 	}
-	a := g.Adjacency()
+	a := g.Matrix()
 	n := len(d)
 	i := 0
 	j := sliceutils.NextNonZero(a[i], 0)
@@ -115,8 +114,9 @@ func IsCycleMatrixGraph(g *graph.MatrixGraph) bool {
 	return m+1 == n
 }
 
+/*
 // CycleMatrixGraph returns an irreflexive cycle of order n in canonical order.
-func CycleMatrixGraph(n int) *graph.MatrixGraph {
+func CycleMatrixGraph(n int) *graph.StaticGraph {
 	c := PathMatrixGraph(n)
 	err := c.AddEdge(0, n-1)
 	if err != nil {
@@ -124,9 +124,10 @@ func CycleMatrixGraph(n int) *graph.MatrixGraph {
 	}
 	return c
 }
+*/
 
 // IsPathMatrixGraph checks whether a graph is an irreflexive path or not.
-func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
+func IsPathMatrixGraph(g *graph.StaticGraph) bool {
 	d := g.DegreeSequence()
 	if len(d) == 1 && d[0] == 0 {
 		return true
@@ -149,7 +150,7 @@ func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
 	if end == -1 {
 		return false
 	}
-	a := g.Adjacency()
+	a := g.Matrix()
 	n := len(d)
 	i := start
 	var j int
@@ -170,7 +171,7 @@ func IsPathMatrixGraph(g *graph.MatrixGraph) bool {
 }
 
 // PathMatrixGraph returns an irreflexive path of order n in canonical order.
-func PathMatrixGraph(n int) *graph.MatrixGraph {
+func PathMatrixGraph(n int) *graph.StaticGraph {
 	a := make([][]byte, n, n)
 	a[0] = make([]byte, n, n)
 	if n > 1 {
@@ -183,9 +184,10 @@ func PathMatrixGraph(n int) *graph.MatrixGraph {
 			a[i][i+1] = 1
 		}
 	}
-	return graph.NewMatrixGraph(a)
+	return graph.NewGraphFromMatrixU(a)
 }
 
+/*
 // CirculantMatrixDigraph returns a circulant digraph of order n
 // with set of integer jumps s.
 func CirculantMatrixDigraph(n int, jumps map[int]bool) *graph.MatrixDigraph {
@@ -205,3 +207,4 @@ func CirculantMatrixDigraph(n int, jumps map[int]bool) *graph.MatrixDigraph {
 	}
 	return graph.NewMatrixDigraph(a)
 }
+*/
