@@ -16,4 +16,5 @@ func (error graphError) Error() string {
 
 var (
 	assymetricMatrixError = GraphError("Adjacency matrix is not symmetric")
+	invalidListError      = GraphError("Invalid adjacency list")
 )
