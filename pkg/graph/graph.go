@@ -2,6 +2,10 @@
 // and handling graphs.
 package graph
 
+// Type aliases to improve code readability.
+type AdjacencyMatrix = [][]byte
+type AdjacencyList = [][]int
+
 type Graph interface {
 	// Order returns the number of vertices in the graph.
 	Order() int
