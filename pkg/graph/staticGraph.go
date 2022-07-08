@@ -4,10 +4,6 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
-// Type aliases to improve code readability.
-type AdjacencyMatrix = [][]byte
-type AdjacencyList = [][]int
-
 // A StaticGraph represents an undirected graph, modelled by its adjacency
 // matrix, its adjacency list, or both. Usually, only one of the two
 // representations will be used, and the other one will be calculated when an
