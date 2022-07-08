@@ -7,7 +7,7 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 )
 
-func TestIsCompleteMatrixGraph(t *testing.T) {
+func TestIsComplete(t *testing.T) {
 	a := [][]byte{
 		{0, 1, 1, 1, 1, 1},
 		{1, 0, 1, 1, 1, 1},
@@ -31,34 +31,34 @@ func TestIsCompleteMatrixGraph(t *testing.T) {
 	}
 	k, _ := graph.NewGraphFromMatrix(a)
 	l, _ := graph.NewGraphFromMatrix(b)
-	m, _ := graph.NewGraphFromMatrix(c)
+	m := graph.NewGraphFromMatrixU(c)
 	n, _ := graph.NewGraphFromMatrix(d)
-	if !IsCompleteMatrixGraph(k) {
+	if !IsComplete(k) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCompleteMatrixGraph(k),
+			IsComplete(k),
 		)
 	}
-	if IsCompleteMatrixGraph(l) {
+	if IsComplete(l) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCompleteMatrixGraph(k),
+			IsComplete(k),
 		)
 	}
-	if IsCompleteMatrixGraph(m) {
+	if IsComplete(m) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCompleteMatrixGraph(k),
+			IsComplete(k),
 		)
 	}
-	if !IsCompleteMatrixGraph(n) {
+	if !IsComplete(n) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCompleteMatrixGraph(k),
+			IsComplete(k),
 		)
 	}
 }
@@ -66,10 +66,10 @@ func TestIsCompleteMatrixGraph(t *testing.T) {
 // TestCompleteMatrixGraph calls CompleteMatrixGraph with five different
 // randomly generated graphs, and checks each of them to be a complete graph by
 // exploring their adjacency matrices.
-func TestCompleteMatrixGraph(t *testing.T) {
+func TestCompleteGraph(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
-		k := CompleteMatrixGraph(n)
+		k := CompleteGraph(n)
 		a := k.Matrix()
 		for i := range a {
 			for j := range a[i] {
@@ -83,7 +83,7 @@ func TestCompleteMatrixGraph(t *testing.T) {
 	}
 }
 
-func TestIsCompleteBipartiteMatrixGraph(t *testing.T) {
+func TestIsCompleteBipartite(t *testing.T) {
 	a := [][]byte{
 		{0, 0, 0, 0, 1, 1},
 		{0, 0, 0, 0, 1, 1},
@@ -115,42 +115,42 @@ func TestIsCompleteBipartiteMatrixGraph(t *testing.T) {
 	}
 	k, _ := graph.NewGraphFromMatrix(a)
 	l, _ := graph.NewGraphFromMatrix(b)
-	m, _ := graph.NewGraphFromMatrix(c)
-	n, _ := graph.NewGraphFromMatrix(d)
+	m := graph.NewGraphFromMatrixU(c)
+	n := graph.NewGraphFromMatrixU(d)
 	o, _ := graph.NewGraphFromMatrix(e)
-	if !IsCompleteBipartiteMatrixGraph(k) {
+	if !IsCompleteBipartite(k) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCompleteBipartiteMatrixGraph(k),
+			IsCompleteBipartite(k),
 		)
 	}
-	if IsCompleteBipartiteMatrixGraph(l) {
+	if IsCompleteBipartite(l) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCompleteBipartiteMatrixGraph(k),
+			IsCompleteBipartite(k),
 		)
 	}
-	if IsCompleteBipartiteMatrixGraph(m) {
+	if IsCompleteBipartite(m) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCompleteBipartiteMatrixGraph(k),
+			IsCompleteBipartite(k),
 		)
 	}
-	if IsCompleteBipartiteMatrixGraph(n) {
+	if IsCompleteBipartite(n) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCompleteBipartiteMatrixGraph(k),
+			IsCompleteBipartite(k),
 		)
 	}
-	if !IsCompleteBipartiteMatrixGraph(o) {
+	if !IsCompleteBipartite(o) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCompleteBipartiteMatrixGraph(k),
+			IsCompleteBipartite(k),
 		)
 	}
 }
@@ -158,11 +158,11 @@ func TestIsCompleteBipartiteMatrixGraph(t *testing.T) {
 // TestCompleteBipartiteMatrixGraph calls CompleteBipartiteMatrixGraph with five
 // different randomly generated graphs, and checks each of them to be a complete
 // bipartite graph by exploring their adjacency matrices.
-func TestCompleteBipartiteMatrixGraph(t *testing.T) {
+func TestCompleteBipartiteGraph(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
 		m := rand.Intn(1000)
-		k := CompleteBipartiteMatrixGraph(n, m)
+		k := CompleteBipartiteGraph(n, m)
 		a := k.Matrix()
 		for i := range a {
 			for j := range a[i] {
@@ -181,10 +181,10 @@ func TestCompleteBipartiteMatrixGraph(t *testing.T) {
 	}
 }
 
-// TestIsCycleMatrixGraph calls IsCycleMatrixGraph with different hardcoded
+// TestIsCycle calls IsCycleMatrixGraph with different hardcoded
 // graphs, including cycles of different lengths, disconnected 2-regular graphs,
 // and other non-cycle graphs.
-func TestIsCycleMatrixGraph(t *testing.T) {
+func TestIsCycle(t *testing.T) {
 	a := [][]byte{
 		{0, 1, 0, 0, 0, 0, 0, 1},
 		{1, 0, 1, 0, 0, 0, 0, 0},
@@ -234,39 +234,39 @@ func TestIsCycleMatrixGraph(t *testing.T) {
 	i, _ := graph.NewGraphFromMatrix(c)
 	j, _ := graph.NewGraphFromMatrix(d)
 	k, _ := graph.NewGraphFromMatrix(e)
-	if !IsCycleMatrixGraph(g) {
+	if !IsCycle(g) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCycleMatrixGraph(g),
+			IsCycle(g),
 		)
 	}
-	if !IsCycleMatrixGraph(h) {
+	if !IsCycle(h) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCycleMatrixGraph(h),
+			IsCycle(h),
 		)
 	}
-	if !IsCycleMatrixGraph(i) {
+	if !IsCycle(i) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsCycleMatrixGraph(i),
+			IsCycle(i),
 		)
 	}
-	if IsCycleMatrixGraph(j) {
+	if IsCycle(j) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCycleMatrixGraph(j),
+			IsCycle(j),
 		)
 	}
-	if IsCycleMatrixGraph(k) {
+	if IsCycle(k) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsCycleMatrixGraph(k),
+			IsCycle(k),
 		)
 	}
 }
@@ -312,10 +312,10 @@ func TestCycleMatrixGraph(t *testing.T) {
 }
 */
 
-// TestIsPathMatrixGraph calls IsPathMatrixGraph with different hardcoded
+// TestIsPathMatrixGraph calls IsPath with different hardcoded
 // graphs, including cycles of different lengths, linear forests,
 // and other non-cycle graphs.
-func TestIsPathMatrixGraph(t *testing.T) {
+func TestIsPath(t *testing.T) {
 	a := [][]byte{
 		{0, 1, 0, 0, 0, 0, 0, 1},
 		{1, 0, 1, 0, 0, 0, 0, 0},
@@ -378,53 +378,53 @@ func TestIsPathMatrixGraph(t *testing.T) {
 	l, _ := graph.NewGraphFromMatrix(e)
 	m, _ := graph.NewGraphFromMatrix(f)
 	n, _ := graph.NewGraphFromMatrix(g)
-	if !IsPathMatrixGraph(h) {
+	if !IsPath(h) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsPathMatrixGraph(h),
+			IsPath(h),
 		)
 	}
-	if !IsPathMatrixGraph(i) {
+	if !IsPath(i) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsPathMatrixGraph(i),
+			IsPath(i),
 		)
 	}
-	if !IsPathMatrixGraph(j) {
+	if !IsPath(j) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsPathMatrixGraph(j),
+			IsPath(j),
 		)
 	}
-	if IsPathMatrixGraph(k) {
+	if IsPath(k) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsPathMatrixGraph(k),
+			IsPath(k),
 		)
 	}
-	if IsPathMatrixGraph(l) {
+	if IsPath(l) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsPathMatrixGraph(l),
+			IsPath(l),
 		)
 	}
-	if IsPathMatrixGraph(m) {
+	if IsPath(m) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsPathMatrixGraph(m),
+			IsPath(m),
 		)
 	}
-	if !IsPathMatrixGraph(n) {
+	if !IsPath(n) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsPathMatrixGraph(n),
+			IsPath(n),
 		)
 	}
 }
@@ -432,11 +432,11 @@ func TestIsPathMatrixGraph(t *testing.T) {
 // TestPathMatrixGraph calls PathMatrixGraph with five different
 // randomly generated numbers, and checks each of them to be a path by
 // exploring their adjacency matrices.
-func TestPathMatrixGraph(t *testing.T) {
+func TestPathGraph(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
 		if n > 2 {
-			c := PathMatrixGraph(n)
+			c := PathGraph(n)
 			d := c.DegreeSequence()
 			for i, v := range d {
 				if i == 0 || i == n-1 {

@@ -5,10 +5,10 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 )
 
-// IsCompleteMatrixGraph checks whether a graph is a complete graph or not. A
+// IsCompleteGraph checks whether a graph is a complete graph or not. A
 // complete graph is a loopless graph where every pair of different vertices is
 // adjacent.
-func IsCompleteMatrixGraph(g *graph.StaticGraph) bool {
+func IsComplete(g *graph.StaticGraph) bool {
 	a := g.Matrix()
 	for i := range a {
 		for j := range a[i] {
@@ -22,9 +22,9 @@ func IsCompleteMatrixGraph(g *graph.StaticGraph) bool {
 	return true
 }
 
-// CompleteMatrixGraph returns a complete graph of order n. A complete graph is
+// CompleteGraph returns a complete graph of order n. A complete graph is
 // a loopless graph where every pair of different vertices is adjacent.
-func CompleteMatrixGraph(n int) *graph.StaticGraph {
+func CompleteGraph(n int) *graph.StaticGraph {
 	a := make([][]byte, n, n)
 	for i := range a {
 		a[i] = make([]byte, n)
@@ -37,9 +37,9 @@ func CompleteMatrixGraph(n int) *graph.StaticGraph {
 	return graph.NewGraphFromMatrixU(a)
 }
 
-// IsCompleteBipartiteMatrixGraph checks whether a graph is a complete bipartite
+// IsCompleteBipartiteGraph checks whether a graph is a complete bipartite
 // graph or not.
-func IsCompleteBipartiteMatrixGraph(g *graph.StaticGraph) bool {
+func IsCompleteBipartite(g *graph.StaticGraph) bool {
 	a := g.Matrix()
 	x := make([]int, 0)
 	y := make([]int, 0)
@@ -76,7 +76,7 @@ func IsCompleteBipartiteMatrixGraph(g *graph.StaticGraph) bool {
 
 // CompleteBipartiteMatrixGraph returns a complete bipartite graph with parts of
 // cardinality n and m.
-func CompleteBipartiteMatrixGraph(n, m int) *graph.StaticGraph {
+func CompleteBipartiteGraph(n, m int) *graph.StaticGraph {
 	a := make([][]byte, n+m, n+m)
 	for i := range a {
 		a[i] = make([]byte, n+m)
@@ -90,7 +90,7 @@ func CompleteBipartiteMatrixGraph(n, m int) *graph.StaticGraph {
 }
 
 // IsCycleMatrixGraph checks whether a graph is an irreflexive cycle or not.
-func IsCycleMatrixGraph(g *graph.StaticGraph) bool {
+func IsCycle(g *graph.StaticGraph) bool {
 	d := g.DegreeSequence()
 	for _, v := range d {
 		if v != 2 {
@@ -127,7 +127,7 @@ func CycleMatrixGraph(n int) *graph.StaticGraph {
 */
 
 // IsPathMatrixGraph checks whether a graph is an irreflexive path or not.
-func IsPathMatrixGraph(g *graph.StaticGraph) bool {
+func IsPath(g *graph.StaticGraph) bool {
 	d := g.DegreeSequence()
 	if len(d) == 1 && d[0] == 0 {
 		return true
@@ -171,7 +171,7 @@ func IsPathMatrixGraph(g *graph.StaticGraph) bool {
 }
 
 // PathMatrixGraph returns an irreflexive path of order n in canonical order.
-func PathMatrixGraph(n int) *graph.StaticGraph {
+func PathGraph(n int) *graph.StaticGraph {
 	a := make([][]byte, n, n)
 	a[0] = make([]byte, n, n)
 	if n > 1 {
