@@ -17,8 +17,8 @@ type Graph interface {
 	Size() int
 
 	// Matrix returns the adjacency matrix of the graph.
-	Matrix() AdjacencyMatrix
+	Matrix() (AdjacencyMatrix, error)
 
 	// Matrix returns the adjacency list of the graph.
-	List() AdjacencyList
+	List() (AdjacencyList, error)
 }
