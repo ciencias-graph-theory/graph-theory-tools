@@ -36,10 +36,10 @@ func NewGraphFromMatrix(matrix AdjacencyMatrix) (*StaticGraph, error) {
 	}, nil
 }
 
-// NewGraphFromMatrixU initializes a graph modelled by its adjacency matrix.
+// NewFromMatrix initializes a graph modelled by its adjacency matrix.
 // This is an unsafe method, it does not check whether the matrix received as
 // argument is symmetric.
-func NewGraphFromMatrixU(adjacency AdjacencyMatrix) *StaticGraph {
+func NewFromMatrix(adjacency AdjacencyMatrix) *StaticGraph {
 	return &StaticGraph{
 		matrix:         adjacency,
 		list:           nil,
@@ -47,8 +47,8 @@ func NewGraphFromMatrixU(adjacency AdjacencyMatrix) *StaticGraph {
 	}
 }
 
-// Auxiliar method. Gets an efficient adjacency list (list of sets) from a given
-// adjacency list (list of lists), useful for testing membership.
+// Gets an efficient adjacency list (list of sets) from a given adjacency list
+// (list of lists), useful for testing membership.
 func efficientAdjacencyList(list AdjacencyList) *[]map[int]struct{} {
 	efficientAdjacencyList := new([]map[int]struct{})
 	for _, v := range list {
@@ -81,10 +81,10 @@ func NewGraphFromList(list AdjacencyList) (*StaticGraph, error) {
 	}, nil
 }
 
-// NewGraphFromListU initializes a graph modelled by its adjacency list.
+// NewFromList initializes a graph modelled by its adjacency list.
 // This is an unsafe method, it does not check whether the list received as
 // argument is valid.
-func NewGraphFromListU(list AdjacencyList) *StaticGraph {
+func NewFromList(list AdjacencyList) *StaticGraph {
 	return &StaticGraph{
 		matrix:         nil,
 		list:           list,
@@ -102,10 +102,13 @@ func (g *StaticGraph) List() AdjacencyList {
 	return g.list
 }
 
-// === Tentative auxiliar function ====
-func matrixToList(matrix AdjacencyList) (AdjacencyList, error) {
-	return nil, nil
-}
+/* === Tentative auxiliar functions ====
+
+func matrixToList(matrix AdjacencyMatrix) (AdjacencyList, error) {}
+
+func listToMatrix(list AdjacencyList) (AdjacencyMatrix, error) {}
+
+*/
 
 // Order returns the number of vertices in the graph.
 func (g *StaticGraph) Order() int {

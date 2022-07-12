@@ -94,7 +94,7 @@ func TestMatrix(t *testing.T) {
 		{1, 0, 0, 1},
 		{1, 1, 1, 1},
 	}
-	g1 := NewGraphFromMatrixU(a)
+	g1 := NewFromMatrix(a)
 	m1 := g1.Matrix()
 	if !reflect.DeepEqual(a, m1) {
 		t.Errorf("Returned matrix differs from original one")
@@ -120,7 +120,7 @@ func TestList(t *testing.T) {
 		{0, 3},
 		{0, 1, 2, 3},
 	}
-	g1 := NewGraphFromListU(a)
+	g1 := NewFromList(a)
 	l1 := g1.List()
 	if !reflect.DeepEqual(a, l1) {
 		t.Errorf("Returned list differs from original one")
@@ -155,7 +155,7 @@ func TestDegreeSequence(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 0, 0, 0},
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
-	petersen := NewGraphFromMatrixU(adjacency)
+	petersen := NewFromMatrix(adjacency)
 	if petersen.degreeSequence != nil {
 		t.Errorf("The degree sequence was expected to be nil")
 	}
@@ -184,7 +184,7 @@ func TestSize(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 0, 0, 0},
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
-	petersen := NewGraphFromMatrixU(adjacency)
+	petersen := NewFromMatrix(adjacency)
 	if petersen.degreeSequence != nil {
 		t.Errorf("The degree sequence was expected to be nil")
 	}
