@@ -93,13 +93,19 @@ func NewFromList(list AdjacencyList) *StaticGraph {
 }
 
 // Matrix returns the adjacency matrix of the graph.
-func (g *StaticGraph) Matrix() AdjacencyMatrix {
-	return g.matrix
+func (g *StaticGraph) Matrix() (AdjacencyMatrix, error) {
+	if g.matrix == nil {
+		return nil, NilAdjacencyMatrix
+	}
+	return g.matrix, nil
 }
 
 // List returns the adjacency list of the graph.
-func (g *StaticGraph) List() AdjacencyList {
-	return g.list
+func (g *StaticGraph) List() (AdjacencyList, error) {
+	if g.list == nil {
+		return nil, NilAdjacencyList
+	}
+	return g.list, nil
 }
 
 /* === Tentative auxiliar functions ====
