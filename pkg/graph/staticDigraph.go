@@ -10,16 +10,14 @@ import (
 // digraphs, but in the case of a simple digraph, entries will be
 // either 1 or 0.
 type StaticDigraph struct {
-	matrix            AdjacencyMatrix
-	list              AdjacencyList
+	*StaticGraph
 	indegreeSequence  []int
 	outdegreeSequence []int
 }
 
 func NewDigraphFromMatrix(matrix AdjacencyMatrix) *StaticDigraph {
 	return &StaticDigraph{
-		matrix:            matrix,
-		list:              nil,
+		StaticGraph:       NewFromMatrix(matrix),
 		indegreeSequence:  nil,
 		outdegreeSequence: nil,
 	}
@@ -27,26 +25,10 @@ func NewDigraphFromMatrix(matrix AdjacencyMatrix) *StaticDigraph {
 
 func NewDigraphFromList(list AdjacencyList) *StaticDigraph {
 	return &StaticDigraph{
-		matrix:            nil,
-		list:              list,
+		StaticGraph:       NewFromList(list),
 		indegreeSequence:  nil,
 		outdegreeSequence: nil,
 	}
-}
-
-// Matrix returns the adjacency matrix of the graph.
-func (d *StaticDigraph) Matrix() AdjacencyMatrix {
-	return d.matrix
-}
-
-// List returns the adjacency list of the graph.
-func (d *StaticDigraph) List() AdjacencyList {
-	return d.list
-}
-
-// Order returns the number of vertices in the graph.
-func (d *StaticDigraph) Order() int {
-	return len(d.matrix)
 }
 
 // Computes in-degree and out-degree sequences of the digraph
