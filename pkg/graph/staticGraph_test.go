@@ -7,6 +7,10 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
+func TestImplementsGraphInterface(t *testing.T) {
+	var _ Graph = &StaticGraph{}
+}
+
 // TestMatrix calls NewMatrixGraph with an adjacency matrix, and then compares
 // this adjacency matrix with the one returned by Matrix()
 func TestNewGraphFromMatrix(t *testing.T) {
@@ -23,7 +27,7 @@ func TestNewGraphFromMatrix(t *testing.T) {
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
 	petersen, err := NewGraphFromMatrix(matrix)
-	got := petersen.Matrix()
+	got, _ := petersen.Matrix()
 	if err != nil {
 		t.Errorf("Expected %v, got %v", nil, err)
 	}
@@ -95,7 +99,7 @@ func TestMatrix(t *testing.T) {
 		{1, 1, 1, 1},
 	}
 	g1 := NewFromMatrix(a)
-	m1 := g1.Matrix()
+	m1, _ := g1.Matrix()
 	if !reflect.DeepEqual(a, m1) {
 		t.Errorf("Returned matrix differs from original one")
 	}
@@ -106,8 +110,8 @@ func TestMatrix(t *testing.T) {
 		{1, 1, 0, 1},
 		{1, 1, 1, 1},
 	}
-	g2, _ := NewGraphFromMatrix(b)
-	m2 := g2.Matrix()
+	g2 := NewFromMatrix(b)
+	m2, _ := g2.Matrix()
 	if !reflect.DeepEqual(b, m2) {
 		t.Errorf("Returned matrix differs from original one")
 	}
@@ -121,7 +125,7 @@ func TestList(t *testing.T) {
 		{0, 1, 2, 3},
 	}
 	g1 := NewFromList(a)
-	l1 := g1.List()
+	l1, _ := g1.List()
 	if !reflect.DeepEqual(a, l1) {
 		t.Errorf("Returned list differs from original one")
 	}
@@ -132,8 +136,8 @@ func TestList(t *testing.T) {
 		{0, 1, 3},
 		{0, 1, 2},
 	}
-	g2, _ := NewGraphFromList(b)
-	l2 := g2.List()
+	g2 := NewFromList(b)
+	l2, _ := g2.List()
 	if !reflect.DeepEqual(b, l2) {
 		t.Errorf("Returned list differs from original one")
 	}
