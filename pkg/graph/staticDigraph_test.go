@@ -27,7 +27,7 @@ func TestNewDigraphFromMatrix(t *testing.T) {
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
 	petersen := NewDigraphFromMatrix(matrix)
-	got := petersen.Matrix()
+	got, _ := petersen.Matrix()
 	if !reflect.DeepEqual(matrix, got) {
 		t.Errorf("Expected %v, got %v", matrix, got)
 	}
