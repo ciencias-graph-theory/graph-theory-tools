@@ -15,4 +15,10 @@ type Graph interface {
 
 	// Size returns the size of the graph.
 	Size() int
+
+	// Matrix returns the adjacency matrix of the graph.
+	Matrix() AdjacencyMatrix
+
+	// Matrix returns the adjacency list of the graph.
+	List() AdjacencyList
 }
