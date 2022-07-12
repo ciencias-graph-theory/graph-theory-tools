@@ -31,7 +31,7 @@ func TestIsComplete(t *testing.T) {
 	}
 	k, _ := graph.NewGraphFromMatrix(a)
 	l, _ := graph.NewGraphFromMatrix(b)
-	m := graph.NewGraphFromMatrixU(c)
+	m := graph.NewFromMatrix(c)
 	n, _ := graph.NewGraphFromMatrix(d)
 	if !IsComplete(k) {
 		t.Errorf(
@@ -63,14 +63,18 @@ func TestIsComplete(t *testing.T) {
 	}
 }
 
-// TestCompleteMatrixGraph calls CompleteMatrixGraph with five different
+// TestCompleteMatrix calls CompleteGraph with five different
 // randomly generated graphs, and checks each of them to be a complete graph by
 // exploring their adjacency matrices.
-func TestCompleteGraph(t *testing.T) {
+func TestCompleteMatrix(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
-		k := CompleteGraph(n)
-		a := k.Matrix()
+		k := CompleteMatrixGraph(n)
+		a, _ := k.Matrix()
+		o := k.Order()
+		if o != n {
+			t.Errorf("Graph with incorrect order. Expected %v, got %v", n, o)
+		}
 		for i := range a {
 			for j := range a[i] {
 				if i == j && a[i][j] != 0 {
@@ -115,8 +119,8 @@ func TestIsCompleteBipartite(t *testing.T) {
 	}
 	k, _ := graph.NewGraphFromMatrix(a)
 	l, _ := graph.NewGraphFromMatrix(b)
-	m := graph.NewGraphFromMatrixU(c)
-	n := graph.NewGraphFromMatrixU(d)
+	m := graph.NewFromMatrix(c)
+	n := graph.NewFromMatrix(d)
 	o, _ := graph.NewGraphFromMatrix(e)
 	if !IsCompleteBipartite(k) {
 		t.Errorf(
@@ -162,8 +166,8 @@ func TestCompleteBipartiteGraph(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
 		m := rand.Intn(1000)
-		k := CompleteBipartiteGraph(n, m)
-		a := k.Matrix()
+		k := CompleteBipartiteMatrixGraph(n, m)
+		a, _ := k.Matrix()
 		for i := range a {
 			for j := range a[i] {
 				if i == j && a[i][j] != 0 {
@@ -271,22 +275,21 @@ func TestIsCycle(t *testing.T) {
 	}
 }
 
-/*
-// TestCycleMatrixGraph calls CycleMatrixGraph with five different
+// TestMatrixCycle calls MatrixCycle with five different
 // randomly generated numbers, and checks each of them to be a cycle by
 // exploring their adjacency matrices.
-func TestCycleMatrixGraph(t *testing.T) {
+func TestMatrixCycle(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
 		if n > 2 {
-			c := CycleMatrixGraph(n)
+			c := MatrixCycle(n)
 			d := c.DegreeSequence()
 			for _, v := range d {
 				if v != 2 {
 					t.Error("The graph is not 2-regular")
 				}
 			}
-			a := c.Matrix()
+			a, _ := c.Matrix()
 			if a[0][1] != 1 || a[0][n-1] != 1 {
 				t.Errorf(
 					"Adjacencies of vertex %v are not as expected",
@@ -310,9 +313,8 @@ func TestCycleMatrixGraph(t *testing.T) {
 		}
 	}
 }
-*/
 
-// TestIsPathMatrixGraph calls IsPath with different hardcoded
+// TestIsPath calls IsPath with different hardcoded
 // graphs, including cycles of different lengths, linear forests,
 // and other non-cycle graphs.
 func TestIsPath(t *testing.T) {
@@ -432,11 +434,11 @@ func TestIsPath(t *testing.T) {
 // TestPathMatrixGraph calls PathMatrixGraph with five different
 // randomly generated numbers, and checks each of them to be a path by
 // exploring their adjacency matrices.
-func TestPathGraph(t *testing.T) {
+func TestPath(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		n := rand.Intn(1000)
 		if n > 2 {
-			c := PathGraph(n)
+			c := MatrixPath(n)
 			d := c.DegreeSequence()
 			for i, v := range d {
 				if i == 0 || i == n-1 {
@@ -447,7 +449,7 @@ func TestPathGraph(t *testing.T) {
 					t.Error("The graph is not 2-regular")
 				}
 			}
-			a := c.Matrix()
+			a, _ := c.Matrix()
 			if a[0][1] != 1 || a[0][n-1] != 0 {
 				t.Errorf(
 					"Adjacencies of vertex %v are not as expected",
@@ -462,6 +464,59 @@ func TestPathGraph(t *testing.T) {
 			}
 			for i := 1; i < n-1; i++ {
 				if a[i][i-1] != 1 || a[i][i+1] != 1 {
+					t.Errorf(
+						"Adjacencies of vertex %v are not as expected",
+						i,
+					)
+				}
+			}
+		}
+	}
+}
+
+// TestPathDigraph calls PathDigraph with five different
+// randomly generated numbers, and checks each of them to be a directed path by
+// exploring their adjacency matrices.
+func TestDirectedPath(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		n := rand.Intn(1000)
+		if n > 2 {
+			p := MatrixDirectedPath(n)
+			d := p.DegreeSequence()
+			for i, v := range d {
+				if i == 0 || i == n-1 {
+					if v != 1 {
+						t.Error("First or last vertex does not have degree 1")
+					}
+				} else if v != 2 {
+					t.Error("The vertices do not have degree 2")
+				}
+			}
+			o := p.OutdegreeSequence()
+			for i, v := range o {
+				if i == n-1 {
+					if v != 0 {
+						t.Error("Last vertex does not have outdegree 0")
+					}
+				} else if v != 1 {
+					t.Error("The vertices do not have outdegree 1")
+				}
+			}
+			a, _ := p.Matrix()
+			if a[0][1] != 1 || a[0][n-1] != 0 {
+				t.Errorf(
+					"Adjacencies of vertex %v are not as expected",
+					0,
+				)
+			}
+			if a[n-1][0] != 0 || a[n-1][n-2] != 0 {
+				t.Errorf(
+					"Adjacencies of vertex %v are not as expected",
+					n-1,
+				)
+			}
+			for i := 1; i < n-1; i++ {
+				if a[i][i-1] != 0 || a[i][i+1] != 1 {
 					t.Errorf(
 						"Adjacencies of vertex %v are not as expected",
 						i,
