@@ -143,6 +143,70 @@ func TestList(t *testing.T) {
 	}
 }
 
+func TestMatrixToList(t *testing.T) {
+	m1 := [][]byte{
+		{1, 1, 1, 0},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{0, 1, 1, 1},
+	}
+	m2 := [][]byte{
+		{1, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{0, 1, 1, 1},
+	}
+	r, err := matrixToList(m1)
+	l := [][]int{
+		{0, 1, 2},
+		{0, 2, 3},
+		{0, 1, 3},
+		{1, 2, 3},
+	}
+	if err != nil {
+		t.Errorf("Didn't expect an error, got %v", nil)
+	}
+	if !reflect.DeepEqual(*r, l) {
+		t.Errorf("List does not correspond to given matrix")
+	}
+	_, err = matrixToList(m2)
+	if err != assymetricMatrixError {
+		t.Errorf("Expected an error, got %v", err)
+	}
+}
+
+func TestListToMatrix(t *testing.T) {
+	l1 := [][]int{
+		{0, 1, 2},
+		{0, 2, 3},
+		{0, 1, 3},
+		{1, 2, 3},
+	}
+	l2 := [][]int{
+		{0, 1, 2, 3},
+		{0, 2, 3},
+		{0, 1, 3},
+		{1, 2, 3},
+	}
+	m := [][]byte{
+		{1, 1, 1, 0},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{0, 1, 1, 1},
+	}
+	r, err := listToMatrix(l1)
+	if err != nil {
+		t.Errorf("Didn't expect an error, got %v", nil)
+	}
+	if !reflect.DeepEqual(*r, m) {
+		t.Errorf("List does not correspond to given matrix")
+	}
+	_, err = listToMatrix(l2)
+	if err != invalidListError {
+		t.Errorf("Expected an error, got %v", err)
+	}
+}
+
 // TestNewMatrixGraphSequence calls NewMatrixGraph with a fixed adjacency
 // matrix, then compares the sequence obtained from DegreeSequence and the
 // (previously known) degree sequence corresponding to the adjacency matrix.

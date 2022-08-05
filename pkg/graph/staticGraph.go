@@ -108,13 +108,42 @@ func (g *StaticGraph) List() (AdjacencyList, error) {
 	return g.list, nil
 }
 
-/* === Tentative auxiliar functions ====
+// Transforms an adjacency matrix into an adjacency list.
+func matrixToList(matrix AdjacencyMatrix) (*AdjacencyList, error) {
+	list := new(AdjacencyList)
+	for i, v := range matrix {
+		var s []int
+		for j, w := range v {
+			if i < j && w != matrix[j][i] {
+				return nil, assymetricMatrixError
+			} else if w == 1 {
+				s = append(s, j)
+			}
+		}
+		*list = append(*list, s)
+	}
+	return list, nil
+}
 
-func matrixToList(matrix AdjacencyMatrix) (AdjacencyList, error) {}
-
-func listToMatrix(list AdjacencyList) (AdjacencyMatrix, error) {}
-
-*/
+// Transforms an adjacency list into an adjacency matrix.
+func listToMatrix(list AdjacencyList) (*AdjacencyMatrix, error) {
+	matrix := make([][]byte, len(list))
+	for i := range matrix {
+		matrix[i] = make([]byte, len(list))
+	}
+	efficientList := efficientAdjacencyList(list)
+	for i, v := range *efficientList {
+		for w := range v {
+			_, contains := (*efficientList)[w][i]
+			if !contains {
+				return nil, invalidListError
+			} else {
+				matrix[i][w] = 1
+			}
+		}
+	}
+	return &matrix, nil
+}
 
 // Order returns the number of vertices in the graph.
 func (g *StaticGraph) Order() int {
