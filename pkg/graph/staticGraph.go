@@ -10,7 +10,7 @@ import (
 // action is done more efficiently on it. The adjacency matrix is a
 // two-dimensional byte array, and the adjacency list is a two-dimensional
 // integer array.
-// An static graph cannot be modified (neither vertices nor edges can be added
+// A static graph cannot be modified (neither vertices nor edges can be added
 // to it).
 type StaticGraph struct {
 	matrix         AdjacencyMatrix
