@@ -199,7 +199,7 @@ func TestListToMatrix(t *testing.T) {
 		t.Errorf("Didn't expect an error, got %v", nil)
 	}
 	if !reflect.DeepEqual(*r, m) {
-		t.Errorf("List does not correspond to given matrix")
+		t.Errorf("Matrix does not correspond to given list")
 	}
 	_, err = listToMatrix(l2)
 	if err != invalidListError {
