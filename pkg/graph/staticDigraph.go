@@ -15,6 +15,7 @@ type StaticDigraph struct {
 	outdegreeSequence []int
 }
 
+// NewDigraphFromMatrix initializes a digraph modelled by its adjacency matrix.
 func NewDigraphFromMatrix(matrix AdjacencyMatrix) *StaticDigraph {
 	return &StaticDigraph{
 		StaticGraph:       NewFromMatrix(matrix),
@@ -23,6 +24,7 @@ func NewDigraphFromMatrix(matrix AdjacencyMatrix) *StaticDigraph {
 	}
 }
 
+// NewDigraphFromList initializes a digraph modelled by its adjacency list.
 func NewDigraphFromList(list AdjacencyList) *StaticDigraph {
 	return &StaticDigraph{
 		StaticGraph:       NewFromList(list),
