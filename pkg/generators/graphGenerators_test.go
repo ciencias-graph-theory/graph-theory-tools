@@ -44,21 +44,75 @@ func TestIsComplete(t *testing.T) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsComplete(k),
+			IsComplete(l),
 		)
 	}
 	if IsComplete(m) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			false,
-			IsComplete(k),
+			IsComplete(m),
 		)
 	}
 	if !IsComplete(n) {
 		t.Errorf(
 			"Expected %v, but got %v",
 			true,
-			IsComplete(k),
+			IsComplete(n),
+		)
+	}
+
+	e := [][]int{
+		{1, 2, 3, 4, 5},
+		{0, 2, 3, 4, 5},
+		{0, 1, 3, 4, 5},
+		{0, 1, 2, 4, 5},
+		{0, 1, 2, 3, 5},
+		{0, 1, 2, 3, 4},
+	}
+	f := [][]int{
+		{1, 2},
+		{0, 1, 2},
+		{0, 1},
+	}
+	g := [][]int{
+		{2},
+		{0, 2},
+		{0, 1},
+	}
+	h := [][]int{
+		{},
+	}
+	o, _ := graph.NewGraphFromList(e)
+	p, _ := graph.NewGraphFromList(f)
+	q := graph.NewFromList(g)
+	r, _ := graph.NewGraphFromList(h)
+	if !IsComplete(o) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsComplete(o),
+		)
+	}
+	if IsComplete(p) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsComplete(p),
+		)
+	}
+	if IsComplete(q) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsComplete(q),
+		)
+	}
+	if !IsComplete(r) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			IsComplete(r),
 		)
 	}
 }

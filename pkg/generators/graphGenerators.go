@@ -22,9 +22,13 @@ func IsComplete(g Graph) bool {
 			}
 		}
 		return true
-	} else if _, err := g.List(); err != graph.NilAdjacencyList {
-		// TODO: deal with adjacency list case
-		return false
+	} else if a, err := g.List(); err != graph.NilAdjacencyList {
+		for _, l := range a {
+			if len(l) != len(a)-1 {
+				return false
+			}
+		}
+		return true
 	} else {
 		return false
 	}
