@@ -9,37 +9,35 @@ import (
 // Bytes were chosen for future compatibility with weighted
 // digraphs, but in the case of a simple digraph, entries will be
 // either 1 or 0.
-type MatrixDigraph struct {
-	adjacency         [][]byte
+type StaticDigraph struct {
+	*StaticGraph
 	indegreeSequence  []int
 	outdegreeSequence []int
 }
 
-// NewMatrixDigraph initializes a digraph modelled by its
-// adjacency matrix.
-func NewMatrixDigraph(adjacency [][]byte) *MatrixDigraph {
-	return &MatrixDigraph{
-		adjacency:         adjacency,
+// NewDigraphFromMatrix initializes a digraph modelled by its adjacency matrix.
+func NewDigraphFromMatrix(matrix AdjacencyMatrix) *StaticDigraph {
+	return &StaticDigraph{
+		StaticGraph:       NewFromMatrix(matrix),
 		indegreeSequence:  nil,
 		outdegreeSequence: nil,
 	}
 }
 
-// Adjacency returns the adjacency matrix of the digraph.
-func (d *MatrixDigraph) Adjacency() [][]byte {
-	return d.adjacency
-}
-
-// Order returns the number of vertices in the digraph.
-func (d *MatrixDigraph) Order() int {
-	return len(d.adjacency)
+// NewDigraphFromList initializes a digraph modelled by its adjacency list.
+func NewDigraphFromList(list AdjacencyList) *StaticDigraph {
+	return &StaticDigraph{
+		StaticGraph:       NewFromList(list),
+		indegreeSequence:  nil,
+		outdegreeSequence: nil,
+	}
 }
 
 // Computes in-degree and out-degree sequences of the digraph
-func (d *MatrixDigraph) computeDegreeSequences() {
-	inSequence := make([]int, len(d.adjacency))
-	outSequence := make([]int, len(d.adjacency))
-	for i, v := range d.adjacency {
+func (d *StaticDigraph) computeDegreeSequences() {
+	inSequence := make([]int, len(d.matrix))
+	outSequence := make([]int, len(d.matrix))
+	for i, v := range d.matrix {
 		for j, n := range v {
 			if n != 0 {
 				outSequence[i]++
@@ -54,22 +52,20 @@ func (d *MatrixDigraph) computeDegreeSequences() {
 // DegreeSequence returns the degree sequence of the digraph.
 // The degree sequence of the digraph is the sum of the in-degree
 // sequence and the out-degree sequence.
-func (d *MatrixDigraph) DegreeSequence() []int {
-	if d.indegreeSequence == nil ||
-		d.outdegreeSequence == nil {
+func (d *StaticDigraph) DegreeSequence() []int {
+	if d.indegreeSequence == nil || d.outdegreeSequence == nil {
 		d.computeDegreeSequences()
 	}
-	degreeSequence := make([]int, len(d.adjacency))
-	for i := 0; i < len(d.adjacency); i++ {
-		degreeSequence[i] = d.indegreeSequence[i] +
-			d.outdegreeSequence[i]
+	degreeSequence := make([]int, len(d.matrix))
+	for i := 0; i < len(d.matrix); i++ {
+		degreeSequence[i] = d.indegreeSequence[i] + d.outdegreeSequence[i]
 	}
 	return degreeSequence
 }
 
 // IndegreeSequence returns the in-degree sequence of the digraph
 // in non-increasing order.
-func (d *MatrixDigraph) IndegreeSequence() []int {
+func (d *StaticDigraph) IndegreeSequence() []int {
 	if d.indegreeSequence == nil {
 		d.computeDegreeSequences()
 	}
@@ -78,20 +74,20 @@ func (d *MatrixDigraph) IndegreeSequence() []int {
 
 // OutdegreeSequence returns the out-degree sequence of the
 // digraph in non-increasing order.
-func (d *MatrixDigraph) OutdegreeSequence() []int {
+func (d *StaticDigraph) OutdegreeSequence() []int {
 	if d.outdegreeSequence == nil {
 		d.computeDegreeSequences()
 	}
 	return d.outdegreeSequence
 }
 
-// Size computes the size (number of arcs) of the digraph.
-func (d *MatrixDigraph) Size() int {
+// Size returns the size (number of arcs) of a digraph.
+func (d *StaticDigraph) Size() int {
 	if d.indegreeSequence == nil || d.outdegreeSequence == nil {
 		size := 0
-		inSequence := make([]int, len(d.adjacency))
-		outSequence := make([]int, len(d.adjacency))
-		for i, v := range d.adjacency {
+		inSequence := make([]int, len(d.matrix))
+		outSequence := make([]int, len(d.matrix))
+		for i, v := range d.matrix {
 			for j, n := range v {
 				if n != 0 {
 					outSequence[i]++

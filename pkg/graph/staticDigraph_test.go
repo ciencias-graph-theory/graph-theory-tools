@@ -13,8 +13,8 @@ import (
 // adjacency matrix with the one returned by
 // Adjacency(). This test is identical to the one for regular
 // graphs.
-func TestAdjacency(t *testing.T) {
-	adjacency := [][]byte{
+func TestNewDigraphFromMatrix(t *testing.T) {
+	matrix := [][]byte{
 		{0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
 		{1, 0, 1, 0, 0, 0, 1, 0, 0, 0},
 		{0, 1, 0, 1, 0, 0, 0, 1, 0, 0},
@@ -26,10 +26,10 @@ func TestAdjacency(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 0, 0, 0},
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
-	petersen := NewMatrixDigraph(adjacency)
-	got := petersen.Adjacency()
-	if !reflect.DeepEqual(adjacency, got) {
-		t.Errorf("Expected %v, got %v", adjacency, got)
+	petersen := NewDigraphFromMatrix(matrix)
+	got, _ := petersen.Matrix()
+	if !reflect.DeepEqual(matrix, got) {
+		t.Errorf("Expected %v, got %v", matrix, got)
 	}
 }
 
@@ -37,11 +37,11 @@ func TestAdjacency(t *testing.T) {
 // digraphs.
 func TestDigraphOrder(t *testing.T) {
 	order := rand.Intn(100)
-	adjacency := make([][]byte, order)
+	matrix := make([][]byte, order)
 	for i := 0; i < order; i++ {
-		adjacency[i] = make([]byte, order)
+		matrix[i] = make([]byte, order)
 	}
-	digraph := NewMatrixDigraph(adjacency)
+	digraph := NewDigraphFromMatrix(matrix)
 	if order != digraph.Order() {
 		t.Errorf("Expected %v, got %v",
 			order, digraph.Order())
@@ -54,12 +54,12 @@ func TestDigraphOrder(t *testing.T) {
 // Second is from page 11 of article "3-transitive digraphs" by
 // Cesar Hernandez-Cruz, with loops added on vertices 4 and 5.
 func TestDigraphDegreeSequence(t *testing.T) {
-	adjacency1 := [][]byte{
+	matrix1 := [][]byte{
 		{0, 1, 0},
 		{0, 0, 1},
 		{1, 1, 0},
 	}
-	adjacency2 := [][]byte{
+	matrix2 := [][]byte{
 		{0, 1, 0, 0, 1, 0},
 		{0, 0, 1, 1, 0, 1},
 		{0, 0, 0, 0, 1, 0},
@@ -67,8 +67,8 @@ func TestDigraphDegreeSequence(t *testing.T) {
 		{0, 0, 1, 0, 1, 1},
 		{0, 0, 0, 0, 0, 1},
 	}
-	digraph1 := NewMatrixDigraph(adjacency1)
-	digraph2 := NewMatrixDigraph(adjacency2)
+	digraph1 := NewDigraphFromMatrix(matrix1)
+	digraph2 := NewDigraphFromMatrix(matrix2)
 	want1 := []int{2, 3, 3}
 	want2 := []int{2, 5, 3, 3, 7, 4}
 
@@ -139,7 +139,7 @@ func TestDigraphDegreeSequence(t *testing.T) {
 // TestSize tests that size of digraph is computed correctly. This test is
 // very similar to the one for MatrixGraphs.
 func TestDigraphSize(t *testing.T) {
-	adjacency := [][]byte{
+	matrix := [][]byte{
 		{0, 1, 0, 0, 1, 1, 0, 0, 0, 0},
 		{1, 0, 1, 0, 0, 0, 1, 0, 0, 0},
 		{0, 1, 0, 1, 0, 0, 0, 1, 0, 0},
@@ -151,7 +151,7 @@ func TestDigraphSize(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 0, 0, 0},
 		{0, 0, 0, 0, 1, 0, 1, 1, 0, 0},
 	}
-	petersen := NewMatrixDigraph(adjacency)
+	petersen := NewDigraphFromMatrix(matrix)
 	if petersen.indegreeSequence != nil {
 		t.Errorf("The indegree sequence was expected to be nil")
 	}
