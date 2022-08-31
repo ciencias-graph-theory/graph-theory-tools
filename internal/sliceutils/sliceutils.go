@@ -89,7 +89,7 @@ func SumIntSlice(s []int) int {
 
 // Given a slice v of length m and a number n, we extend v until its length is
 // a multiple of n by appending zeros to the left.
-func extendByteSlice(v []byte, n int) []byte {
+func ExtendByteSlice(v []byte, n int) []byte {
 	m := len(v)
 
 	if (m % n) == 0 {

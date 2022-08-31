@@ -62,10 +62,10 @@ func TestExtendSliceOfBytes(t *testing.T) {
 	xd := []byte{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1}
 
 	// Obtained vectors.
-	Av := extendByteSlice(av, 6)
-	Bv := extendByteSlice(bv, 6)
-	Cv := extendByteSlice(cv, 6)
-	Dv := extendByteSlice(dv, 6)
+	Av := ExtendByteSlice(av, 6)
+	Bv := ExtendByteSlice(bv, 6)
+	Cv := ExtendByteSlice(cv, 6)
+	Dv := ExtendByteSlice(dv, 6)
 
 	// Check that the obtainded vectors are equal to the extended ones.
 	if !EqualByteSlice(Av, xa) {
