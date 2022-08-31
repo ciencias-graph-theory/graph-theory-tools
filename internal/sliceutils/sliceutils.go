@@ -100,3 +100,16 @@ func ExtendByteSlice(v []byte, n int) []byte {
 		return append(u, v...)
 	}
 }
+
+// Divides the slice into groups of n bits; it is expected that the slice's
+// length is a multiple of n.
+func DivideByteSlice(v []byte, n int) [][]byte {
+	numGroups := len(v) / n
+	groups := make([][]byte, numGroups, n)
+
+	for i := 0; i < numGroups; i++ {
+		groups[i] = v[(i * n):((i + 1) * n)]
+	}
+
+	return groups
+}
