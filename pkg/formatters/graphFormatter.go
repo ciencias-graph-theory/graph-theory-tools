@@ -29,18 +29,3 @@ func obtainUpperTriangle(matrix graph.AdjacencyMatrix) []byte {
 
 	return v
 }
-
-// Given a vector v of length m and a number n, we extend v until its length is
-// a multiple of n by appending zeros to the left.
-
-func extendVector(v []byte, n int) []byte {
-	m := len(v)
-
-	if (m % n) == 0 {
-		return v
-	} else {
-		missingBytes := n - (m % n)
-		u := make([]byte, missingBytes)
-		return append(u, v...)
-	}
-}

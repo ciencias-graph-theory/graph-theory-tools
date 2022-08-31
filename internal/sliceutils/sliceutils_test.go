@@ -44,3 +44,42 @@ func TestSumIntSlice(t *testing.T) {
 			sumGauss)
 	}
 }
+
+// TestExtendByteSlice calls extendByteSlice with a slice v of length m and a
+// number n, it extends the slice by appending zeros to the left until its
+// length is a multiple of n.
+func TestExtendSliceOfBytes(t *testing.T) {
+	// Example vectors.
+	av := []byte{1, 1, 1, 1, 1, 1}
+	bv := []byte{1, 1, 0, 0, 1, 1}
+	cv := []byte{1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
+	dv := []byte{1, 1, 0, 0, 0, 1, 1}
+
+	// Extended vectors.
+	xa := []byte{1, 1, 1, 1, 1, 1}
+	xb := []byte{1, 1, 0, 0, 1, 1}
+	xc := []byte{0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
+	xd := []byte{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1}
+
+	// Obtained vectors.
+	Av := extendByteSlice(av, 6)
+	Bv := extendByteSlice(bv, 6)
+	Cv := extendByteSlice(cv, 6)
+	Dv := extendByteSlice(dv, 6)
+
+	// Check that the obtainded vectors are equal to the extended ones.
+	if !EqualByteSlice(Av, xa) {
+		t.Errorf("Expansion error: Expected %v but got %v", xa, Av)
+	}
+
+	if !EqualByteSlice(Bv, xb) {
+		t.Errorf("Expansion error: Expected %v but got %v", xb, Bv)
+	}
+
+	if !EqualByteSlice(Cv, xc) {
+		t.Errorf("Expansion error: Expected %v but got %v", xc, Cv)
+	}
+	if !EqualByteSlice(Dv, xd) {
+		t.Errorf("Expansion error: Expected %v but got %v", xd, Dv)
+	}
+}
