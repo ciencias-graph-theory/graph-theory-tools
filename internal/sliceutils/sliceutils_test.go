@@ -83,3 +83,53 @@ func TestExtendSliceOfBytes(t *testing.T) {
 		t.Errorf("Expansion error: Expected %v but got %v", xd, Dv)
 	}
 }
+
+// TestDivideByteslice calls DivideByteslice with a slice v and a number n, it
+// divides v into groups of n bits; it is expected that v's length is multiple
+// of n.
+func TestDivideByteSlice(t *testing.T) {
+	// Example vectors.
+	xa := []byte{1, 1, 1, 1, 1, 1}
+	xb := []byte{1, 1, 0, 0, 1, 1}
+	xc := []byte{0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
+	xd := []byte{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1}
+
+	// Groups.
+	ga := [][]byte{{1, 1, 1, 1, 1, 1}}
+	gb := [][]byte{{1, 1, 0, 0, 1, 1}}
+	gc := [][]byte{
+		{0, 0, 1, 1, 0, 0},
+		{1, 1, 1, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0},
+		{1, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 1, 1},
+	}
+
+	gd := [][]byte{
+		{0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 1, 1},
+	}
+
+	// Obtained vectors.
+	Av := DivideByteSlice(xa, 6)
+	Bv := DivideByteSlice(xb, 6)
+	Cv := DivideByteSlice(xc, 6)
+	Dv := DivideByteSlice(xd, 6)
+
+	// Check that the obtainded vectors are equal to the extended ones.
+	if !EqualByteMatrix(Av, ga) {
+		t.Errorf("Expansion error: Expected %v but got %v", ga, Av)
+	}
+
+	if !EqualByteMatrix(Bv, gb) {
+		t.Errorf("Expansion error: Expected %v but got %v", gb, Bv)
+	}
+
+	if !EqualByteMatrix(Cv, gc) {
+		t.Errorf("Expansion error: Expected %v but got %v", gc, Cv)
+	}
+
+	if !EqualByteMatrix(Dv, gd) {
+		t.Errorf("Expansion error: Expected %v but got %v", gd, Dv)
+	}
+}
