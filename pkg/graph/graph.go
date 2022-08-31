@@ -2,9 +2,14 @@
 // and handling graphs.
 package graph
 
+import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
+)
+
 // Type aliases to improve code readability.
 type AdjacencyMatrix = [][]byte
 type AdjacencyList = [][]int
+type EfficientAdjacencyList = []set.IntSet
 
 type Graph interface {
 	// Order returns the number of vertices in the graph.
