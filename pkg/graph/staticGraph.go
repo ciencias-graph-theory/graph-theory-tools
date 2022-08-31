@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 )
 
@@ -49,14 +50,14 @@ func NewFromMatrix(adjacency AdjacencyMatrix) *StaticGraph {
 
 // Gets an efficient adjacency list (list of sets) from a given adjacency list
 // (list of lists), useful for testing membership.
-func efficientAdjacencyList(list AdjacencyList) *[]map[int]struct{} {
-	efficientAdjacencyList := new([]map[int]struct{})
+func efficientAdjacencyList(list AdjacencyList) *EfficientAdjacencyList {
+	efficientAdjacencyList := new(EfficientAdjacencyList)
 	for _, v := range list {
-		s := make(map[int]struct{})
+		s := set.NewIntSet()
 		for _, w := range v {
-			s[w] = struct{}{}
+			s.Add(w)
 		}
-		*efficientAdjacencyList = append(*efficientAdjacencyList, s)
+		*efficientAdjacencyList = append(*efficientAdjacencyList, *s)
 	}
 	return efficientAdjacencyList
 }
@@ -67,9 +68,8 @@ func efficientAdjacencyList(list AdjacencyList) *[]map[int]struct{} {
 func NewGraphFromList(list AdjacencyList) (*StaticGraph, error) {
 	efficientList := efficientAdjacencyList(list)
 	for i, v := range *efficientList {
-		for w := range v {
-			_, contains := (*efficientList)[w][i]
-			if !contains {
+		for w := range v.Items() {
+			if !(*efficientList)[w].Contains(i) {
 				return nil, invalidListError
 			}
 		}
@@ -133,9 +133,8 @@ func listToMatrix(list AdjacencyList) (*AdjacencyMatrix, error) {
 	}
 	efficientList := efficientAdjacencyList(list)
 	for i, v := range *efficientList {
-		for w := range v {
-			_, contains := (*efficientList)[w][i]
-			if !contains {
+		for w := range v.Items() {
+			if !(*efficientList)[w].Contains(i) {
 				return nil, invalidListError
 			} else {
 				matrix[i][w] = 1
@@ -148,6 +147,7 @@ func listToMatrix(list AdjacencyList) (*AdjacencyMatrix, error) {
 // Order returns the number of vertices in the graph.
 func (g *StaticGraph) Order() int {
 	return len(g.matrix)
+	//TODO list case
 }
 
 // DegreeSequence returns the degree sequence of the graph
