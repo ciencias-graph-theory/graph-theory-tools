@@ -147,3 +147,16 @@ func ByteMatrixToIntSlice(v [][]byte) []int {
 
 	return vals
 }
+
+// Returns a ASCII representation of the slice of ints. Note: The int's
+// values should between 33 and 126, the reason being that all of the ASCII
+// found in this range are printable.
+func IntSliceToASCII(v []int) string {
+	ASCII := ""
+
+	for _, val := range v {
+		ASCII += string(rune(val))
+	}
+
+	return ASCII
+}
