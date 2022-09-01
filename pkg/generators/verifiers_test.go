@@ -125,3 +125,58 @@ func TestIsStable(t *testing.T) {
 		}
 	}
 }
+
+func TestAreFullyAdjacent(t *testing.T) {
+	a := [][]byte{
+		{0, 1, 0, 0, 1, 1},
+		{1, 0, 0, 0, 1, 1},
+		{0, 0, 0, 1, 1, 0},
+		{0, 0, 1, 0, 1, 1},
+		{1, 1, 1, 1, 0, 1},
+		{1, 1, 0, 1, 1, 0},
+	}
+	g := graph.NewFromMatrix(a)
+	if !AreFullyAdjacent(g, []int{0, 1}, []int{4, 5}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			AreFullyAdjacent(g, []int{0, 1}, []int{4, 5}),
+		)
+	}
+	if AreFullyAdjacent(g, []int{2, 3}, []int{4, 5}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			AreFullyAdjacent(g, []int{2, 3}, []int{4, 5}),
+		)
+	}
+}
+
+func TestAreFullyNonAdjacent(t *testing.T) {
+	a := [][]byte{
+		{0, 1, 1, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0},
+		{1, 1, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1, 0},
+	}
+	g := graph.NewFromMatrix(a)
+	if !AreFullyNonAdjacent(g, []int{0, 1, 2}, []int{3, 4, 5}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			true,
+			AreFullyNonAdjacent(g, []int{0, 1, 2}, []int{3, 4, 5}),
+		)
+	}
+	a[4][1] = 1
+	a[1][4] = 1
+	g = graph.NewFromMatrix(a)
+	if AreFullyNonAdjacent(g, []int{0, 1, 2}, []int{3, 4, 5}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			AreFullyNonAdjacent(g, []int{0, 1, 2}, []int{3, 4, 5}),
+		)
+	}
+}

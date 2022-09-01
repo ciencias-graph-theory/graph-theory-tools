@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
 )
 
 // This function checks whether two int slices are equal.
@@ -276,4 +278,18 @@ func ByteMatrixToSlice(matrix [][]byte) []byte {
 	}
 
 	return slice
+}
+
+// This function checks whether two int slices are disjoint.
+func DisjointIntSlice(a, b []int) bool {
+	s := set.NewIntSet()
+	for _, v := range a {
+		s.Add(v)
+	}
+	for _, v := range b {
+		if s.Contains(v) {
+			return false
+		}
+	}
+	return true
 }
