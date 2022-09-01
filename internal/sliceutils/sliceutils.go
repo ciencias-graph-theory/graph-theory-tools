@@ -181,7 +181,7 @@ func IntToByteSlice(n int) []byte {
 
 // Returns a byte slice corresponding to the upper triangle of a byte matrix
 // column by column, if diagonal is true then the diagonal is considered.
-func ByteMatrixObtainUpperTriangle(matrix [][]byte, diagonal bool) []byte {
+func ByteMatrixUpperTriangle(matrix [][]byte, diagonal bool) []byte {
 	var v []byte
 
 	// Number of columns.

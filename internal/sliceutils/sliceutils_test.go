@@ -254,10 +254,10 @@ func TestIntToByteSlice(t *testing.T) {
 	}
 }
 
-// TestByteMatrixObtainUpperTriangle calls ByteMatrixObtainUpperTriangle with a
-// byte matrix, and then compares the obtained vector with the upper
-// triangle of the given matrix.
-func TestObtainUpperTriangle(t *testing.T) {
+// TestByteMatrixUpperTriangle calls ByteMatrixUpperTriangle with a byte matrix,
+// and then compares the obtained vector with the upper triangle of the given
+// matrix.
+func TestByteMatrixUpperTriangle(t *testing.T) {
 
 	// Complete graph with four vertices.
 	a := [][]byte{
@@ -298,9 +298,9 @@ func TestObtainUpperTriangle(t *testing.T) {
 		0, 0, 0, 1, 0, 1, 1,
 	}
 
-	Av := ByteMatrixObtainUpperTriangle(a, false)
-	Bv := ByteMatrixObtainUpperTriangle(b, false)
-	Cv := ByteMatrixObtainUpperTriangle(c, false)
+	Av := ByteMatrixUpperTriangle(a, false)
+	Bv := ByteMatrixUpperTriangle(b, false)
+	Cv := ByteMatrixUpperTriangle(c, false)
 
 	if !EqualByteSlice(Av, av) {
 		t.Errorf("Formatting error: Expected %v but got %v", av, Av)
@@ -326,9 +326,9 @@ func TestObtainUpperTriangle(t *testing.T) {
 		0, 0, 0, 1, 0, 1, 1, 0,
 	}
 
-	Avd := ByteMatrixObtainUpperTriangle(a, true)
-	Bvd := ByteMatrixObtainUpperTriangle(b, true)
-	Cvd := ByteMatrixObtainUpperTriangle(c, true)
+	Avd := ByteMatrixUpperTriangle(a, true)
+	Bvd := ByteMatrixUpperTriangle(b, true)
+	Cvd := ByteMatrixUpperTriangle(c, true)
 
 	if !EqualByteSlice(Avd, avd) {
 		t.Errorf("Formatting error: Expected %v but got %v", avd, Avd)
