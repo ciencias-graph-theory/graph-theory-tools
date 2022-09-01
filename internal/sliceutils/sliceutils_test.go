@@ -133,3 +133,52 @@ func TestDivideByteSlice(t *testing.T) {
 		t.Errorf("Expansion error: Expected %v but got %v", gd, Dv)
 	}
 }
+
+// TestDivideByteslice calls DivideByteslice with a slice v and a number n, it
+// divides v into groups of n bits; it is expected that v's length is multiple
+// of n.
+func TestByteMatrixToIntSlice(t *testing.T) {
+	// Example groups.
+	ga := [][]byte{{1, 1, 1, 1, 1, 1}}
+	gb := [][]byte{{1, 1, 0, 0, 1, 1}}
+	gc := [][]byte{
+		{0, 0, 1, 1, 0, 0},
+		{1, 1, 1, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0},
+		{1, 0, 0, 1, 0, 0},
+		{0, 0, 1, 0, 1, 1},
+	}
+
+	gd := [][]byte{
+		{0, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 1, 1},
+	}
+
+	ai := []int{63}
+	bi := []int{51}
+	ci := []int{12, 56, 10, 36, 11}
+	di := []int{1, 35}
+
+	// Obtained vectors.
+	Ai := ByteMatrixToIntSlice(ga)
+	Bi := ByteMatrixToIntSlice(gb)
+	Ci := ByteMatrixToIntSlice(gc)
+	Di := ByteMatrixToIntSlice(gd)
+
+	// Check that the obtainded vectors are equal to the extended ones.
+	if !EqualIntSlice(Ai, ai) {
+		t.Errorf("Conversion error: Expected %v but got %v", ai, Ai)
+	}
+
+	if !EqualIntSlice(Bi, bi) {
+		t.Errorf("Conversion error: Expected %v but got %v", bi, Bi)
+	}
+
+	if !EqualIntSlice(Ci, ci) {
+		t.Errorf("Conversion error: Expected %v but got %v", ci, Ci)
+	}
+
+	if !EqualIntSlice(Di, di) {
+		t.Errorf("Conversion error: Expected %v but got %v", di, Di)
+	}
+}
