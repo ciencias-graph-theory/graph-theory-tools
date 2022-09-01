@@ -211,3 +211,14 @@ func ByteMatrixUpperTriangle(matrix [][]byte, diagonal bool) []byte {
 
 	return v
 }
+
+// Sum m to each value k in the int slice v.
+func IntSliceSumToEach(v []int, m int) []int {
+	w := make([]int, len(v))
+
+	for i := 0; i < len(v); i++ {
+		w[i] = v[i] + m
+	}
+
+	return w
+}
