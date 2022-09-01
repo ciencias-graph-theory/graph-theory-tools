@@ -89,9 +89,10 @@ func SumIntSlice(s []int) int {
 	return Foldl(func(a, b int) int { return a + b }, 0, s)
 }
 
-// Given a slice v of length m and a number n, we extend v until its length is
-// a multiple of n by appending zeros to the left.
-func ExtendByteSlice(v []byte, n int) []byte {
+// Given a slice v of length m and a number n, we extend v until its length is a
+// multiple of n by appending zeros. If leftPadding is true then the zeros are
+// appended to the left; otherwise, they're appended to the right.
+func ExtendByteSlice(v []byte, n int, leftPadding bool) []byte {
 	m := len(v)
 
 	if (m % n) == 0 {
@@ -99,7 +100,12 @@ func ExtendByteSlice(v []byte, n int) []byte {
 	} else {
 		missingBytes := n - (m % n)
 		u := make([]byte, missingBytes)
-		return append(u, v...)
+
+		if leftPadding {
+			return append(u, v...)
+		} else {
+			return append(v, u...)
+		}
 	}
 }
 

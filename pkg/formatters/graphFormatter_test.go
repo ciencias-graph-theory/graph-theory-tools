@@ -1,6 +1,7 @@
 package formatters
 
 import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 	"testing"
 )
@@ -45,7 +46,7 @@ func TestToGraph6(t *testing.T) {
 	// Expected formats.
 	K4g6 := "C~"
 	C4g6 := "Cr"
-	Q3g6 := "GKwIcJ"
+	Q3g6 := "Gr_iOk"
 
 	// Check if obtained formats are correct.
 	K4G6 := ToGraph6(K4)
@@ -62,5 +63,54 @@ func TestToGraph6(t *testing.T) {
 
 	if Q3G6 != Q3g6 {
 		t.Errorf("Graph6 Error: Expected %s but got %v", Q3g6, Q3G6)
+	}
+}
+
+func TestParseByteSliceFormat6(t *testing.T) {
+	// Byte slices examples.
+	a := []byte{
+		1, 1, 0, 0, 1, 1, 1,
+		0, 0, 0, 0, 0, 1, 0,
+		1, 0, 1, 0, 0, 1, 0,
+		0, 0, 0, 1, 0, 1, 1}
+
+	b := []byte{1, 1, 1, 1, 1, 1}
+
+	c := []byte{1, 1, 0, 0, 1, 1}
+
+	d := []byte{
+		0, 0, 1, 0, 1,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 1, 0, 0, 1,
+		0, 0, 0, 0, 0}
+
+	// Expected int slices.
+	ia := []int{114, 95, 105, 79, 107}
+	ib := []int{126}
+	ic := []int{114}
+	id := []int{73, 63, 65, 79, 63}
+
+	// Obtained int slices.
+	IA := parseByteSliceFormat6(a, false)
+	IB := parseByteSliceFormat6(b, false)
+	IC := parseByteSliceFormat6(c, false)
+	ID := parseByteSliceFormat6(d, false)
+
+	// Check that the obtained slices are correct.
+	if !sliceutils.EqualIntSlice(ia, IA) {
+		t.Errorf("Parsing Error: Expected %v but got %v", ia, IA)
+	}
+
+	if !sliceutils.EqualIntSlice(ib, IB) {
+		t.Errorf("Parsing Error: Expected %v but got %v", ib, IB)
+	}
+
+	if !sliceutils.EqualIntSlice(ic, IC) {
+		t.Errorf("Parsing Error: Expected %v but got %v", ic, IC)
+	}
+
+	if !sliceutils.EqualIntSlice(id, ID) {
+		t.Errorf("Parsing Error: Expected %v but got %v", id, ID)
 	}
 }

@@ -9,13 +9,13 @@ type Graph = graph.Graph
 type StaticGraph = graph.StaticGraph
 type StaticDigraph = graph.StaticDigraph
 
-// Parses a byte slice to format6.
-// This function is known in https://users.cecs.anu.edu.au/~bdm/data/formats.txt
-// as R(x).
-func parseByteSliceFormat6(v []byte) []int {
+// Parses a byte slice to format6. If leftPadding is true then the byte slice is
+// extended by appending zeros to the left, otherwise they're appended to the
+// right. This function is known in as R(x).
+func parseByteSliceFormat6(v []byte, leftPadding bool) []int {
 
 	// Extend the previous vector so its length is a multiple of 6.
-	vExtended := sliceutils.ExtendByteSlice(v, 6)
+	vExtended := sliceutils.ExtendByteSlice(v, 6, leftPadding)
 
 	// Divide the previous vector in groups of 6 bits.
 	vGroups := sliceutils.DivideByteSlice(vExtended, 6)
@@ -37,11 +37,11 @@ func parseOrderFormat6(n int) []int {
 		return []int{(n + 63)}
 	} else if n <= 258047 {
 		nbin := sliceutils.IntToByteSlice(n)
-		nASCII := parseByteSliceFormat6(nbin)
+		nASCII := parseByteSliceFormat6(nbin, true)
 		return append([]int{63}, nASCII...)
 	} else {
 		nbin := sliceutils.IntToByteSlice(n)
-		nASCII := parseByteSliceFormat6(nbin)
+		nASCII := parseByteSliceFormat6(nbin, true)
 		return append([]int{63, 63}, nASCII...)
 	}
 }
@@ -55,7 +55,7 @@ func ToGraph6(graph *StaticGraph) string {
 	upperTriangle := sliceutils.ByteMatrixUpperTriangle(matrix, false)
 
 	// Parse the edges of the graph to the accepted format6 standart.
-	edgesASCII := parseByteSliceFormat6(upperTriangle)
+	edgesASCII := parseByteSliceFormat6(upperTriangle, false)
 
 	// Parse the order of the graph to the accepted format6 standart.
 	orderASCII := parseOrderFormat6(graph.Order())

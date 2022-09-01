@@ -50,37 +50,91 @@ func TestSumIntSlice(t *testing.T) {
 // length is a multiple of n.
 func TestExtendSliceOfBytes(t *testing.T) {
 	// Example vectors.
+
 	av := []byte{1, 1, 1, 1, 1, 1}
+
 	bv := []byte{1, 1, 0, 0, 1, 1}
-	cv := []byte{1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
+
+	cv := []byte{
+		1, 1, 0, 0, 1, 1, 1,
+		0, 0, 0, 0, 0, 1, 0,
+		1, 0, 1, 0, 0, 1, 0,
+		0, 0, 0, 1, 0, 1, 1}
+
 	dv := []byte{1, 1, 0, 0, 0, 1, 1}
 
-	// Extended vectors.
-	xa := []byte{1, 1, 1, 1, 1, 1}
-	xb := []byte{1, 1, 0, 0, 1, 1}
-	xc := []byte{0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
-	xd := []byte{0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1}
+	// Extended vectors with left padding.
+	xal := []byte{1, 1, 1, 1, 1, 1}
+
+	xbl := []byte{1, 1, 0, 0, 1, 1}
+
+	xcl := []byte{
+		0, 0, 1, 1, 0, 0,
+		1, 1, 1, 0, 0, 0,
+		0, 0, 1, 0, 1, 0,
+		1, 0, 0, 1, 0, 0,
+		0, 0, 1, 0, 1, 1}
+
+	xdl := []byte{
+		0, 0, 0, 0, 0, 1,
+		1, 0, 0, 0, 1, 1}
+
+	// Extended vectors with right padding.
+	xar := []byte{1, 1, 1, 1, 1, 1}
+
+	xbr := []byte{1, 1, 0, 0, 1, 1}
+
+	xcr := []byte{
+		1, 1, 0, 0, 1, 1,
+		1, 0, 0, 0, 0, 0,
+		1, 0, 1, 0, 1, 0,
+		0, 1, 0, 0, 0, 0,
+		1, 0, 1, 1, 0, 0}
+
+	xdr := []byte{
+		1, 1, 0, 0, 0, 1,
+		1, 0, 0, 0, 0, 0}
 
 	// Obtained vectors.
-	Av := ExtendByteSlice(av, 6)
-	Bv := ExtendByteSlice(bv, 6)
-	Cv := ExtendByteSlice(cv, 6)
-	Dv := ExtendByteSlice(dv, 6)
+	Avl := ExtendByteSlice(av, 6, true)
+	Bvl := ExtendByteSlice(bv, 6, true)
+	Cvl := ExtendByteSlice(cv, 6, true)
+	Dvl := ExtendByteSlice(dv, 6, true)
+
+	Avr := ExtendByteSlice(av, 6, false)
+	Bvr := ExtendByteSlice(bv, 6, false)
+	Cvr := ExtendByteSlice(cv, 6, false)
+	Dvr := ExtendByteSlice(dv, 6, false)
 
 	// Check that the obtainded vectors are equal to the extended ones.
-	if !EqualByteSlice(Av, xa) {
-		t.Errorf("Expansion error: Expected %v but got %v", xa, Av)
+	if !EqualByteSlice(Avl, xal) {
+		t.Errorf("Expansion error: Expected %v but got %v", xal, Avl)
 	}
 
-	if !EqualByteSlice(Bv, xb) {
-		t.Errorf("Expansion error: Expected %v but got %v", xb, Bv)
+	if !EqualByteSlice(Bvl, xbl) {
+		t.Errorf("Expansion error: Expected %v but got %v", xbl, Bvl)
 	}
 
-	if !EqualByteSlice(Cv, xc) {
-		t.Errorf("Expansion error: Expected %v but got %v", xc, Cv)
+	if !EqualByteSlice(Cvl, xcl) {
+		t.Errorf("Expansion error: Expected %v but got %v", xcl, Cvl)
 	}
-	if !EqualByteSlice(Dv, xd) {
-		t.Errorf("Expansion error: Expected %v but got %v", xd, Dv)
+	if !EqualByteSlice(Dvl, xdl) {
+		t.Errorf("Expansion error: Expected %v but got %v", xdl, Dvl)
+	}
+
+	if !EqualByteSlice(Avr, xar) {
+		t.Errorf("Expansion error: Expected %v but got %v", xar, Avr)
+	}
+
+	if !EqualByteSlice(Bvr, xbr) {
+		t.Errorf("Expansion error: Expected %v but got %v", xbr, Bvr)
+	}
+
+	if !EqualByteSlice(Cvr, xcr) {
+		t.Errorf("Expansion error: Expected %v but got %v", xcr, Cvr)
+	}
+	if !EqualByteSlice(Dvr, xdr) {
+		t.Errorf("Expansion error: Expected %v but got %v", xdr, Dvr)
 	}
 }
 
