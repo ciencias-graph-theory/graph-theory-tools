@@ -188,3 +188,20 @@ func (g *StaticGraph) Size() int {
 	g.degreeSequence = degreeSequence
 	return size
 }
+
+// Neighbours returns a set of the neighbours to a given vertex in the graph.
+func (g *StaticGraph) Neighbours(v int) *set.IntSet {
+	s := set.NewIntSet()
+	if g.matrix != nil {
+		for n := 0; n < len(g.matrix); n++ {
+			if g.matrix[v][n] != 0 {
+				s.Add(n)
+			}
+		}
+	} else if g.list != nil {
+		for _, n := range g.list[v] {
+			s.Add(n)
+		}
+	}
+	return s
+}

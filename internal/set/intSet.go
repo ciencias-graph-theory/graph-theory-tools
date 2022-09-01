@@ -37,6 +37,10 @@ func (s *IntSet) Remove(item int) bool {
 	}
 }
 
+func (s *IntSet) IsEmpty() bool {
+	return len(s.setMap) == 0
+}
+
 func (s *IntSet) Items() map[int]struct{} {
 	return s.setMap
 }
