@@ -182,3 +182,35 @@ func TestByteMatrixToIntSlice(t *testing.T) {
 		t.Errorf("Conversion error: Expected %v but got %v", di, Di)
 	}
 }
+
+// TestIntSliceToASCII calls IntSliceToASCII with a slice v, and return an ASCII
+// representation of the values of the slice.
+func TestIntSliceToASCII(t *testing.T) {
+	// Examples.
+	a := []int{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75}
+	b := []int{71, 65, 84, 84, 79, 95, 82, 85, 76, 69, 83}
+	c := []int{59, 60, 61, 62, 63, 64}
+
+	// Expected string.
+	sa := "ABCDEFGHIJK"
+	sb := "GATTO_RULES"
+	sc := ";<=>?@"
+
+	// Obtained strings.
+	SA := IntSliceToASCII(a)
+	SB := IntSliceToASCII(b)
+	SC := IntSliceToASCII(c)
+
+	// Check that the obtained strings are correct.
+	if SA != sa {
+		t.Errorf("Conversion error: Expected %v but got %v", sa, SA)
+	}
+
+	if SB != sb {
+		t.Errorf("Conversion error: Expected %v but got %v", sb, SB)
+	}
+
+	if SC != sc {
+		t.Errorf("Conversion error: Expected %v but got %v", sc, SC)
+	}
+}
