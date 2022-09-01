@@ -4,6 +4,7 @@ package sliceutils
 import (
 	"bytes"
 	"math"
+	"strconv"
 )
 
 // This function checks whether two int slices are equal.
@@ -159,4 +160,21 @@ func IntSliceToASCII(v []int) string {
 	}
 
 	return ASCII
+}
+
+// Returns the binary representation of an intenger n as a byte slice.
+// E.g. If n = 170 then the function returns {1,0,1,0,1,0,1,0}.
+func IntToByteSlice(n int) []byte {
+	binaryString := strconv.FormatInt(int64(n), 2)
+	binary := make([]byte, len(binaryString))
+
+	for i := 0; i < len(binaryString); i++ {
+		if binaryString[i] == '1' {
+			binary[i] = 1
+		} else {
+			binary[i] = 0
+		}
+	}
+
+	return binary
 }
