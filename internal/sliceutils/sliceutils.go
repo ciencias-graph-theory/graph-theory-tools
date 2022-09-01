@@ -3,6 +3,7 @@ package sliceutils
 
 import (
 	"bytes"
+	"math"
 )
 
 // This function checks whether two int slices are equal.
@@ -112,4 +113,37 @@ func DivideByteSlice(v []byte, n int) [][]byte {
 	}
 
 	return groups
+}
+
+// Not to be confused with the methods provided by the library encoding/binary.
+// The reason is the following: If a byte slice represents the binary of an int
+// (e.g. (1, 1, 0, 0, 1, 1)) then the desired int would be 35. However, all the
+// libraries available to work with bytes would consider each bit as a byte, not
+// as a bit. Resulting in a wrong conversion. So, we have to do this manually.
+// Consider this as an auxiliary function to the ByteMatrixtoIntSlice.
+func ByteSliceToInt(v []byte) int {
+	val := 0
+	numBits := len(v)
+
+	for i := 0; i < numBits; i++ {
+		if v[i] == 1 {
+			power := float64((numBits - 1) - i)
+			val += int(math.Pow(2, power))
+		}
+	}
+
+	return val
+}
+
+// Returns an int slice containing the int representation of the bytes in each
+// row of the matrix given.
+func ByteMatrixToIntSlice(v [][]byte) []int {
+	cols := len(v)
+	vals := make([]int, cols)
+
+	for i := 0; i < cols; i++ {
+		vals[i] = ByteSliceToInt(v[i])
+	}
+
+	return vals
 }
