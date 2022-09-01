@@ -253,3 +253,92 @@ func TestIntToByteSlice(t *testing.T) {
 		t.Errorf("Conversion error: Expected %v but got %v", b120, B120)
 	}
 }
+
+// TestByteMatrixObtainUpperTriangle calls ByteMatrixObtainUpperTriangle with a
+// byte matrix, and then compares the obtained vector with the upper
+// triangle of the given matrix.
+func TestObtainUpperTriangle(t *testing.T) {
+
+	// Complete graph with four vertices.
+	a := [][]byte{
+		{0, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// A 4-cycle.
+	b := [][]byte{
+		{0, 1, 1, 0},
+		{1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, 1, 1, 0},
+	}
+
+	// A cube.
+	c := [][]byte{
+		{0, 1, 1, 0, 1, 0, 0, 0},
+		{1, 0, 0, 1, 0, 0, 1, 0},
+		{1, 0, 0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 1, 1, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 1, 1, 0},
+	}
+
+	// The corresponding vectors of the upper triangle of each adjacency matrix
+	// without considering the diagonal.
+	av := []byte{1, 1, 1, 1, 1, 1}
+	bv := []byte{1, 1, 0, 0, 1, 1}
+	cv := []byte{
+		1, 1, 0, 0, 1, 1, 1,
+		0, 0, 0, 0, 0, 1, 0,
+		1, 0, 1, 0, 0, 1, 0,
+		0, 0, 0, 1, 0, 1, 1,
+	}
+
+	Av := ByteMatrixObtainUpperTriangle(a, false)
+	Bv := ByteMatrixObtainUpperTriangle(b, false)
+	Cv := ByteMatrixObtainUpperTriangle(c, false)
+
+	if !EqualByteSlice(Av, av) {
+		t.Errorf("Formatting error: Expected %v but got %v", av, Av)
+	}
+
+	if !EqualByteSlice(Bv, bv) {
+		t.Errorf("Formatting error: Expected %v but got %v", bv, Bv)
+	}
+
+	if !EqualByteSlice(Cv, cv) {
+		t.Errorf("Formatting error: Expected %v but got %v", cv, Cv)
+	}
+
+	// The corresponding vectors of the upper triangle of each adjacency matrix
+	// without considering the diagonal.
+	avd := []byte{0, 1, 0, 1, 1, 0, 1, 1, 1, 0}
+	bvd := []byte{0, 1, 0, 1, 0, 0, 0, 1, 1, 0}
+	cvd := []byte{
+		0, 1, 0, 1, 0, 0, 0,
+		1, 1, 0, 1, 0, 0, 0,
+		0, 0, 0, 1, 0, 1, 0,
+		0, 1, 0, 0, 1, 0, 0,
+		0, 0, 0, 1, 0, 1, 1, 0,
+	}
+
+	Avd := ByteMatrixObtainUpperTriangle(a, true)
+	Bvd := ByteMatrixObtainUpperTriangle(b, true)
+	Cvd := ByteMatrixObtainUpperTriangle(c, true)
+
+	if !EqualByteSlice(Avd, avd) {
+		t.Errorf("Formatting error: Expected %v but got %v", avd, Avd)
+	}
+
+	if !EqualByteSlice(Bvd, bvd) {
+		t.Errorf("Formatting error: Expected %v but got %v", bvd, Bvd)
+	}
+
+	if !EqualByteSlice(Cvd, cvd) {
+		t.Errorf("Formatting error: Expected %v but got %v", cvd, Cvd)
+	}
+}
