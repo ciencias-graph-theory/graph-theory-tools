@@ -214,3 +214,42 @@ func TestIntSliceToASCII(t *testing.T) {
 		t.Errorf("Conversion error: Expected %v but got %v", sc, SC)
 	}
 }
+
+// TestIntToByteSlice calls IntToByteslice with an int n. Returns the binary
+// representation of n as a byte slice.
+func TestIntToByteSlice(t *testing.T) {
+	// Expected byte slices.
+	b170 := []byte{1, 0, 1, 0, 1, 0, 1, 0}
+	b63 := []byte{1, 1, 1, 1, 1, 1}
+	b35 := []byte{1, 0, 0, 0, 1, 1}
+	b89 := []byte{1, 0, 1, 1, 0, 0, 1}
+	b120 := []byte{1, 1, 1, 1, 0, 0, 0}
+
+	// Obtained byte slices.
+	B170 := IntToByteSlice(170)
+	B63 := IntToByteSlice(63)
+	B35 := IntToByteSlice(35)
+	B89 := IntToByteSlice(89)
+	B120 := IntToByteSlice(120)
+
+	// Check that the obtained byte slices are correct.
+	if !EqualByteSlice(B170, b170) {
+		t.Errorf("Conversion error: Expected %v but got %v", b170, B170)
+	}
+
+	if !EqualByteSlice(B63, b63) {
+		t.Errorf("Conversion error: Expected %v but got %v", b63, B63)
+	}
+
+	if !EqualByteSlice(B35, b35) {
+		t.Errorf("Conversion error: Expected %v but got %v", b35, B35)
+	}
+
+	if !EqualByteSlice(B89, b89) {
+		t.Errorf("Conversion error: Expected %v but got %v", b89, B89)
+	}
+
+	if !EqualByteSlice(B120, b120) {
+		t.Errorf("Conversion error: Expected %v but got %v", b120, B120)
+	}
+}
