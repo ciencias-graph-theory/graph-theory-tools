@@ -39,6 +39,13 @@ func TestIsClique(t *testing.T) {
 	}
 	subsets = append(subsets, vertices)
 	g := graph.NewFromMatrix(a)
+	if IsClique(g, []int{0, 6}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsClique(g, []int{0, 6}),
+		)
+	}
 	for _, set := range subsets {
 		if len(set) > 1 && !IsClique(g, set) {
 			t.Errorf(
@@ -99,6 +106,13 @@ func TestIsStable(t *testing.T) {
 	}
 	subsets = append(subsets, vertices)
 	g := graph.NewFromMatrix(a)
+	if IsStable(g, []int{0, 6}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			IsStable(g, []int{0, 6}),
+		)
+	}
 	for _, set := range subsets {
 		if len(set) < 2 {
 			continue
@@ -138,6 +152,13 @@ func TestAreFullyAdjacent(t *testing.T) {
 		{1, 1, 0, 1, 1, 0},
 	}
 	g := graph.NewFromMatrix(a)
+	if AreFullyAdjacent(g, []int{0, 6}, []int{-1, 0}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			AreFullyAdjacent(g, []int{0, 6}, []int{-1, 0}),
+		)
+	}
 	if !AreFullyAdjacent(g, []int{0, 1}, []int{4, 5}) {
 		t.Errorf(
 			"Expected %v, but got %v",
@@ -167,6 +188,13 @@ func TestAreFullyNonAdjacent(t *testing.T) {
 		{0, 0, 0, 1, 1, 0},
 	}
 	g := graph.NewFromMatrix(a)
+	if AreFullyNonAdjacent(g, []int{0, 6}, []int{-1, 0}) {
+		t.Errorf(
+			"Expected %v, but got %v",
+			false,
+			AreFullyNonAdjacent(g, []int{0, 6}, []int{-1, 0}),
+		)
+	}
 	if !AreFullyNonAdjacent(g, []int{0, 1, 2}, []int{3, 4, 5}) {
 		t.Errorf(
 			"Expected %v, but got %v",
