@@ -178,3 +178,36 @@ func IntToByteSlice(n int) []byte {
 
 	return binary
 }
+
+// Returns a byte slice corresponding to the upper triangle of a byte matrix
+// column by column, if diagonal is true then the diagonal is considered.
+func ByteMatrixObtainUpperTriangle(matrix [][]byte, diagonal bool) []byte {
+	var v []byte
+
+	// Number of columns.
+	n := len(matrix)
+
+	// Let k be the amount of elements in the upper triangle of the matrix,
+	// we build a byte slice of size k.
+	// If the diagonal is not considered then k = (n * (n-1)) / 2.
+	// If the diagonal is considered then k = (n * (n+1)) / 2.
+	if diagonal {
+		v = make([]byte, (n * (n + 1) / 2))
+	} else {
+		v = make([]byte, (n * (n - 1) / 2))
+	}
+
+	// Travel the matrix column by column filling the slice.
+	k := 0
+	for j := 0; j < n; j++ {
+		for i := 0; i <= j; i++ {
+			if (i == j) && !diagonal {
+				continue
+			}
+			v[k] = matrix[i][j]
+			k++
+		}
+	}
+
+	return v
+}
