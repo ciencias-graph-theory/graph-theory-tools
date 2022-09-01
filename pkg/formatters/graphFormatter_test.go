@@ -1,17 +1,15 @@
 package formatters
 
 import (
-	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
-	// "github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
+	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 	"testing"
 )
 
-// TestObtainUppertriangle calls obtainUppertriangle with an adjacency matrix,
-// and then compares the obtained vector with the upper triangle of the given
-// matrix.
-func TestObtainUpperTriangle(t *testing.T) {
+// TestToGraph6 calls ToGraph6 with a Graph G and check if the obtained format
+// is correct.
+func TestToGraph6(t *testing.T) {
 
-	// Complete graph with four vertices.
+	// The adj. matrix of complete graph with four vertices.
 	a := [][]byte{
 		{0, 1, 1, 1},
 		{1, 0, 1, 1},
@@ -19,7 +17,7 @@ func TestObtainUpperTriangle(t *testing.T) {
 		{1, 1, 1, 0},
 	}
 
-	// A 4-cycle.
+	// The adj. matrix of a 4-cycle.
 	b := [][]byte{
 		{0, 1, 1, 0},
 		{1, 0, 0, 1},
@@ -27,7 +25,7 @@ func TestObtainUpperTriangle(t *testing.T) {
 		{0, 1, 1, 0},
 	}
 
-	// A cube.
+	// The adj. matrix of a 3-cube.
 	c := [][]byte{
 		{0, 1, 1, 0, 1, 0, 0, 0},
 		{1, 0, 0, 1, 0, 0, 1, 0},
@@ -39,24 +37,30 @@ func TestObtainUpperTriangle(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 0},
 	}
 
-	// The corresponding vectors of the upper triangle of each adjacency matrix.
-	av := []byte{1, 1, 1, 1, 1, 1}
-	bv := []byte{1, 1, 0, 0, 1, 1}
-	cv := []byte{1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1}
+	// Build the graphs.
+	K4, _ := graph.NewGraphFromMatrix(a)
+	C4, _ := graph.NewGraphFromMatrix(b)
+	Q3, _ := graph.NewGraphFromMatrix(c)
 
-	Av := obtainUpperTriangle(a)
-	Bv := obtainUpperTriangle(b)
-	Cv := obtainUpperTriangle(c)
+	// Expected formats.
+	K4g6 := "C~"
+	C4g6 := "Cr"
+	Q3g6 := "GKwIcJ"
 
-	if !sliceutils.EqualByteSlice(Av, av) {
-		t.Errorf("Formatting error: Expected %v but got %v", av, Av)
+	// Check if obtained formats are correct.
+	K4G6 := ToGraph6(K4)
+	C4G6 := ToGraph6(C4)
+	Q3G6 := ToGraph6(Q3)
+
+	if K4G6 != K4g6 {
+		t.Errorf("Graph6 Error: Expected %s but got %v", K4g6, K4G6)
 	}
 
-	if !sliceutils.EqualByteSlice(Bv, bv) {
-		t.Errorf("Formatting error: Expected %v but got %v", bv, Bv)
+	if C4G6 != C4g6 {
+		t.Errorf("Graph6 Error: Expected %s but got %v", C4g6, C4G6)
 	}
 
-	if !sliceutils.EqualByteSlice(Cv, cv) {
-		t.Errorf("Formatting error: Expected %v but got %v", cv, Cv)
+	if Q3G6 != Q3g6 {
+		t.Errorf("Graph6 Error: Expected %s but got %v", Q3g6, Q3G6)
 	}
 }
