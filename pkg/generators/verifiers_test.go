@@ -50,7 +50,7 @@ func TestIsClique(t *testing.T) {
 	}
 	b := [][]byte{
 		{0, 1, 1, 1, 1, 1},
-		{1, 0, 1, 1, 1, 1},
+		{1, 0, 1, 1, 0, 1},
 		{1, 1, 0, 1, 1, 1},
 		{1, 1, 1, 0, 1, 1},
 		{1, 0, 1, 1, 0, 1},
@@ -126,6 +126,8 @@ func TestIsStable(t *testing.T) {
 	}
 }
 
+// TestAreFullyAdjacent calls AreFullyAdjacent with a graph where the vertices
+// subsets {0,1} and {4,5} are fully adjacent, but {2,3} and {4,5} are not.
 func TestAreFullyAdjacent(t *testing.T) {
 	a := [][]byte{
 		{0, 1, 0, 0, 1, 1},
@@ -152,6 +154,9 @@ func TestAreFullyAdjacent(t *testing.T) {
 	}
 }
 
+// TestAreFullyNonAdjacent calls AreFullyNonAdjacent with a graph with
+// fully adjacent subsets {0,1,2} and {3,4,5}. Next, a vertex between vertices
+// 4 and 1 is added to see if the graph remains fully adjacent.
 func TestAreFullyNonAdjacent(t *testing.T) {
 	a := [][]byte{
 		{0, 1, 1, 0, 0, 0},
