@@ -228,3 +228,25 @@ func IntSliceSumToEach(v []int, m int) []int {
 
 	return w
 }
+
+// Returns the byte matrix as a slice of bytes, this is done by traversing
+// the matrix row by row.
+func ByteMatrixToSlice(matrix [][]byte) []byte {
+	// A matrix has m rows and n columns.
+	m := len(matrix)
+	n := len(matrix[0])
+
+	// We create a slice of size (m * n)
+	slice := make([]byte, m*n)
+
+	// Travel the matrix row by row.
+	k := 0
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			slice[k] = matrix[i][j]
+			k++
+		}
+	}
+
+	return slice
+}
