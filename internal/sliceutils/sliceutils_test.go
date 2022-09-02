@@ -396,3 +396,67 @@ func TestByteMatrixUpperTriangle(t *testing.T) {
 		t.Errorf("Formatting error: Expected %v but got %v", cvd, Cvd)
 	}
 }
+
+// TestByteMatrixToSlice calls ByteMatrixToSlice with a byte matrix, and then
+// compares that the obtained vector is correct.
+func TestByteMatrixToSlice(t *testing.T) {
+	// Test matrices.
+	a := [][]byte{
+		{0, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// A 4-cycle.
+	b := [][]byte{
+		{0, 1, 1, 0},
+		{1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, 1, 1, 0},
+	}
+
+	// A cube.
+	c := [][]byte{
+		{0, 1, 1, 0, 1, 0, 0, 0},
+		{1, 0, 0, 1, 0, 0, 1, 0},
+		{1, 0, 0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 1, 1, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 1, 1, 0},
+	}
+
+	// Expected byte slices.
+	sa := []byte{0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0}
+	sb := []byte{0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0}
+	sc := []byte{
+		0, 1, 1, 0, 1, 0, 0, 0,
+		1, 0, 0, 1, 0, 0, 1, 0,
+		1, 0, 0, 1, 0, 1, 0, 0,
+		0, 1, 1, 0, 0, 0, 0, 1,
+		1, 0, 0, 0, 0, 1, 1, 0,
+		0, 0, 1, 0, 1, 0, 0, 1,
+		0, 1, 0, 0, 1, 0, 0, 1,
+		0, 0, 0, 1, 0, 1, 1, 0,
+	}
+
+	// Obtained byte slices.
+	SA := ByteMatrixToSlice(a)
+	SB := ByteMatrixToSlice(b)
+	SC := ByteMatrixToSlice(c)
+
+	// Check that the obtainded slices are correct.
+	if !EqualByteSlice(sa, SA) {
+		t.Errorf("Conversion error: Expected %v but got %v", sa, SA)
+	}
+
+	if !EqualByteSlice(sb, SB) {
+		t.Errorf("Conversion error: Expected %v but got %v", sb, SB)
+	}
+
+	if !EqualByteSlice(sc, SC) {
+		t.Errorf("Conversion error: Expected %v but got %v", sc, SC)
+	}
+}
