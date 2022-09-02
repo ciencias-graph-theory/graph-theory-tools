@@ -33,17 +33,42 @@ func parseByteSliceFormat6(v []byte, leftPadding bool) []int {
 // This function is known in https://users.cecs.anu.edu.au/~bdm/data/formats.txt
 // as N(x).
 func parseOrderFormat6(n int) []int {
+	var missingBytes []int
+
+	// If n <= 62, define N(n) as a single byte n+63.
 	if n <= 62 {
 		return []int{(n + 63)}
-	} else if n <= 258047 {
-		nbin := sliceutils.IntToByteSlice(n)
-		nASCII := parseByteSliceFormat6(nbin, true)
-		return append([]int{63}, nASCII...)
-	} else {
-		nbin := sliceutils.IntToByteSlice(n)
-		nASCII := parseByteSliceFormat6(nbin, true)
-		return append([]int{63, 63}, nASCII...)
 	}
+
+	// N(n) is defined as followed if n >= 63.
+	// Obtain the binary representation of n as byte slice.
+	nbin := sliceutils.IntToByteSlice(n)
+
+	// Parse the order of the graph to the format6.
+	nASCII := parseByteSliceFormat6(nbin, true)
+
+	// If 63 <= n <= 258047, define N(n) to be four bytes.
+	if n <= 258047 {
+		missingBytes = []int{126}
+
+		// In case there are still missing some bytes, append the byte 63.
+		for i := len(nASCII); i < 3; i++ {
+			missingBytes = append(missingBytes, 63)
+		}
+
+		return append(missingBytes, nASCII...)
+	} else {
+		// If 258048 <= n <= 68719476735, define N(n) to be the eight bytes.
+		missingBytes = []int{126, 126}
+
+		// In case there are still missing some bytes, append the byte 63.
+		for i := len(nASCII); i < 6; i++ {
+			missingBytes = append(missingBytes, 63)
+		}
+
+		return append(missingBytes, nASCII...)
+	}
+
 }
 
 // Returns the graph6 format string of a given static graph.
