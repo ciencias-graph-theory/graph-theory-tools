@@ -114,3 +114,25 @@ func TestParseByteSliceFormat6(t *testing.T) {
 		t.Errorf("Parsing Error: Expected %v but got %v", id, ID)
 	}
 }
+
+func TestParseOrderFormat6(t *testing.T) {
+	// Test values.
+	input := []int{8, 30, 136, 12345, 460175067}
+
+	// Expected output.
+	output := [][]int{
+		{71},
+		{93},
+		{126, 63, 65, 71},
+		{126, 66, 63, 120},
+		{126, 126, 63, 90, 90, 90, 90, 90},
+	}
+
+	// Check that obtained values are correct.
+	for i := 0; i < len(input); i++ {
+		obOutput := parseOrderFormat6(input[i])
+		if !sliceutils.EqualIntSlice(obOutput, output[i]) {
+			t.Errorf("Parsing Error: Expected %v but got %v", output[i], obOutput)
+		}
+	}
+}
