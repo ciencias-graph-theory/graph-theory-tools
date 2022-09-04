@@ -192,3 +192,53 @@ func TestToLoop6(t *testing.T) {
 		t.Errorf("Loop6 Error: Expected %s but got %v", Q3l6, Q3L6)
 	}
 }
+
+func TestToDigraph6(t *testing.T) {
+	// Example of a digraph with n = 5 and edges:
+	// 0 -> 2, 0 -> 4,
+	// 3 -> 1, 3 -> 4.
+	a := [][]byte{
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 1, 0, 0, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	// Example of digraph with n = 8 and edges:
+	// 0 -> 1, 0 -> 2,
+	// 3 -> 1, 3 -> 2,
+	// 4 -> 0,
+	// 5 -> 2, 5 -> 4, 5 -> 7,
+	// 6 -> 1, 6 -> 4, 6 -> 7,
+	// 7 -> 3.
+	b := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+	}
+
+	Da := graph.NewDigraphFromMatrix(a)
+	Db := graph.NewDigraphFromMatrix(b)
+
+	// Expected Digraph6 strings from the previous graphs.
+	Dad6 := "&DI?AO?"
+	Dbd6 := "&GW???WG?hQP?"
+
+	// Check if obtained formats are correct.
+	DAD6 := ToDigraph6(Da)
+	DBD6 := ToDigraph6(Db)
+
+	if DAD6 != Dad6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", Dad6, DAD6)
+	}
+
+	if DBD6 != Dbd6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", Dbd6, DBD6)
+	}
+}
