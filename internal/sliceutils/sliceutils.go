@@ -113,7 +113,7 @@ func ExtendByteSlice(v []byte, n int, leftPadding bool) []byte {
 // length is a multiple of n.
 func DivideByteSlice(v []byte, n int) [][]byte {
 	numGroups := len(v) / n
-	groups := make([][]byte, numGroups, n)
+	groups := make([][]byte, numGroups)
 
 	for i := 0; i < numGroups; i++ {
 		groups[i] = v[(i * n):((i + 1) * n)]
