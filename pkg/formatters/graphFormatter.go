@@ -91,3 +91,25 @@ func ToGraph6(graph *StaticGraph) string {
 	// Retuns the ASCII representation of the graph.
 	return sliceutils.IntSliceToASCII(graphASCII)
 }
+
+func ToLoop6(graph *StaticGraph) string {
+	// Obtain the adjacency matrix.
+	matrix, _ := graph.Matrix()
+
+	// Obtain the vector of bits in the upper triangle of the adj. matrix
+	// considering the diagonal.
+	upperTriangle := sliceutils.ByteMatrixUpperTriangle(matrix, true)
+
+	// Parse the edges of the graph to the accepted format6 standart.
+	edgesASCII := parseByteSliceFormat6(upperTriangle, false)
+
+	// Parse the order of the graph to the accepted format6 standart.
+	orderASCII := parseOrderFormat6(graph.Order())
+
+	// Concat both edges and orded ASCII values.
+	graphASCII := append(orderASCII, edgesASCII...)
+
+	// Append the loop6 identifier and return the ASCII representation of the
+	// graph.
+	return ";" + sliceutils.IntSliceToASCII(graphASCII)
+}
