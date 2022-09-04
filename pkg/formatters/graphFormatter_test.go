@@ -136,3 +136,59 @@ func TestParseOrderFormat6(t *testing.T) {
 		}
 	}
 }
+
+func TestToLoop6(t *testing.T) {
+	// The adj. matrix of complete graph with four vertices with loops.
+	a := [][]byte{
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+	}
+
+	// The adj. matrix of a 4-cycle with loops.
+	b := [][]byte{
+		{1, 1, 1, 0},
+		{1, 1, 0, 1},
+		{1, 0, 1, 1},
+		{0, 1, 1, 1},
+	}
+
+	// The adj. matrix of a 3-cube with loops.
+	c := [][]byte{
+		{1, 1, 1, 0, 1, 0, 0, 0},
+		{1, 1, 0, 1, 0, 0, 1, 0},
+		{1, 0, 1, 1, 0, 1, 0, 0},
+		{0, 1, 1, 1, 0, 0, 0, 1},
+		{1, 0, 0, 0, 1, 1, 1, 0},
+		{0, 0, 1, 0, 1, 1, 0, 1},
+		{0, 1, 0, 0, 1, 0, 1, 1},
+		{0, 0, 0, 1, 0, 1, 1, 1},
+	}
+
+	K4l, _ := graph.NewGraphFromMatrix(a)
+	C4l, _ := graph.NewGraphFromMatrix(b)
+	Q3l, _ := graph.NewGraphFromMatrix(c)
+
+	// Expected Loop6 strings from the previous graphs.
+	K4l6 := ";C~{"
+	C4l6 := ";C|["
+	Q3l6 := ";G|]HYSV"
+
+	// Check if obtained formats are correct.
+	K4L6 := ToLoop6(K4l)
+	C4L6 := ToLoop6(C4l)
+	Q3L6 := ToLoop6(Q3l)
+
+	if K4L6 != K4l6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", K4l6, K4L6)
+	}
+
+	if C4L6 != C4l6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", C4l6, C4L6)
+	}
+
+	if Q3L6 != Q3l6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", Q3l6, Q3L6)
+	}
+}
