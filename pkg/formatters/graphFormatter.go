@@ -113,3 +113,24 @@ func ToLoop6(graph *StaticGraph) string {
 	// graph.
 	return ";" + sliceutils.IntSliceToASCII(graphASCII)
 }
+
+func ToDigraph6(digraph *StaticDigraph) string {
+	// Obtain the adjacency matrix.
+	matrix, _ := digraph.Matrix()
+
+	// Obtain the vector of bits corresponding to the adj. matrix.
+	bits := sliceutils.ByteMatrixToSlice(matrix)
+
+	// Parse the edges of the graph to the accepted format6 standart.
+	edgesASCII := parseByteSliceFormat6(bits, false)
+
+	// Parse the order of the graph to the accepted format6 standart.
+	orderASCII := parseOrderFormat6(digraph.Order())
+
+	// Concat both edges and orded ASCII values.
+	graphASCII := append(orderASCII, edgesASCII...)
+
+	// Append the loop6 identifier and return the ASCII representation of the
+	// graph.
+	return "&" + sliceutils.IntSliceToASCII(graphASCII)
+}
