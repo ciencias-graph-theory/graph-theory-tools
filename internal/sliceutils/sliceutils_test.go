@@ -269,6 +269,43 @@ func TestIntSliceToASCII(t *testing.T) {
 	}
 }
 
+func TestASCIIToIntSlice(t *testing.T) {
+	// String examples.
+	sa := "ABCDEFGHIJK"
+	sb := "GATTO_RULES"
+	sc := ";<=>?@"
+	sd := "SG_WAS_HERE"
+
+	// Expected int slices.
+	a := []int{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75}
+	b := []int{71, 65, 84, 84, 79, 95, 82, 85, 76, 69, 83}
+	c := []int{59, 60, 61, 62, 63, 64}
+	d := []int{83, 71, 95, 87, 65, 83, 95, 72, 69, 82, 69}
+
+	// Obtained int slices.
+	A := ASCIIToIntSlice(sa)
+	B := ASCIIToIntSlice(sb)
+	C := ASCIIToIntSlice(sc)
+	D := ASCIIToIntSlice(sd)
+
+	// Compare slices.
+	if !EqualIntSlice(A, a) {
+		t.Errorf("Conversion error: Expected %v but got %v", a, A)
+	}
+
+	if !EqualIntSlice(B, b) {
+		t.Errorf("Conversion error: Expected %v but got %v", b, B)
+	}
+
+	if !EqualIntSlice(C, c) {
+		t.Errorf("Conversion error: Expected %v but got %v", a, A)
+	}
+
+	if !EqualIntSlice(D, d) {
+		t.Errorf("Conversion error: Expected %v but got %v", a, A)
+	}
+}
+
 // TestIntToByteSlice calls IntToByteslice with an int n. Returns the binary
 // representation of n as a byte slice.
 func TestIntToByteSlice(t *testing.T) {
