@@ -293,6 +293,63 @@ func TestToLoop6(t *testing.T) {
 	}
 }
 
+// TestFromLoop6 calls FromLoop6 with a string corresponding the loop6
+// format of a graph G, it checks that the obtained graph is the one
+// corresponding to the format.
+func TestFromLoop6(t *testing.T) {
+	// Example strings.
+	K4l6 := ";C~{"
+	C4l6 := ";C|["
+	Q3l6 := ";G|]HYSV"
+
+	// Expected adj. matrices of the examples.
+	// The adj. matrix of complete graph with four vertices with loops.
+	K4lm := [][]byte{
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+		{1, 1, 1, 1},
+	}
+
+	// The adj. matrix of a 4-cycle with loops.
+	C4lm := [][]byte{
+		{1, 1, 1, 0},
+		{1, 1, 0, 1},
+		{1, 0, 1, 1},
+		{0, 1, 1, 1},
+	}
+
+	// The adj. matrix of a 3-cube with loops.
+	Q3lm := [][]byte{
+		{1, 1, 1, 0, 1, 0, 0, 0},
+		{1, 1, 0, 1, 0, 0, 1, 0},
+		{1, 0, 1, 1, 0, 1, 0, 0},
+		{0, 1, 1, 1, 0, 0, 0, 1},
+		{1, 0, 0, 0, 1, 1, 1, 0},
+		{0, 0, 1, 0, 1, 1, 0, 1},
+		{0, 1, 0, 0, 1, 0, 1, 1},
+		{0, 0, 0, 1, 0, 1, 1, 1},
+	}
+
+	// Obtain the graphs based on the strings
+	K4l, _ := FromLoop6(K4l6).Matrix()
+	C4l, _ := FromLoop6(C4l6).Matrix()
+	Q3l, _ := FromLoop6(Q3l6).Matrix()
+
+	// Compare that the obtained graphs are correct.
+	if !sliceutils.EqualByteMatrix(K4lm, K4l) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", K4lm, K4l)
+	}
+
+	if !sliceutils.EqualByteMatrix(C4lm, C4l) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", C4lm, C4l)
+	}
+
+	if !sliceutils.EqualByteMatrix(Q3lm, Q3l) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", Q3lm, Q3l)
+	}
+}
+
 func TestToDigraph6(t *testing.T) {
 	// Example of a digraph with n = 5 and edges:
 	// 0 -> 2, 0 -> 4,
