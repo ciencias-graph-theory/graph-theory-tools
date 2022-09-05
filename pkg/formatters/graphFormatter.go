@@ -29,6 +29,31 @@ func parseByteSliceFormat6(v []byte, leftPadding bool) []int {
 	return ASCII
 }
 
+// The inverse process of obtaining the format 6.
+// Returns the original bits that produced the given slice of ints.
+func inverseFormat6(v []int) []byte {
+	// Decrease each value by 63 to obtain the original values.
+	ogVals := sliceutils.IntSliceSumToEach(v, -63)
+	numVals := len(v)
+
+	// Obtain the binary representation of each of the original values.
+	ogBits := make([][]byte, numVals)
+
+	for i := 0; i < numVals; i++ {
+		// Obtain the binary representation.
+		binary := sliceutils.IntToByteSlice(ogVals[i])
+
+		// Extend the binary to 6 bits.
+		// A left padding is used to not modify the original value.
+		extBinary := sliceutils.ExtendByteSlice(binary, 6, true)
+
+		ogBits[i] = extBinary
+	}
+
+	// Obtain all the bits as a single slice.
+	return sliceutils.ByteMatrixToSlice(ogBits)
+}
+
 // Parses the order of a graph to format 6.
 // This function is known in https://users.cecs.anu.edu.au/~bdm/data/formats.txt
 // as N(x).
@@ -71,6 +96,86 @@ func parseOrderFormat6(n int) []int {
 
 }
 
+// Returns the order of a graph given the format6 values.
+// This function could be considered the inverse of N(n).
+func inverseParseOrderFormat6(vals []int) int {
+	// Obtain the order by inverting the process to obtain the format.
+	orderBinary := inverseFormat6(vals)
+
+	// Obtain the order value.
+	order := sliceutils.ByteSliceToInt(orderBinary)
+
+	return order
+}
+
+// Given a slice of ints corresponding to the format6 of a graph, determine the
+// bytes that correspond to the order and edges. Return the order of the graph
+// and the rest of the int slice.
+func determineOrderAndEdges(vals []int) (int, []int) {
+	var order int
+	var edgeValues []int
+
+	// If first byte is different from 126, then the number of bytes associated to
+	// the order is just one.
+	if vals[0] != 126 {
+		order = inverseParseOrderFormat6([]int{vals[0]})
+		edgeValues = vals[1:]
+	} else if vals[1] != 126 {
+		// If the first byte is 126 and the second byte is different from 126, then
+		// the first four bytes are associated with the order of the graph.
+		order = inverseParseOrderFormat6(vals[1:4])
+		edgeValues = vals[4:]
+	} else {
+		// Otherwise, the first eight bytes are associated with the order.
+		order = inverseParseOrderFormat6(vals[2:8])
+		edgeValues = vals[8:]
+	}
+
+	return order, edgeValues
+}
+
+// Returns the adj. matrix corresponding to the format6 values.
+func inverseParseEdgesFormat6(order int, vals []int, diag, sym bool) [][]byte {
+	// Create an empty adj. matrix.
+	matrix := make([][]byte, order)
+	for i := 0; i < order; i++ {
+		matrix[i] = make([]byte, order)
+	}
+
+	// Obtain the edges bits by inverting the process of the format6.
+	edgeBits := inverseFormat6(vals)
+
+	// Travel the bits to build the adj. matrix.
+	k := 0
+	for j := 0; j < order; j++ {
+		for i := 0; i < order; i++ {
+
+			// If i = j and the diagonal is not considered, continue to the next
+			// column.
+			if (i == j) && !diag {
+				break
+			}
+
+			// If the matrix is not symmetric then it corresponds to a digraph.
+			// Otherwise, only travel the upper triangle of the matrix.
+			if (i > j) && sym {
+				break
+			}
+
+			matrix[i][j] = edgeBits[k]
+
+			// If the matrix is symmetric then a_ij = a_ji.
+			if sym {
+				matrix[j][i] = edgeBits[k]
+			}
+
+			k++
+		}
+	}
+
+	return matrix
+}
+
 // Returns the graph6 format string of a given static graph.
 func ToGraph6(graph *StaticGraph) string {
 	// Obtain the adjacency matrix.
@@ -90,6 +195,21 @@ func ToGraph6(graph *StaticGraph) string {
 
 	// Retuns the ASCII representation of the graph.
 	return sliceutils.IntSliceToASCII(graphASCII)
+}
+
+func FromGraph6(s string) *StaticGraph {
+	// Obtain the ASCII values of the string.
+	values := sliceutils.ASCIIToIntSlice(s)
+
+	// Determine the order of the graph and the values corresponding to the edges.
+	order, edgeVals := determineOrderAndEdges(values)
+
+	// Obtain the adjacency matrix given the edge values.
+	matrix := inverseParseEdgesFormat6(order, edgeVals, false, true)
+
+	// Build and return a graph given a matrix.
+	G, _ := graph.NewGraphFromMatrix(matrix)
+	return G
 }
 
 func ToLoop6(graph *StaticGraph) string {
