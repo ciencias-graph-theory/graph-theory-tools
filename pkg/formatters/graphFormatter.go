@@ -162,11 +162,11 @@ func inverseParseEdgesFormat6(order int, vals []int, diag, sym bool) [][]byte {
 				break
 			}
 
-			matrix[i][j] = edgeBits[k]
+			matrix[j][i] = edgeBits[k]
 
 			// If the matrix is symmetric then a_ij = a_ji.
 			if sym {
-				matrix[j][i] = edgeBits[k]
+				matrix[i][j] = edgeBits[k]
 			}
 
 			k++
