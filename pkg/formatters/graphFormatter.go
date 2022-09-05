@@ -234,6 +234,24 @@ func ToLoop6(graph *StaticGraph) string {
 	return ";" + sliceutils.IntSliceToASCII(graphASCII)
 }
 
+func FromLoop6(s string) *StaticGraph {
+	// Obtain the ASCII values of the string.
+	values := sliceutils.ASCIIToIntSlice(s)
+
+	// Ignore the identifier.
+	values = values[1:]
+
+	// Determine the order of the graph and the values corresponding to the edges.
+	order, edgeVals := determineOrderAndEdges(values)
+
+	// Obtain the adjacency matrix given the edge values. Consider the diagonal.
+	matrix := inverseParseEdgesFormat6(order, edgeVals, true, true)
+
+	// Build and return a graph given a matrix.
+	G, _ := graph.NewGraphFromMatrix(matrix)
+	return G
+}
+
 func ToDigraph6(digraph *StaticDigraph) string {
 	// Obtain the adjacency matrix.
 	matrix, _ := digraph.Matrix()
