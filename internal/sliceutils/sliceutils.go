@@ -168,6 +168,20 @@ func IntSliceToASCII(v []int) string {
 	return ASCII
 }
 
+// Returns the int value of each of the ASCII chars present in a string.
+func ASCIIToIntSlice(s string) []int {
+	var slice []int
+	n := len(s)
+
+	slice = make([]int, n)
+
+	for i := 0; i < n; i++ {
+		slice[i] = int(rune(s[i]))
+	}
+
+	return slice
+}
+
 // Returns the binary representation of an intenger n as a byte slice.
 // E.g. If n = 170 then the function returns {1,0,1,0,1,0,1,0}.
 func IntToByteSlice(n int) []byte {
