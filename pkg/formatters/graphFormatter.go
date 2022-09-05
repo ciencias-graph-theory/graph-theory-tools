@@ -272,3 +272,21 @@ func ToDigraph6(digraph *StaticDigraph) string {
 	// graph.
 	return "&" + sliceutils.IntSliceToASCII(graphASCII)
 }
+
+func FromDigraph6(s string) *StaticDigraph {
+	// Obtain the ASCII values of the string.
+	values := sliceutils.ASCIIToIntSlice(s)
+
+	// Ignore the identifier.
+	values = values[1:]
+
+	// Determine the order of the graph and the values corresponding to the edges.
+	order, edgeVals := determineOrderAndEdges(values)
+
+	// Obtain the adjacency matrix given the edge values. Consider the diagonal.
+	matrix := inverseParseEdgesFormat6(order, edgeVals, true, false)
+
+	// Build and return a graph given a matrix.
+	D := graph.NewDigraphFromMatrix(matrix)
+	return D
+}
