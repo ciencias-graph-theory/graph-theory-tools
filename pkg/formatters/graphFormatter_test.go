@@ -399,3 +399,42 @@ func TestToDigraph6(t *testing.T) {
 		t.Errorf("Loop6 Error: Expected %s but got %v", Dbd6, DBD6)
 	}
 }
+
+func TestFromDigraph6(t *testing.T) {
+	// Examples of Digraph6 strings.
+	Dad6 := "&DI?AO?"
+	Dbd6 := "&GW???WG?hQP?"
+
+	// Expected adj. matrices of the previous strings.
+	a := [][]byte{
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 1, 0, 0, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	// Example of digraph with n = 8 and edges:
+	b := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+	}
+
+	Da, _ := FromDigraph6(Dad6).Matrix()
+	Db, _ := FromDigraph6(Dbd6).Matrix()
+
+	// Compare that the obtained graphs are correct.
+	if !sliceutils.EqualByteMatrix(a, Da) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", a, Da)
+	}
+
+	if !sliceutils.EqualByteMatrix(b, Db) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", b, Db)
+	}
+}
