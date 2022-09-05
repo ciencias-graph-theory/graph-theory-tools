@@ -66,6 +66,62 @@ func TestToGraph6(t *testing.T) {
 	}
 }
 
+// TestFromGraph6 calls FromGraph6 with a string corresponding a the graph6
+// format of a graph G, it checks that the obtained graph is the one
+// corresponding to the format.
+func TestFromGraph6(t *testing.T) {
+	// Example strings.
+	K4g6 := "C~"
+	C4g6 := "Cr"
+	Q3g6 := "Gr_iOk"
+
+	// Expected adj. matrices of the examples.
+	K4m := [][]byte{
+		{0, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// The adj. matrix of a 4-cycle.
+	C4m := [][]byte{
+		{0, 1, 1, 0},
+		{1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, 1, 1, 0},
+	}
+
+	// The adj. matrix of a 3-cube.
+	Q3m := [][]byte{
+		{0, 1, 1, 0, 1, 0, 0, 0},
+		{1, 0, 0, 1, 0, 0, 1, 0},
+		{1, 0, 0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 1, 1, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 1, 1, 0},
+	}
+
+	// Obtain the graphs based on the strings
+	K4, _ := FromGraph6(K4g6).Matrix()
+	C4, _ := FromGraph6(C4g6).Matrix()
+	Q3, _ := FromGraph6(Q3g6).Matrix()
+
+	// Compare that the obtained graphs are correct.
+	if !sliceutils.EqualByteMatrix(K4m, K4) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", K4m, K4)
+	}
+
+	if !sliceutils.EqualByteMatrix(C4m, C4) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", C4m, C4)
+	}
+
+	if !sliceutils.EqualByteMatrix(Q3m, Q3) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", Q3m, Q3)
+	}
+}
+
 func TestParseByteSliceFormat6(t *testing.T) {
 	// Byte slices examples.
 	a := []byte{
@@ -133,6 +189,50 @@ func TestParseOrderFormat6(t *testing.T) {
 		obOutput := parseOrderFormat6(input[i])
 		if !sliceutils.EqualIntSlice(obOutput, output[i]) {
 			t.Errorf("Parsing Error: Expected %v but got %v", output[i], obOutput)
+		}
+	}
+}
+
+func TestDetermineOrderAndEdges(t *testing.T) {
+	// Test slices.
+	input := [][]int{
+		{71},
+		{93},
+		{126, 63, 65, 71},
+		{126, 66, 63, 120},
+		{126, 126, 63, 90, 90, 90, 90, 90},
+	}
+
+	// Expected values.
+	output := []int{8, 30, 136, 12345, 460175067}
+
+	// Check that obtained values are correct.
+	for i := 0; i < len(input); i++ {
+		obOutput, _ := determineOrderAndEdges(input[i])
+		if output[i] != obOutput {
+			t.Errorf("Parsing Error: Expected %d but got %d", output[i], obOutput)
+		}
+	}
+}
+
+func TestInverseParseOrderFormat6(t *testing.T) {
+	// Test slices.
+	input := [][]int{
+		{71},
+		{93},
+		{63, 65, 71},
+		{66, 63, 120},
+		{63, 90, 90, 90, 90, 90},
+	}
+
+	// Expected values.
+	output := []int{8, 30, 136, 12345, 460175067}
+
+	// Check that obtained values are correct.
+	for i := 0; i < len(input); i++ {
+		obOutput := inverseParseOrderFormat6(input[i])
+		if output[i] != obOutput {
+			t.Errorf("Parsing Error: Expected %d but got %d", output[i], obOutput)
 		}
 	}
 }
