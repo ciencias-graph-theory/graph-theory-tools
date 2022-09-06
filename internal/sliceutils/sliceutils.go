@@ -3,6 +3,8 @@ package sliceutils
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"math"
 	"strconv"
 )
@@ -111,15 +113,26 @@ func ExtendByteSlice(v []byte, n int, leftPadding bool) []byte {
 
 // Divides the slice into groups of n bits; it is expected that the slice's
 // length is a multiple of n.
-func DivideByteSlice(v []byte, n int) [][]byte {
+func DivideByteSlice(v []byte, n int) ([][]byte, error) {
+	var groups [][]byte
+
+	// If slice's length is not a multiple of n. Return error.
+	if (len(v) % n) != 0 {
+		errString := "DivideByteSlice: Expected slice of length %d"
+		errString += " but got slice of length %d"
+		errString = fmt.Sprintf(errString, n, len(v))
+		err := errors.New(errString)
+		return groups, err
+	}
+
 	numGroups := len(v) / n
-	groups := make([][]byte, numGroups)
+	groups = make([][]byte, numGroups)
 
 	for i := 0; i < numGroups; i++ {
 		groups[i] = v[(i * n):((i + 1) * n)]
 	}
 
-	return groups
+	return groups, nil
 }
 
 // Not to be confused with the methods provided by the library encoding/binary.

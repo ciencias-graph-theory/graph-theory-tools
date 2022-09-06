@@ -18,7 +18,7 @@ func parseByteSliceFormat6(v []byte, leftPadding bool) []int {
 	vExtended := sliceutils.ExtendByteSlice(v, 6, leftPadding)
 
 	// Divide the previous vector in groups of 6 bits.
-	vGroups := sliceutils.DivideByteSlice(vExtended, 6)
+	vGroups, _ := sliceutils.DivideByteSlice(vExtended, 6)
 
 	// Convert the bits into its binary number.
 	vInts := sliceutils.ByteMatrixToIntSlice(vGroups)

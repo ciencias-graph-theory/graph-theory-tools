@@ -165,26 +165,50 @@ func TestDivideByteSlice(t *testing.T) {
 	}
 
 	// Obtained vectors.
-	Av := DivideByteSlice(xa, 6)
-	Bv := DivideByteSlice(xb, 6)
-	Cv := DivideByteSlice(xc, 6)
-	Dv := DivideByteSlice(xd, 6)
+	Av, errA := DivideByteSlice(xa, 6)
+	Bv, errB := DivideByteSlice(xb, 6)
+	Cv, errC := DivideByteSlice(xc, 6)
+	Dv, errD := DivideByteSlice(xd, 6)
+
+	// The previous operations should not return an error.
+	if errA != nil {
+		t.Errorf("Division Error: Unexpected Error: %v", errA)
+	}
+
+	if errB != nil {
+		t.Errorf("Division Error: Unexpected Error: %v", errB)
+	}
+
+	if errC != nil {
+		t.Errorf("Division Error: Unexpected Error: %v", errC)
+	}
+
+	if errD != nil {
+		t.Errorf("Division Error: Unexpected Error: %v", errD)
+	}
 
 	// Check that the obtainded vectors are equal to the extended ones.
 	if !EqualByteMatrix(Av, ga) {
-		t.Errorf("Expansion error: Expected %v but got %v", ga, Av)
+		t.Errorf("Division error: Expected %v but got %v", ga, Av)
 	}
 
 	if !EqualByteMatrix(Bv, gb) {
-		t.Errorf("Expansion error: Expected %v but got %v", gb, Bv)
+		t.Errorf("Division error: Expected %v but got %v", gb, Bv)
 	}
 
 	if !EqualByteMatrix(Cv, gc) {
-		t.Errorf("Expansion error: Expected %v but got %v", gc, Cv)
+		t.Errorf("Division error: Expected %v but got %v", gc, Cv)
 	}
 
 	if !EqualByteMatrix(Dv, gd) {
-		t.Errorf("Expansion error: Expected %v but got %v", gd, Dv)
+		t.Errorf("Division error: Expected %v but got %v", gd, Dv)
+	}
+
+	// The following operation should return an error.
+	Ev, errE := DivideByteSlice(xa[1:], 6)
+
+	if errE == nil {
+		t.Errorf("Division error: Expected an error but got %v", Ev)
 	}
 }
 
