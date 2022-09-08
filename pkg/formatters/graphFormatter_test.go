@@ -488,3 +488,48 @@ func TestFromSparse6(t *testing.T) {
 		t.Errorf("Sparse6 Conversion Error: Expected %v but got %v", ex2A, ex2Gm)
 	}
 }
+
+// TestToSparse6 calls ToSparse6 with a graph, then checks that the
+// obtained sparse6 string is the correct one.
+func TestToSparse6(t *testing.T) {
+	// Example adj. matrices.
+	ex1A := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 0},
+		{1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 1},
+		{0, 0, 0, 0, 0, 1, 0},
+	}
+
+	ex2A := [][]byte{
+		{1, 0, 0, 0, 0, 0},
+		{0, 0, 1, 1, 0, 0},
+		{0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 2},
+		{0, 0, 0, 0, 2, 0},
+	}
+
+	// The sparse6 strings expected from the previous strings.
+	ex1 := ":Fa@x^"
+	ex2 := ":EA`clPN"
+
+	// Build the graphs from the adj. matrix.
+	G1, _ := graph.NewGraphFromMatrix(ex1A)
+	G2, _ := graph.NewGraphFromMatrix(ex2A)
+
+	// Get the sparse6 strings from the previous strings.
+	G1S6 := ToSparse6(G1)
+	G2S6 := ToSparse6(G2)
+
+	// Compare the obtained sparse6 strings with the expected ones.
+	if ex1 != G1S6 {
+		t.Errorf("Sparse6 Conversion Error: Expected %s but got %s", ex1, G1S6)
+	}
+
+	if ex2 != G2S6 {
+		t.Errorf("Sparse6 Conversion Error: Expected %s but got %s", ex2, G2S6)
+	}
+}
