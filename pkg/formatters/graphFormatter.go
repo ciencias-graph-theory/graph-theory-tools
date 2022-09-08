@@ -4,6 +4,7 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 	"math"
+	"sort"
 )
 
 type Graph = graph.Graph
@@ -408,4 +409,141 @@ func FromSparse6(s string) *StaticGraph {
 	// Return the graph with its adj. matrix.
 	G, _ := graph.NewGraphFromMatrix(matrix)
 	return G
+}
+
+// Return the set of edges in a graph as byte matrix where
+// each row is the pair of edges.
+// Note: This method is only auxiliary and in a future it
+// should be expected to be replaced by a method of the graph
+// structure.
+func getEdgePairs(graph *StaticGraph) [][]int {
+	var pairs [][]int
+
+	// Let n be the order of the graph.
+	n := graph.Order()
+
+	// Let M be the adjacency matrix of the graph.
+	M, _ := graph.Matrix()
+
+	// Travel the upper triangle of the matrix as it is
+	// symmetric, and consider the diagonal.
+	for i := 0; i < n; i++ {
+		for j := 0; j <= i; j++ {
+			// If an edge exists, create a pair and add it to the
+			// list.
+			if M[i][j] > 0 {
+				numEdges := int(M[i][j])
+
+				for e := 0; e < numEdges; e++ {
+					pair := make([]int, 2)
+					pair[0] = i
+					pair[1] = j
+
+					pairs = append(pairs, [][]int{pair}...)
+				}
+
+			}
+		}
+	}
+
+	return pairs
+}
+
+// Sort the edge pairs according to the sparse6 format:
+//  1. Sort each edge in descending order.
+//  2. Sort in ascending order the matrix based on the 0-th
+//     column.
+func sortEdgePairs(pairs [][]int) [][]int {
+	numPairs := len(pairs)
+
+	// Copy the pairs to not modify the originals.
+	sortedPairs := make([][]int, numPairs)
+	copy(sortedPairs, pairs)
+
+	// Sort each edge in descending order.
+	for k := 0; k < numPairs; k++ {
+		sort.Slice(sortedPairs[k], func(i, j int) bool {
+			return sortedPairs[k][i] > sortedPairs[k][j]
+		})
+	}
+
+	// Sort each row based on the 0-th column.
+	sort.Slice(sortedPairs, func(i, j int) bool {
+		return sortedPairs[i][0] < sortedPairs[j][0]
+	})
+
+	return sortedPairs
+}
+
+// Converts the pairs of edges into the sparse6 binary format.
+func pairsToBinary(order int, pairs [][]int) []byte {
+	var bits []byte
+
+	// Let k be amount of bits to represent n-1 in binary,
+	// where n is the order.
+	m := float64(order - 1)
+	k := int(math.Ceil(math.Log2(m)))
+
+	// Let v be the current vertex. Initialize with v = 0.
+	v := 0
+
+	// Start conversion.
+	for i := 0; i < len(pairs); i++ {
+		pair := pairs[i]
+
+		p0 := pair[0]
+		p1 := pair[1]
+
+		if v == p0 {
+			bits = append(bits, 0)
+		} else if p0 == (v + 1) {
+			bits = append(bits, 1)
+			v++
+		} else {
+			bits = append(bits, 1)
+
+			// Obtain the k-bits representation of p0.
+			p0bin := sliceutils.IntToByteSlice(p0)
+			p0bin = sliceutils.ExtendByteSlice(p0bin, k, true)
+			bits = append(bits, p0bin...)
+
+			bits = append(bits, 0)
+
+			v = p0
+		}
+
+		p1bin := sliceutils.IntToByteSlice(p1)
+		p1bin = sliceutils.ExtendByteSlice(p1bin, k, true)
+		bits = append(bits, p1bin...)
+	}
+
+	// Extend the byte slice to be of length multiple of 6.
+	for len(bits)%6 != 0 {
+		bits = append(bits, 1)
+	}
+
+	return bits
+}
+
+// Returns the sparse6 format corresponding to the given graph.
+func ToSparse6(graph *StaticGraph) string {
+	// Let n be the order of the graph.
+	n := graph.Order()
+
+	// Obtain the edge pairs.
+	edgePairs := getEdgePairs(graph)
+
+	// Sort the pairs according to the sparse6 format.
+	sortedPairs := sortEdgePairs(edgePairs)
+
+	// Convert the pairs of edges into a format6 binary.
+	edgeBits := pairsToBinary(n, sortedPairs)
+
+	// Get the order and edges ASCII bytes.
+	orderBytes := parseOrderFormat6(n)
+	edgeBytes := parseByteSliceFormat6(edgeBits, false)
+
+	ASCIIBytes := append(orderBytes, edgeBytes...)
+
+	return ":" + sliceutils.IntSliceToASCII(ASCIIBytes)
 }
