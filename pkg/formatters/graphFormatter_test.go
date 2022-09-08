@@ -438,3 +438,34 @@ func TestFromDigraph6(t *testing.T) {
 		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", b, Db)
 	}
 }
+
+// TestFromSparse6 calls FromSparse6 with a string corresponding the sparse6
+// format of a graph G, it checks that the obtained graph is the one
+// corresponding to the format.
+func TestFromSparse6(t *testing.T) {
+	// Example string obtained from the format6 specifications website:
+	// https://users.cecs.anu.edu.au/~bdm/data/formats.txt
+	ex1 := ":Fa@x^"
+
+	// Expected adjacency matrix from the previous string.
+	ex1A := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 0},
+		{1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 1},
+		{0, 0, 0, 0, 0, 1, 0},
+	}
+
+	// Build the graphs from the sparse6 string.
+	ex1G := FromSparse6(ex1)
+
+	// Obtained matrices.
+	ex1Gm, _ := ex1G.Matrix()
+
+	// Compare the obtained graphs with the expected ones.
+	if !sliceutils.EqualByteMatrix(ex1A, ex1Gm) {
+		t.Errorf("Sparse6 Conversion Error: Expected %v but got %v", ex1A, ex1Gm)
+	}
+}
