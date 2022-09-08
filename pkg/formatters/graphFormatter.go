@@ -3,6 +3,7 @@ package formatters
 import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
+	"math"
 )
 
 type Graph = graph.Graph
@@ -289,4 +290,122 @@ func FromDigraph6(s string) *StaticDigraph {
 	// Build and return a graph given a matrix.
 	D := graph.NewDigraphFromMatrix(matrix)
 	return D
+}
+
+// Given a bits slice, build the corresponding block of each edge.
+func obtainEdgeBlocks(order int, bits []byte) [][]int {
+	// Let k be how many bits are needed to represent the order
+	// in binary.
+	m := float64(order - 1)
+	k := int(math.Ceil(math.Log2(m)))
+
+	// Extend the bits slice so its length is multiple of k + 1.
+	// Note: This can also be achieved by removing bits, but by
+	// safety we prefer to append them.
+	exBits := sliceutils.ExtendByteSlice(bits, k+1, false)
+
+	// Create an empty matrix to store the blocks.
+	numBlocks := (len(exBits) / (k + 1))
+	bitsBlocks := make([][]byte, numBlocks)
+	for i := 0; i < numBlocks; i++ {
+		bitsBlocks[i] = make([]byte, k+1)
+	}
+
+	// Build the blocks.
+	for i := 0; i < numBlocks; i++ {
+		bitsBlocks[i] = exBits[(i * (k + 1)) : (i+1)*(k+1)]
+	}
+
+	// Create an empty matrix to store the integer equivalent
+	// of the blocks.
+	blocks := make([][]int, numBlocks)
+	for i := 0; i < numBlocks; i++ {
+		blocks[i] = make([]int, 2)
+	}
+
+	// Convert each block.
+	for i := 0; i < numBlocks; i++ {
+		// The first element of the pair can only be 1 or 0.
+		if bitsBlocks[i][0] == 1 {
+			blocks[i][0] = 1
+		} else {
+			blocks[i][0] = 0
+		}
+
+		// The second element of the pair is int representation
+		// of the rest of the k bits.
+		blocks[i][1] = sliceutils.ByteSliceToInt(bitsBlocks[i][1:])
+	}
+
+	return blocks
+}
+
+// Build an adjacency matrix of n x n given the blocks of edges
+// represented by the Sparse6 format, where n is the order of
+// the graph.
+func buildFromBlocks(order int, blocks [][]int) [][]byte {
+	// Build an empty matrix of size n times n, where n is
+	// the order.
+	matrix := make([][]byte, order)
+	for i := 0; i < order; i++ {
+		matrix[i] = make([]byte, order)
+	}
+
+	// The letter i represents the current vertex.
+	i := 0
+
+	// The letter j represents the vertex i is adjacent with.
+	j := 0
+
+	// The limit is the last vertex that can be represented.
+	limit := order - 1
+
+	for b := 0; b < len(blocks); b++ {
+		if blocks[b][0] == 1 {
+			i++
+
+			// If limit has been surpassed, break.
+			if i > limit {
+				break
+			}
+		}
+
+		if blocks[b][1] > i {
+			i = blocks[b][1]
+		} else {
+			j = blocks[b][1]
+
+			// The matrix is symmetric.
+			matrix[i][j]++
+			if i != j {
+				// Don't update twice if it is the diagonal.
+				matrix[j][i]++
+			}
+		}
+	}
+
+	return matrix
+}
+
+// Returns the graph corresponding to the sparse6 string given.
+func FromSparse6(s string) *StaticGraph {
+	// Obtain the ASCII values of the string.
+	values := sliceutils.ASCIIToIntSlice(s)
+
+	// Ignore the identifier.
+	values = values[1:]
+
+	// Determine the order of the graph and the values corresponding to the edges.
+	order, edgeBytes := determineOrderAndEdges(values)
+
+	// Obtain the blocks corresponding to the edges.
+	edgeBits := inverseFormat6(edgeBytes)
+	blocks := obtainEdgeBlocks(order, edgeBits)
+
+	// Build the adj. matrix given the blocks.
+	matrix := buildFromBlocks(order, blocks)
+
+	// Return the graph with its adj. matrix.
+	G, _ := graph.NewGraphFromMatrix(matrix)
+	return G
 }
