@@ -447,7 +447,11 @@ func TestFromSparse6(t *testing.T) {
 	// https://users.cecs.anu.edu.au/~bdm/data/formats.txt
 	ex1 := ":Fa@x^"
 
-	// Expected adjacency matrix from the previous string.
+	// Another example with the following adjacencies:
+	// {{0, 0}, {1, 2}, {1, 3}, {2, 3}, {4, 5}, {4, 5}}
+	ex2 := ":E?`cdPK"
+
+	// Expected adjacency matrix from the previous strings.
 	ex1A := [][]byte{
 		{0, 1, 1, 0, 0, 0, 0},
 		{1, 0, 1, 0, 0, 0, 0},
@@ -458,14 +462,29 @@ func TestFromSparse6(t *testing.T) {
 		{0, 0, 0, 0, 0, 1, 0},
 	}
 
+	ex2A := [][]byte{
+		{1, 0, 0, 0, 0, 0},
+		{0, 0, 1, 1, 0, 0},
+		{0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 2},
+		{0, 0, 0, 0, 2, 0},
+	}
+
 	// Build the graphs from the sparse6 string.
 	ex1G := FromSparse6(ex1)
+	ex2G := FromSparse6(ex2)
 
 	// Obtained matrices.
 	ex1Gm, _ := ex1G.Matrix()
+	ex2Gm, _ := ex2G.Matrix()
 
 	// Compare the obtained graphs with the expected ones.
 	if !sliceutils.EqualByteMatrix(ex1A, ex1Gm) {
 		t.Errorf("Sparse6 Conversion Error: Expected %v but got %v", ex1A, ex1Gm)
+	}
+
+	if !sliceutils.EqualByteMatrix(ex2A, ex2Gm) {
+		t.Errorf("Sparse6 Conversion Error: Expected %v but got %v", ex2A, ex2Gm)
 	}
 }
