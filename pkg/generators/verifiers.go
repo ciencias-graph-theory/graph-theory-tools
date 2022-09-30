@@ -12,8 +12,9 @@ func IsClique(g Graph, vertices []int) bool {
 	}
 	for _, v := range vertices {
 		s := g.Neighbours(v)
+		vertices = vertices[1:]
 		for _, n := range vertices {
-			if n != v && !s.Contains(n) {
+			if !s.Contains(n) {
 				return false
 			}
 		}
@@ -29,8 +30,9 @@ func IsStable(g Graph, vertices []int) bool {
 	}
 	for _, v := range vertices {
 		s := g.Neighbours(v)
+		vertices = vertices[1:]
 		for _, n := range vertices {
-			if n != v && s.Contains(n) {
+			if s.Contains(n) {
 				return false
 			}
 		}
