@@ -27,6 +27,6 @@ type Graph interface {
 	// Matrix returns the adjacency list of the graph.
 	List() (AdjacencyList, error)
 
-	// Neighbours returns a set of the neighbours to a given vertex in the graph.
-	Neighbours(v int) *set.IntSet
+	// NeighboursSet returns a set of the neighbours to a given vertex in the graph.
+	NeighboursSet(v int) *set.IntSet
 }

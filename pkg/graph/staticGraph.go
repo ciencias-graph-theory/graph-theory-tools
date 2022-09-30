@@ -190,7 +190,7 @@ func (g *StaticGraph) Size() int {
 }
 
 // Neighbours returns a set of the neighbours to a given vertex in the graph.
-func (g *StaticGraph) Neighbours(v int) *set.IntSet {
+func (g *StaticGraph) NeighboursSet(v int) *set.IntSet {
 	s := set.NewIntSet()
 	if g.matrix != nil {
 		for n := 0; n < len(g.matrix); n++ {

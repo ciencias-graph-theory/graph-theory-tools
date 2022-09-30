@@ -11,7 +11,7 @@ func IsClique(g Graph, vertices []int) bool {
 		return false
 	}
 	for _, v := range vertices {
-		s := g.Neighbours(v)
+		s := g.NeighboursSet(v)
 		vertices = vertices[1:]
 		for _, n := range vertices {
 			if !s.Contains(n) {
@@ -29,7 +29,7 @@ func IsStable(g Graph, vertices []int) bool {
 		return false
 	}
 	for _, v := range vertices {
-		s := g.Neighbours(v)
+		s := g.NeighboursSet(v)
 		vertices = vertices[1:]
 		for _, n := range vertices {
 			if s.Contains(n) {
@@ -52,7 +52,7 @@ func AreFullyAdjacent(g Graph, x, y []int) bool {
 		return false
 	}
 	for _, v := range x {
-		s := g.Neighbours(v)
+		s := g.NeighboursSet(v)
 		for _, w := range y {
 			if !s.Contains(w) {
 				return false
@@ -75,7 +75,7 @@ func AreFullyNonAdjacent(g Graph, x, y []int) bool {
 		return false
 	}
 	for _, v := range x {
-		s := g.Neighbours(v)
+		s := g.NeighboursSet(v)
 		for _, w := range y {
 			if s.Contains(w) {
 				return false
