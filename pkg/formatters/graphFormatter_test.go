@@ -334,6 +334,8 @@ func TestFromLoop6(t *testing.T) {
 	K4l6 := ";C~{"
 	C4l6 := ";C|["
 	Q3l6 := ";G|]HYSV"
+	Gdl6 := ";EUGPo"
+	Gel6 := ";DUGW"
 
 	// Expected adj. matrices of the examples.
 	// The adj. matrix of complete graph with four vertices with loops.
@@ -364,10 +366,31 @@ func TestFromLoop6(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 1},
 	}
 
+	// The adj. matrix of an arbitrary graph with no loops.
+	Gdlm := [][]byte{
+		{0, 1, 1, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0},
+		{1, 1, 0, 1, 0, 1},
+		{0, 0, 1, 0, 1, 1},
+		{0, 0, 0, 1, 0, 1},
+		{0, 0, 1, 1, 1, 0},
+	}
+
+	// The adj. matrix of an arbitrary graph with some loops.
+	Gelm := [][]byte{
+		{0, 1, 1, 0, 0},
+		{1, 0, 1, 0, 0},
+		{1, 1, 0, 1, 0},
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1},
+	}
+
 	// Obtain the graphs based on the strings
 	K4l, _ := FromLoop6(K4l6).Matrix()
 	C4l, _ := FromLoop6(C4l6).Matrix()
 	Q3l, _ := FromLoop6(Q3l6).Matrix()
+	Gdl, _ := FromLoop6(Gdl6).Matrix()
+	Gel, _ := FromLoop6(Gel6).Matrix()
 
 	// Compare that the obtained graphs are correct.
 	if !sliceutils.EqualByteMatrix(K4lm, K4l) {
@@ -380,6 +403,14 @@ func TestFromLoop6(t *testing.T) {
 
 	if !sliceutils.EqualByteMatrix(Q3lm, Q3l) {
 		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", Q3lm, Q3l)
+	}
+
+	if !sliceutils.EqualByteMatrix(Gdlm, Gdl) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", Gdlm, Gdl)
+	}
+
+	if !sliceutils.EqualByteMatrix(Gelm, Gel) {
+		t.Errorf("Graph6 Conversion Error: Expected %v but got %v", Gelm, Gel)
 	}
 }
 
