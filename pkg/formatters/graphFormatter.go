@@ -147,7 +147,7 @@ func inverseParseEdgesFormat6(order int, vals []int, diag, sym bool) [][]byte {
 	// Obtain the edges bits by inverting the process of the format6.
 	edgeBits := inverseFormat6(vals)
 
-	// Travel the bits to build the adj. matrix.
+	// Traverse the bits to build the adj. matrix.
 	k := 0
 	for j := 0; j < order; j++ {
 		for i := 0; i < order; i++ {
