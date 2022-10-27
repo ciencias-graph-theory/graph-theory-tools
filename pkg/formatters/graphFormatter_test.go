@@ -266,19 +266,44 @@ func TestToLoop6(t *testing.T) {
 		{0, 0, 0, 1, 0, 1, 1, 1},
 	}
 
+	// The adj. matrix of an arbitrary graph with no loops.
+	d := [][]byte{
+		{0, 1, 1, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0},
+		{1, 1, 0, 1, 0, 1},
+		{0, 0, 1, 0, 1, 1},
+		{0, 0, 0, 1, 0, 1},
+		{0, 0, 1, 1, 1, 0},
+	}
+
+	// The adj. matrix of an arbitrary graph with some loops.
+	e := [][]byte{
+		{0, 1, 1, 0, 0},
+		{1, 0, 1, 0, 0},
+		{1, 1, 0, 1, 0},
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1},
+	}
+
 	K4l, _ := graph.NewGraphFromMatrix(a)
 	C4l, _ := graph.NewGraphFromMatrix(b)
 	Q3l, _ := graph.NewGraphFromMatrix(c)
+	Gdl, _ := graph.NewGraphFromMatrix(d)
+	Gel, _ := graph.NewGraphFromMatrix(e)
 
 	// Expected Loop6 strings from the previous graphs.
 	K4l6 := ";C~{"
 	C4l6 := ";C|["
 	Q3l6 := ";G|]HYSV"
+	Gdl6 := ";EUGPo"
+	Gel6 := ";DUGW"
 
 	// Check if obtained formats are correct.
 	K4L6 := ToLoop6(K4l)
 	C4L6 := ToLoop6(C4l)
 	Q3L6 := ToLoop6(Q3l)
+	GdL6 := ToLoop6(Gdl)
+	GeL6 := ToLoop6(Gel)
 
 	if K4L6 != K4l6 {
 		t.Errorf("Loop6 Error: Expected %s but got %v", K4l6, K4L6)
@@ -290,6 +315,14 @@ func TestToLoop6(t *testing.T) {
 
 	if Q3L6 != Q3l6 {
 		t.Errorf("Loop6 Error: Expected %s but got %v", Q3l6, Q3L6)
+	}
+
+	if GdL6 != Gdl6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", Gdl6, GdL6)
+	}
+
+	if GeL6 != Gel6 {
+		t.Errorf("Loop6 Error: Expected %s but got %v", Gel6, GeL6)
 	}
 }
 
