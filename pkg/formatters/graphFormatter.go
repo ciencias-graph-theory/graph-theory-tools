@@ -159,7 +159,7 @@ func inverseParseEdgesFormat6(order int, vals []int, diag, sym bool) [][]byte {
 			}
 
 			// If the matrix is not symmetric then it corresponds to a digraph.
-			// Otherwise, only travel the upper triangle of the matrix.
+			// Otherwise, only traverse the upper triangle of the matrix.
 			if (i > j) && sym {
 				break
 			}
@@ -425,7 +425,7 @@ func getEdgePairs(graph *StaticGraph) [][]int {
 	// Let M be the adjacency matrix of the graph.
 	M, _ := graph.Matrix()
 
-	// Travel the upper triangle of the matrix as it is
+	// Traverse the upper triangle of the matrix as it is
 	// symmetric, and consider the diagonal.
 	for i := 0; i < n; i++ {
 		for j := 0; j <= i; j++ {

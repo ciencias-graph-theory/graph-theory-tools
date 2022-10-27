@@ -230,7 +230,7 @@ func ByteMatrixUpperTriangle(matrix [][]byte, diagonal bool) []byte {
 		v = make([]byte, (n * (n - 1) / 2))
 	}
 
-	// Travel the matrix column by column filling the slice.
+	// Traverse the matrix column by column filling the slice.
 	k := 0
 	for j := 0; j < n; j++ {
 		for i := 0; i <= j; i++ {
@@ -266,7 +266,7 @@ func ByteMatrixToSlice(matrix [][]byte) []byte {
 	// We create a slice of size (m * n)
 	slice := make([]byte, m*n)
 
-	// Travel the matrix row by row.
+	// Traverse the matrix row by row.
 	k := 0
 	for i := 0; i < m; i++ {
 		for j := 0; j < n; j++ {
