@@ -9,8 +9,8 @@ type Graph = graph.Graph
 type StaticGraph = graph.StaticGraph
 type StaticDigraph = graph.StaticDigraph
 
-// Given an array of graph6 strings, return a list of the graphs that satisfy
-// the condition given by the boolean function.
+// Given an array of graph6 strings and a boolean function, return a slice of
+// the graphs that satisfy the condition given by the boolean function.
 func FilterGraph6(strs []string, f func(*StaticGraph) bool) []*StaticGraph {
 	var sat []*StaticGraph
 
