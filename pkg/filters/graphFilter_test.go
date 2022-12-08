@@ -8,6 +8,20 @@ import (
 	"testing"
 )
 
+// hasLoops returns whether or not the given graph has loops.
+func hasLoops(graph *StaticGraph) bool {
+	// Obtain the adjacency matrix.
+	matrix, _ := graph.Matrix()
+
+	for i, _ := range matrix {
+		if matrix[i][i] == 1 {
+			return true
+		}
+	}
+
+	return false
+}
+
 // IsK2s returns whether or not the given graph is set of disjoint complete
 // graphs of two vertices. We can determine this by the following conditional: A
 // graph is a set of disjoint K2s if and only if all vertices have degree 1.
@@ -128,6 +142,104 @@ func TestFilterGraph6(t *testing.T) {
 		G := obtainedCompletes[i]
 
 		expMatrix, _ := Kn.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+}
+
+func TestFilterLoop6(t *testing.T) {
+	// Loop6 format of C4 and its isomorphism.
+	C4 := ";CSW"
+	isomorphismC4 := ";CEo "
+
+	// Loop6 format of two disjoint C4's.
+	twoC4s := ";GSW??WK"
+
+	// Loop6 format of two K2's.
+	twoK2s := ";COG"
+
+	// Loop6 format of a complete graph with 4 vertices (K4).
+	K4 := ";CUw"
+
+	// Loop6 format of a complete graph with 3 vertices (K3).
+	K3 := ";BU"
+
+	// Loop6 format of three disjoint C3's, which are K3's.
+	threeC3s := ";HU?Oo?A?o"
+
+	// Loop6 format of four disjoint K2's.
+	fourK2s := ";GOG?O?A"
+
+	// Loop6 format of a graph with a loop.
+	loopG := ";Cmw"
+
+	// An array containing all the graph6 strings.
+	total := []string{C4, isomorphismC4, twoC4s, twoK2s, K4, K3, threeC3s, fourK2s, loopG}
+
+	// Convert all the graph6 strings into graphs.
+	lC4 := formatters.FromLoop6(C4)
+	lIsomorphismC4 := formatters.FromLoop6(isomorphismC4)
+	lTwoC4s := formatters.FromLoop6(twoC4s)
+	lTwoK2s := formatters.FromLoop6(twoK2s)
+	lK4 := formatters.FromLoop6(K4)
+	lK3 := formatters.FromLoop6(K3)
+	lThreeC3s := formatters.FromLoop6(threeC3s)
+	lFourK2s := formatters.FromLoop6(fourK2s)
+	lLoopG := formatters.FromLoop6(loopG)
+
+	// Classifications.
+	cycles := []*StaticGraph{lC4, lIsomorphismC4, lTwoC4s, lK3, lThreeC3s}
+	k2s := []*StaticGraph{lTwoK2s, lFourK2s}
+	completes := []*StaticGraph{lK4, lK3}
+	loops := []*StaticGraph{lLoopG}
+
+	// Obtainded graphs.
+	obtainedCycles := FilterLoop6(total, isCycles)
+	obtainedK2s := FilterLoop6(total, isK2s)
+	obtainedCompletes := FilterLoop6(total, isComplete)
+	obtainedLoops := FilterLoop6(total, hasLoops)
+
+	for i, C := range cycles {
+		G := obtainedCycles[i]
+
+		expMatrix, _ := C.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, K2 := range k2s {
+		G := obtainedK2s[i]
+
+		expMatrix, _ := K2.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, Kn := range completes {
+		G := obtainedCompletes[i]
+
+		expMatrix, _ := Kn.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, L := range loops {
+		G := obtainedLoops[i]
+
+		expMatrix, _ := L.Matrix()
 		obtMatrix, _ := G.Matrix()
 
 		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
