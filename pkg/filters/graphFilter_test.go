@@ -4,13 +4,13 @@ import (
 	// "fmt"
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/sliceutils"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/formatters"
-	// "github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
+	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 	"testing"
 )
 
 // hasLoops returns whether or not the given graph has loops.
 func hasLoops(graph *StaticGraph) bool {
-	// Obtain the adjacency matrix.
+	// Obtain adjacency matrix.
 	matrix, _ := graph.Matrix()
 
 	for i, _ := range matrix {
@@ -20,6 +20,28 @@ func hasLoops(graph *StaticGraph) bool {
 	}
 
 	return false
+}
+
+func isSimple(graph *StaticGraph) bool {
+	// Obtain adjacency matrix.
+	matrix, _ := graph.Matrix()
+
+	for i, v := range matrix {
+		for j, _ := range v {
+			// If it has loops, return false.
+			if (i == j) && matrix[i][j] > 0 {
+				return false
+			}
+
+			// If it has multiple edges, return false.
+			if matrix[i][j] > 1 {
+				return false
+			}
+		}
+	}
+
+	// Otherwise, return true.
+	return true
 }
 
 // IsK2s returns whether or not the given graph is set of disjoint complete
@@ -240,6 +262,206 @@ func TestFilterLoop6(t *testing.T) {
 		G := obtainedLoops[i]
 
 		expMatrix, _ := L.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+}
+
+func TestFilterSparse6(t *testing.T) {
+	// Adj. matrices of different graphs.
+	// C4 and its isomorphism.
+	matrixC4 := [][]byte{
+		{0, 1, 1, 0},
+		{1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, 1, 1, 0},
+	}
+
+	matrixIsomorphismC4 := [][]byte{
+		{0, 0, 1, 1},
+		{0, 0, 1, 1},
+		{1, 1, 0, 0},
+		{1, 1, 0, 0},
+	}
+
+	matrixTwoC4 := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{1, 0, 0, 1, 0, 0, 0, 0},
+		{1, 0, 0, 1, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 1, 1, 0, 0},
+		{0, 0, 0, 0, 1, 1, 0, 0},
+	}
+
+	// Two disjoint K2's.
+	matrixTwoK2 := [][]byte{
+		{0, 1, 0, 0},
+		{1, 0, 0, 0},
+		{0, 0, 0, 1},
+		{0, 0, 1, 0},
+	}
+
+	// Complete graph of 4 vertices (K4).
+	matrixK4 := [][]byte{
+		{0, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// Complete graph of 3 vertices (K3).
+	matrixK3 := [][]byte{
+		{0, 1, 1},
+		{1, 0, 1},
+		{1, 1, 0},
+	}
+
+	// Three disjoint cycles of 3 vertices.
+	matrixThreeC3 := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0, 0, 0},
+		{1, 0, 1, 0, 0, 0, 0, 0, 0},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 1, 0, 0, 0},
+		{0, 0, 0, 1, 0, 1, 0, 0, 0},
+		{0, 0, 0, 1, 1, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 0, 0, 0, 1, 1, 0},
+	}
+
+	// Four disjoint K2's.
+	matrixFourK2 := [][]byte{
+		{0, 1, 0, 0, 0, 0, 0, 0},
+		{1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+		{0, 0, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 0, 0, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 1},
+		{0, 0, 0, 0, 0, 0, 1, 0},
+	}
+
+	// An arbitrary graph with loops.
+	matrixLoop := [][]byte{
+		{1, 0, 1, 1},
+		{0, 1, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// An arbitrary graph with multiple edges and loops.
+	matrixMultiEdgesLoops := [][]byte{
+		{1, 0, 0, 0, 0, 0},
+		{0, 0, 1, 1, 0, 0},
+		{0, 1, 0, 1, 0, 0},
+		{0, 1, 1, 0, 0, 0},
+		{0, 0, 0, 0, 0, 2},
+		{0, 0, 0, 0, 2, 0},
+	}
+
+	// Convert matrices into graphs.
+	C4, _ := graph.NewGraphFromMatrix(matrixC4)
+	isomorphismC4, _ := graph.NewGraphFromMatrix(matrixIsomorphismC4)
+	twoC4, _ := graph.NewGraphFromMatrix(matrixTwoC4)
+	twoK2, _ := graph.NewGraphFromMatrix(matrixTwoK2)
+	K4, _ := graph.NewGraphFromMatrix(matrixK4)
+	K3, _ := graph.NewGraphFromMatrix(matrixK3)
+	threeC3, _ := graph.NewGraphFromMatrix(matrixThreeC3)
+	fourK2, _ := graph.NewGraphFromMatrix(matrixFourK2)
+	graphLoop, _ := graph.NewGraphFromMatrix(matrixLoop)
+	graphMultiEdgesLoops, _ := graph.NewGraphFromMatrix(matrixMultiEdgesLoops)
+
+	// Obtain its sparse6 formats.
+	sp6C4 := formatters.ToSparse6(C4)
+	sp6IsomorphismC4 := formatters.ToSparse6(isomorphismC4)
+	sp6TwoC4 := formatters.ToSparse6(twoC4)
+	sp6TwoK2 := formatters.ToSparse6(twoK2)
+	sp6K4 := formatters.ToSparse6(K4)
+	sp6K3 := formatters.ToSparse6(K3)
+	sp6ThreeC3 := formatters.ToSparse6(threeC3)
+	sp6FourK2 := formatters.ToSparse6(fourK2)
+	sp6Loop := formatters.ToSparse6(graphLoop)
+	sp6MultiEdgesLoop := formatters.ToSparse6(graphMultiEdgesLoops)
+
+	// An array containing all the graph6 strings.
+	total := []string{
+		sp6C4, sp6IsomorphismC4, sp6TwoC4,
+		sp6TwoK2, sp6K4, sp6K3,
+		sp6ThreeC3, sp6FourK2, sp6Loop,
+		sp6MultiEdgesLoop,
+	}
+
+	// Classifications.
+	cycles := []*StaticGraph{C4, isomorphismC4, twoC4, K3, threeC3}
+	k2s := []*StaticGraph{twoK2, fourK2}
+	completes := []*StaticGraph{K4, K3}
+	loops := []*StaticGraph{graphLoop}
+	simples := []*StaticGraph{
+		C4, isomorphismC4, twoC4, twoK2,
+		K4, K3, threeC3, fourK2,
+	}
+
+	// Obtainded graphs.
+	obtainedCycles := FilterSparse6(total, isCycles)
+	obtainedK2s := FilterSparse6(total, isK2s)
+	obtainedCompletes := FilterSparse6(total, isComplete)
+	obtainedLoops := FilterSparse6(total, hasLoops)
+	obtainedSimples := FilterSparse6(total, isSimple)
+
+	for i, C := range cycles {
+		G := obtainedCycles[i]
+
+		expMatrix, _ := C.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, K2 := range k2s {
+		G := obtainedK2s[i]
+
+		expMatrix, _ := K2.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, Kn := range completes {
+		G := obtainedCompletes[i]
+
+		expMatrix, _ := Kn.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, L := range loops {
+		G := obtainedLoops[i]
+
+		expMatrix, _ := L.Matrix()
+		obtMatrix, _ := G.Matrix()
+
+		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
+			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+		}
+	}
+
+	for i, S := range simples {
+		G := obtainedSimples[i]
+
+		expMatrix, _ := S.Matrix()
 		obtMatrix, _ := G.Matrix()
 
 		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
