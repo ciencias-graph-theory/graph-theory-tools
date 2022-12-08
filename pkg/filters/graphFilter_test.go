@@ -8,6 +8,22 @@ import (
 	"testing"
 )
 
+// equalGraphSlices returns whether or not two graph slices are equal.
+func equalGraphSlices(A, B []*StaticGraph) bool {
+	for i, a := range A {
+		b := B[i]
+
+		am, _ := a.Matrix()
+		bm, _ := b.Matrix()
+
+		if !sliceutils.EqualByteMatrix(am, bm) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // hasLoops returns whether or not the given graph has loops.
 func hasLoops(graph *StaticGraph) bool {
 	// Obtain adjacency matrix.
@@ -138,36 +154,22 @@ func TestFilterGraph6(t *testing.T) {
 	obtainedK2s := FilterGraph6(total, isK2s)
 	obtainedCompletes := FilterGraph6(total, isComplete)
 
-	for i, C := range cycles {
-		G := obtainedCycles[i]
-
-		expMatrix, _ := C.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	// Comparisons.
+	expected := [][]*StaticGraph{
+		cycles,
+		k2s,
+		completes,
 	}
 
-	for i, K2 := range k2s {
-		G := obtainedK2s[i]
-
-		expMatrix, _ := K2.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	obtained := [][]*StaticGraph{
+		obtainedCycles,
+		obtainedK2s,
+		obtainedCompletes,
 	}
 
-	for i, Kn := range completes {
-		G := obtainedCompletes[i]
-
-		expMatrix, _ := Kn.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+	for i, _ := range expected {
+		if !equalGraphSlices(expected[i], obtained[i]) {
+			t.Errorf("Filter error: Expected %v but got %v", expected[i], obtained[i])
 		}
 	}
 
@@ -225,47 +227,24 @@ func TestFilterLoop6(t *testing.T) {
 	obtainedCompletes := FilterLoop6(total, isComplete)
 	obtainedLoops := FilterLoop6(total, hasLoops)
 
-	for i, C := range cycles {
-		G := obtainedCycles[i]
-
-		expMatrix, _ := C.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	// Comparisons.
+	expected := [][]*StaticGraph{
+		cycles,
+		k2s,
+		completes,
+		loops,
 	}
 
-	for i, K2 := range k2s {
-		G := obtainedK2s[i]
-
-		expMatrix, _ := K2.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	obtained := [][]*StaticGraph{
+		obtainedCycles,
+		obtainedK2s,
+		obtainedCompletes,
+		obtainedLoops,
 	}
 
-	for i, Kn := range completes {
-		G := obtainedCompletes[i]
-
-		expMatrix, _ := Kn.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
-	}
-
-	for i, L := range loops {
-		G := obtainedLoops[i]
-
-		expMatrix, _ := L.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+	for i, _ := range expected {
+		if !equalGraphSlices(expected[i], obtained[i]) {
+			t.Errorf("Filter error: Expected %v but got %v", expected[i], obtained[i])
 		}
 	}
 
@@ -414,58 +393,26 @@ func TestFilterSparse6(t *testing.T) {
 	obtainedLoops := FilterSparse6(total, hasLoops)
 	obtainedSimples := FilterSparse6(total, isSimple)
 
-	for i, C := range cycles {
-		G := obtainedCycles[i]
-
-		expMatrix, _ := C.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	// Comparisons.
+	expected := [][]*StaticGraph{
+		cycles,
+		k2s,
+		completes,
+		loops,
+		simples,
 	}
 
-	for i, K2 := range k2s {
-		G := obtainedK2s[i]
-
-		expMatrix, _ := K2.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
+	obtained := [][]*StaticGraph{
+		obtainedCycles,
+		obtainedK2s,
+		obtainedCompletes,
+		obtainedLoops,
+		obtainedSimples,
 	}
 
-	for i, Kn := range completes {
-		G := obtainedCompletes[i]
-
-		expMatrix, _ := Kn.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
-	}
-
-	for i, L := range loops {
-		G := obtainedLoops[i]
-
-		expMatrix, _ := L.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
-		}
-	}
-
-	for i, S := range simples {
-		G := obtainedSimples[i]
-
-		expMatrix, _ := S.Matrix()
-		obtMatrix, _ := G.Matrix()
-
-		if !sliceutils.EqualByteMatrix(expMatrix, obtMatrix) {
-			t.Errorf("Filter error: Expected %v but got %v", expMatrix, obtMatrix)
+	for i, _ := range expected {
+		if !equalGraphSlices(expected[i], obtained[i]) {
+			t.Errorf("Filter error: Expected %v but got %v", expected[i], obtained[i])
 		}
 	}
 
