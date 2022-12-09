@@ -8,8 +8,12 @@ import (
 	"testing"
 )
 
-// equalGraphSlices returns whether or not two graph slices are equal.
+// This function returns whether or not two graph slices are equal.
 func equalGraphSlices(A, B []*StaticGraph) bool {
+	if len(A) != len(B) {
+		return false
+	}
+
 	for i, a := range A {
 		b := B[i]
 
@@ -92,7 +96,15 @@ func isCycles(graph *StaticGraph) bool {
 	return true
 }
 
+// This function returns whether or not the given graph is a complete graph.  We
+// can the determine this by the following conditional: A graph is complete if
+// and only if all vertices have degree (n-1) and it has no loops.
 func isComplete(graph *StaticGraph) bool {
+	// Check if the graph has loops.
+	if hasLoops(graph) {
+		return false
+	}
+
 	// Obtain the graph's order.
 	n := graph.Order()
 
