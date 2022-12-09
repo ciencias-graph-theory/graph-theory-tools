@@ -28,7 +28,27 @@ func equalGraphSlices(A, B []*StaticGraph) bool {
 	return true
 }
 
-// hasLoops returns whether or not the given graph has loops.
+// This function returns whether or not two digraph slices are equal.
+func equalDigraphSlices(A, B []*StaticDigraph) bool {
+	if len(A) != len(B) {
+		return false
+	}
+
+	for i, a := range A {
+		b := B[i]
+
+		am, _ := a.Matrix()
+		bm, _ := b.Matrix()
+
+		if !sliceutils.EqualByteMatrix(am, bm) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// This function returns whether or not the given graph has loops.
 func hasLoops(graph *StaticGraph) bool {
 	// Obtain adjacency matrix.
 	matrix, _ := graph.Matrix()
@@ -42,6 +62,8 @@ func hasLoops(graph *StaticGraph) bool {
 	return false
 }
 
+// This function returns whether or not the given graph is simple. Simple graphs
+// have no loops or multiple edges.
 func isSimple(graph *StaticGraph) bool {
 	// Obtain adjacency matrix.
 	matrix, _ := graph.Matrix()
@@ -64,9 +86,10 @@ func isSimple(graph *StaticGraph) bool {
 	return true
 }
 
-// IsK2s returns whether or not the given graph is set of disjoint complete
-// graphs of two vertices. We can determine this by the following conditional: A
-// graph is a set of disjoint K2s if and only if all vertices have degree 1.
+// This function returns whether or not the given graph is set of disjoint
+// complete graphs of two vertices. We can determine this by the following
+// conditional: A graph is a set of disjoint K2s if and only if all vertices
+// have degree 1.
 func isK2s(graph *StaticGraph) bool {
 	// Obtain the degree sequence of the graph.
 	degrees := graph.DegreeSequence()
@@ -80,7 +103,7 @@ func isK2s(graph *StaticGraph) bool {
 	return true
 }
 
-// IsCycles returns whether or not the given graph is a cycle or a set of
+// This function returns whether or not the given graph is a cycle or a set of
 // disjoint cycles. We can the determine this by the following conditional: A
 // graph is a set of disjoint cycles if and only if all vertices have degree 2.
 func isCycles(graph *StaticGraph) bool {
@@ -120,6 +143,62 @@ func isComplete(graph *StaticGraph) bool {
 	return true
 }
 
+// This function returns whether or not the given digraph is simple. Simple
+// digraphs have no loops or multiple edges.
+func isSimpleDigraph(digraph *StaticDigraph) bool {
+	// Obtain adjacency matrix.
+	matrix, _ := digraph.Matrix()
+
+	for i, v := range matrix {
+		for j, _ := range v {
+			// If it has loops.
+			if (i == j) && (matrix[i][j] > 0) {
+				return false
+			}
+
+			// If it has multiple arrows.
+			if matrix[i][j] > 1 {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// This function returns whether or not the given digraph has loops.
+func hasLoopsDigraph(digraph *StaticDigraph) bool {
+	// Obtain adjacency matrix.
+	matrix, _ := digraph.Matrix()
+
+	for i, _ := range matrix {
+		if matrix[i][i] > 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
+// This function returns whether or not the given graph is a complete graph.  We
+// can the determine this by the following conditional: A graph is complete if
+// and only if all vertices have degree (n-1) and it has no loops.
+func isCompleteDigraph(digraph *StaticDigraph) bool {
+	// Obtain the adjacency matrix.
+	matrix, _ := digraph.Matrix()
+
+	for i, v := range matrix {
+		for j, _ := range v {
+			if (matrix[i][j] < 1) && (i != j) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// Tests the function FilterGraph6.
 func TestFilterGraph6(t *testing.T) {
 	// Graph6 format of C4 and its isomorphism.
 	C4 := "Cr"
@@ -187,6 +266,7 @@ func TestFilterGraph6(t *testing.T) {
 
 }
 
+// Tests the function FilterLoop6.
 func TestFilterLoop6(t *testing.T) {
 	// Loop6 format of C4 and its isomorphism.
 	C4 := ";CSW"
@@ -262,6 +342,7 @@ func TestFilterLoop6(t *testing.T) {
 
 }
 
+// Tests the function FilterSparse6.
 func TestFilterSparse6(t *testing.T) {
 	// Adj. matrices of different graphs.
 	// C4 and its isomorphism.
@@ -392,7 +473,7 @@ func TestFilterSparse6(t *testing.T) {
 	cycles := []*StaticGraph{C4, isomorphismC4, twoC4, K3, threeC3}
 	k2s := []*StaticGraph{twoK2, fourK2}
 	completes := []*StaticGraph{K4, K3}
-	loops := []*StaticGraph{graphLoop}
+	loops := []*StaticGraph{graphLoop, graphMultiEdgesLoops}
 	simples := []*StaticGraph{
 		C4, isomorphismC4, twoC4, twoK2,
 		K4, K3, threeC3, fourK2,
