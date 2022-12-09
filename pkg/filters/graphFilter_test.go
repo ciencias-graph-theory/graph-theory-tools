@@ -510,3 +510,120 @@ func TestFilterSparse6(t *testing.T) {
 	}
 
 }
+
+// Tests the function FilterDigraph6.
+func TestFilterDigraph6(t *testing.T) {
+	// Adj. matrices of different digraphs.
+	// C4 and its isomorphism.
+	matrixC4 := [][]byte{
+		{0, 1, 0, 0},
+		{0, 0, 1, 0},
+		{0, 0, 0, 1},
+		{1, 0, 0, 0},
+	}
+
+	matrixIsomorphismC4 := [][]byte{
+		{0, 0, 1, 0},
+		{0, 0, 0, 1},
+		{0, 1, 0, 0},
+		{1, 0, 0, 0},
+	}
+
+	// Two vertices pointing at a vertex.
+	matrixCap := [][]byte{
+		{0, 1, 0},
+		{0, 0, 0},
+		{0, 1, 0},
+	}
+
+	// Q3 with an arbitrary orientation.
+	matrixQ3 := [][]byte{
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0, 0, 0, 0},
+		{1, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0, 0, 1},
+		{0, 1, 0, 0, 1, 0, 0, 1},
+		{0, 0, 0, 1, 0, 0, 0, 0},
+	}
+
+	// Complete digraph of 4 vertices (K4).
+	matrixK4 := [][]byte{
+		{0, 1, 1, 1},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// Complete digraph of 3 vertices (K3).
+	matrixK3 := [][]byte{
+		{0, 1, 1},
+		{1, 0, 1},
+		{1, 1, 0},
+	}
+
+	// An arbitrary digraph with loops.
+	matrixLoop := [][]byte{
+		{1, 0, 1, 1},
+		{0, 1, 1, 1},
+		{1, 1, 0, 1},
+		{1, 1, 1, 0},
+	}
+
+	// Convert matrices into graphs.
+	C4 := graph.NewDigraphFromMatrix(matrixC4)
+	isomorphismC4 := graph.NewDigraphFromMatrix(matrixIsomorphismC4)
+	cap := graph.NewDigraphFromMatrix(matrixCap)
+	Q3 := graph.NewDigraphFromMatrix(matrixQ3)
+	K4 := graph.NewDigraphFromMatrix(matrixK4)
+	K3 := graph.NewDigraphFromMatrix(matrixK3)
+	digraphLoop := graph.NewDigraphFromMatrix(matrixLoop)
+
+	// Obtain its sparse6 formats.
+	d6C4 := formatters.ToDigraph6(C4)
+	d6IsomorphismC4 := formatters.ToDigraph6(isomorphismC4)
+	d6Cap := formatters.ToDigraph6(cap)
+	d6Q3 := formatters.ToDigraph6(Q3)
+	d6K4 := formatters.ToDigraph6(K4)
+	d6K3 := formatters.ToDigraph6(K3)
+	d6Loop := formatters.ToDigraph6(digraphLoop)
+
+	// An array containing all the graph6 strings.
+	total := []string{
+		d6C4, d6IsomorphismC4, d6Cap, d6Q3,
+		d6K4, d6K3, d6Loop,
+	}
+
+	// Classifications.
+	completes := []*StaticDigraph{K4, K3}
+	loops := []*StaticDigraph{digraphLoop}
+	simples := []*StaticDigraph{
+		C4, isomorphismC4, cap, Q3, K4, K3,
+	}
+
+	// Obtainded graphs.
+	obtainedCompletes := FilterDigraph6(total, isCompleteDigraph)
+	obtainedLoops := FilterDigraph6(total, hasLoopsDigraph)
+	obtainedSimples := FilterDigraph6(total, isSimpleDigraph)
+
+	// Comparisons.
+	expected := [][]*StaticDigraph{
+		completes,
+		loops,
+		simples,
+	}
+
+	obtained := [][]*StaticDigraph{
+		obtainedCompletes,
+		obtainedLoops,
+		obtainedSimples,
+	}
+
+	for i, _ := range expected {
+		if !equalDigraphSlices(expected[i], obtained[i]) {
+			t.Errorf("Filter error: Expected %v but got %v", expected[i], obtained[i])
+		}
+	}
+
+}
