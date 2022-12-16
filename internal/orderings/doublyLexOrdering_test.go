@@ -217,3 +217,199 @@ func TestColumnRefinement(t *testing.T) {
 	}
 
 }
+
+// This function calls rowRefinement with a matrix, a column index and a set of
+// columns and tests if the set of rows have been partitioned correctly.
+func TestRowRefinement(t *testing.T) {
+	// Arbitrary matrix.
+	m := [][]byte{
+		{0, 1, 0, 1, 1},
+		{0, 1, 0, 0, 0},
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	// The rows indexes.
+	R := map[int]bool{
+		0: true,
+		1: true,
+		2: true,
+		3: true,
+		4: true,
+	}
+
+	// Expected row refinement of the first column.
+	expectedR0 := map[int]bool{
+		0: true,
+		1: true,
+		2: true,
+		3: true,
+		4: true,
+	}
+
+	expectedR1 := map[int]bool{}
+
+	// Obtained row refinement of the first column.
+	obtainedR1, obtainedR0 := rowRefinement(m, 0, R, false)
+
+	// Check that the row refinement is correct.
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Check that the inverse order flag works.
+	obtainedR0, obtainedR1 = rowRefinement(m, 0, R, true)
+
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Expected row refinement of the second column.
+	expectedR0 = map[int]bool{
+		2: true,
+		3: true,
+		4: true,
+	}
+
+	expectedR1 = map[int]bool{
+		0: true,
+		1: true,
+	}
+
+	// Obtained row refinement of the second column.
+	obtainedR1, obtainedR0 = rowRefinement(m, 1, R, false)
+
+	// Check that the row refinement is correct.
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Check that the inverse order flag works.
+	obtainedR0, obtainedR1 = rowRefinement(m, 1, R, true)
+
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Expected row refinement of the third column.
+	expectedR0 = map[int]bool{
+		0: true,
+		1: true,
+		3: true,
+		4: true,
+	}
+
+	expectedR1 = map[int]bool{
+		2: true,
+	}
+
+	// Obtained row refinement of the third column.
+	obtainedR1, obtainedR0 = rowRefinement(m, 2, R, false)
+
+	// Check that the row refinement is correct.
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Check that the inverse order flag works.
+	obtainedR0, obtainedR1 = rowRefinement(m, 2, R, true)
+
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Expected row refinement of the fourth column.
+	expectedR0 = map[int]bool{
+		1: true,
+		2: true,
+		4: true,
+	}
+
+	expectedR1 = map[int]bool{
+		0: true,
+		3: true,
+	}
+
+	// Obtained row refinement of the fourth column.
+	obtainedR1, obtainedR0 = rowRefinement(m, 3, R, false)
+
+	// Check that the row refinement is correct.
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Check that the inverse order flag works.
+	obtainedR0, obtainedR1 = rowRefinement(m, 3, R, true)
+
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Expected row refinement of the fifth column.
+	expectedR0 = map[int]bool{
+		1: true,
+		4: true,
+	}
+
+	expectedR1 = map[int]bool{
+		0: true,
+		2: true,
+		3: true,
+	}
+
+	// Obtained row refinement of the fifth column.
+	obtainedR1, obtainedR0 = rowRefinement(m, 4, R, false)
+
+	// Check that the row refinement is correct.
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+
+	// Check that the inverse order flag works.
+	obtainedR0, obtainedR1 = rowRefinement(m, 4, R, true)
+
+	if !equalNumSets(expectedR0, obtainedR0) {
+		t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
+	}
+
+	if !equalNumSets(expectedR1, obtainedR1) {
+		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
+	}
+}
