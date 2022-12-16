@@ -42,7 +42,7 @@ func columnRefinement(M matrix, row int, Cj numset, inverseOrder bool) (numset, 
 	// The set of columns whose entries in the given row are 0.
 	C0 := make(numset)
 
-	// The set of columns whose entries in the given row are 0.
+	// The set of columns whose entries in the given row are 1.
 	C1 := make(numset)
 
 	for col, _ := range Cj {
@@ -57,6 +57,34 @@ func columnRefinement(M matrix, row int, Cj numset, inverseOrder bool) (numset, 
 		return C0, C1
 	} else {
 		return C1, C0
+	}
+
+}
+
+// Given a square (0,1)-matrix M, a column index, and a set of rows Ri of M. The
+// following function returns a row refinement of the given set Ri. A row
+// refinement divides the rows whose entries in the given column are 0 or 1. If
+// the inverseOrder flag is true then the first set contains all of the rows
+// whose entries are 0.
+func rowRefinement(M matrix, col int, Ri numset, inverseOrder bool) (numset, numset) {
+	// The set of rows whose entries in the given column are 0.
+	R0 := make(numset)
+
+	// The set of rows whose entries in the given column are 1.
+	R1 := make(numset)
+
+	for row, _ := range Ri {
+		if M[row][col] == 1 {
+			R1[row] = true
+		} else {
+			R0[row] = true
+		}
+	}
+
+	if inverseOrder {
+		return R0, R1
+	} else {
+		return R1, R0
 	}
 
 }
