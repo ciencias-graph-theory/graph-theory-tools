@@ -48,6 +48,11 @@ func (B *Block) SetSize(s int) {
 	B.size = s
 }
 
+// Get the block's size.
+func (B *Block) GetSize() int {
+	return B.size
+}
+
 // SetRowBlocksSizes sets the size for the row blocks.
 func (B *Block) SetRowBlocksSizes(sizes map[int]int) {
 	B.rowBlocksSizes = sizes
