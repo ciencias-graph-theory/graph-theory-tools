@@ -166,16 +166,8 @@ func TestCalculateSize(t *testing.T) {
 
 	for ri, rowIndexes := range rowIndexesTests {
 		for cj, colIndexes := range colIndexesTests {
-			// Columns and rows indexes sets.
-			rowIndexesSet := set.NewIntSetFromValues(rowIndexes)
-			colIndexesSet := set.NewIntSetFromValues(colIndexes)
-
-			// Columns and row parts.
-			rowPart := NewOrderedBipartitionFromIntSet(rowIndexesSet)
-			colPart := NewOrderedBipartitionFromIntSet(colIndexesSet)
-
 			// Block.
-			B := NewBlock(rowPart, colPart)
+			B := NewBlockFromIndexes(rowIndexes, colIndexes)
 
 			// Calculate block's size.
 			calculateSize(m, B)
