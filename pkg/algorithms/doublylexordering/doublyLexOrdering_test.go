@@ -1,4 +1,4 @@
-package orderings
+package doublylexordering
 
 import (
 	"testing"

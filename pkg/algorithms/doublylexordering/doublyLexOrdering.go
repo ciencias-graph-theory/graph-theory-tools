@@ -1,4 +1,4 @@
-package orderings
+package doublylexordering
 
 // A double lexicographical ordering of a matrix is an ordering in which the
 // rows and columns, as vectors, are sorted lexicographically. For example, the
@@ -19,9 +19,6 @@ package orderings
 // detail to mention is that switching rows is independant from switching
 // columns; in other words, we can switch rows without swithing columns and
 // vice versa.
-
-// Type aliases to improve readability.
-type matrix = [][]byte
 
 // There is no built-in data structure to represent a set. To get around this we
 // will define a set as a boolean map where all the elements inside the map will
@@ -88,3 +85,37 @@ func rowRefinement(M matrix, col int, Ri numset, inverseOrder bool) (numset, num
 	}
 
 }
+
+// The size of a block B = (Ri, Cj) is the amount of non-zero entries in
+// sub-matrix defined by B. Given a square (0,1)-matrix M, a a set of rows Ri
+// and columns Cj of M, and a map size. The following function calculates the
+// size of the block B = (Ri, Cj) and the blocks (r, Cj) for each r in Ri.
+// func calculateSize(M matrix, Ri, Cj numset, size map[block]int) {
+// 	// Define the block B = (Ri, Cj).
+// 	B := block{Ri, Cj}
+//
+// 	// Size of B.
+// 	sizeB := 0
+//
+// 	// Traverse each row r in Ri and calculate the size of the block (r, Cj).
+// 	for r, _ := range Ri {
+// 		// Define a unitary set for r.
+// 		rUnit := numset{r: true}
+//
+// 		// Define block (r, Cj).
+// 		rowBlock := block{rUnit, Cj}
+//
+// 		// Size of (r, Cj).
+// 		sizeR := 0
+//
+// 		for c, _ := range Cj {
+// 			sizeR += int(M[r][c])
+// 		}
+//
+// 		size[rowBlock] = sizeR
+//
+// 		sizeB += sizeR
+// 	}
+//
+// 	size[B] = sizeB
+// }
