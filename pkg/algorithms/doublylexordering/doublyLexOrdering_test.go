@@ -189,3 +189,67 @@ func TestCalculateSize(t *testing.T) {
 		}
 	}
 }
+
+// This function calls obtainSplittingRow with a matrix, and a block. Tests if
+// it returns a splitting row of a block.
+func TestObtainSplittingRow(t *testing.T) {
+	// Arbitrary matrix.
+	m := [][]byte{
+		{0, 1, 0, 1, 1, 0},
+		{0, 1, 0, 0, 0, 0},
+		{0, 0, 1, 0, 1, 0},
+		{0, 0, 0, 1, 1, 0},
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0},
+	}
+
+	// Pairs of rows and columns indexes.
+	pairIndexes := [][][]int{
+		{{0, 1, 2, 3, 4, 5}, {0, 1, 2, 3, 4, 5}},
+		{{0, 1, 4, 5}, {0, 1, 2, 3, 4, 5}},
+		{{0, 3}, {3, 4}},
+		{{4, 5}, {0, 1, 2, 3, 4, 5}},
+	}
+
+	// Possible splitting rows of the previous pairs.
+	allSplittingRows := [][]int{
+		{0, 1, 2, 3},
+		{0, 1},
+		{},
+		{},
+	}
+
+	for i, pair := range pairIndexes {
+		// Obtain the row and column indexes.
+		rowIndexes := pair[0]
+		colIndexes := pair[1]
+
+		// Create the respective block.
+		B := NewBlockFromIndexes(rowIndexes, colIndexes)
+
+		// Calculate B's size.
+		calculateSize(m, B)
+
+		// Get the possible splitting rows as a set.
+		possibleSplittingRows := set.NewIntSetFromValues(allSplittingRows[i])
+
+		// Get B's splitting row index.
+		r := getSplittingRow(m, B)
+
+		// If B has a splitting row, check it is a possible splitting row.
+		if r != -1 {
+			if !possibleSplittingRows.Contains(r) {
+				t.Errorf("Row %v should not be a splitting row", r)
+			}
+		}
+
+		// If B has no splitting rows, check that there are no possible splitting
+		// rows.
+		if r == -1 {
+			if !possibleSplittingRows.IsEmpty() {
+				t.Errorf("Expected a splitting row.")
+			}
+		}
+	}
+
+}
