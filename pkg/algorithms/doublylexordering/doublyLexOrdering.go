@@ -1,5 +1,9 @@
 package doublylexordering
 
+import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
+)
+
 // A double lexicographical ordering of a matrix is an ordering in which the
 // rows and columns, as vectors, are sorted lexicographically. For example, the
 // double lexicographical ordering of this matrix would be the following:
@@ -20,36 +24,41 @@ package doublylexordering
 // columns; in other words, we can switch rows without swithing columns and
 // vice versa.
 
+// Type aliases to improve readability.
+type matrix = [][]byte
+
 // There is no built-in data structure to represent a set. To get around this we
 // will define a set as a boolean map where all the elements inside the map will
 // always point to a true.
 type numset = map[int]bool
-
-// Let M be a matrix with indexed rows and columns, and R = (R_1, ..., R_n) and
-// C = (C_1, ..., C_n) a partition of the indexed rows and columns respectively.
-// A block is defined as an ordered pair, B = (R_i, C_j).
-type block = [2]numset
 
 // Given a square (0,1)-matrix M, a row index, and a set of columns Cj of M. The
 // following function returns a column refinement of the given set Cj. A column
 // refinement divides the columns whose entries in the given row are 0 or 1. If
 // the inverseOrder flag is true then the first set contains all of the columns
 // whose entries are 0.
-func columnRefinement(M matrix, row int, Cj numset, inverseOrder bool) (numset, numset) {
+func columnRefinement(M matrix, row int, Cj *IntSet, inverseOrder bool) (*IntSet, *IntSet) {
 	// The set of columns whose entries in the given row are 0.
-	C0 := make(numset)
+	C0 := set.NewIntSet()
 
 	// The set of columns whose entries in the given row are 1.
-	C1 := make(numset)
+	C1 := set.NewIntSet()
 
-	for col, _ := range Cj {
+	// Get the columns indexes contained in Cj.
+	colIndexes := Cj.GetValues()
+
+	// Traverse the columns given by Cj.
+	for _, col := range colIndexes {
+		// Given the row r and column c, if the entry M[r][c] is one, add it to C1,
+		// otherwise to C0.
 		if M[row][col] == 1 {
-			C1[col] = true
+			C1.Add(col)
 		} else {
-			C0[col] = true
+			C0.Add(col)
 		}
 	}
 
+	// Return the partition of the set of column indexes.
 	if inverseOrder {
 		return C0, C1
 	} else {
@@ -63,21 +72,28 @@ func columnRefinement(M matrix, row int, Cj numset, inverseOrder bool) (numset, 
 // refinement divides the rows whose entries in the given column are 0 or 1. If
 // the inverseOrder flag is true then the first set contains all of the rows
 // whose entries are 0.
-func rowRefinement(M matrix, col int, Ri numset, inverseOrder bool) (numset, numset) {
+func rowRefinement(M matrix, col int, Ri *IntSet, inverseOrder bool) (*IntSet, *IntSet) {
 	// The set of rows whose entries in the given column are 0.
-	R0 := make(numset)
+	R0 := set.NewIntSet()
 
 	// The set of rows whose entries in the given column are 1.
-	R1 := make(numset)
+	R1 := set.NewIntSet()
 
-	for row, _ := range Ri {
+	// Get rows indexes contained in Ri.
+	rowIndexes := Ri.GetValues()
+
+	// Traverse the rows given by Ri.
+	for _, row := range rowIndexes {
+		// Given the row r and column c, if the entry M[r][c] is one, add it to R1,
+		// otherwise to R0.
 		if M[row][col] == 1 {
-			R1[row] = true
+			R1.Add(row)
 		} else {
-			R0[row] = true
+			R0.Add(row)
 		}
 	}
 
+	// Return the partition of the set of row indexes.
 	if inverseOrder {
 		return R0, R1
 	} else {
