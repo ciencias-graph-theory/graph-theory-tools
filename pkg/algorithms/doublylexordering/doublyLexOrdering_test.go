@@ -20,144 +20,48 @@ func TestColumnRefinement(t *testing.T) {
 	// The columns indexes.
 	C := set.NewIntSetFromValues([]int{0, 1, 2, 3, 4})
 
-	// Expected column refinement of the first row.
-	expectedC0 := set.NewIntSetFromValues([]int{0, 2})
-
-	expectedC1 := set.NewIntSetFromValues([]int{1, 3, 4})
-
-	// Obtained column refinement of the first row.
-	obtainedC1, obtainedC0 := columnRefinement(m, 0, C, false)
-
-	// Check that the column refinement is correct.
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
+	// Expected column refinements for each row.
+	expectedColRefinement := [][][]int{
+		// First row.
+		{{0, 2}, {1, 3, 4}},
+		// Second row.
+		{{0, 2, 3, 4}, {1}},
+		// Third row.
+		{{0, 1, 3}, {2, 4}},
+		// Fourth row.
+		{{0, 1, 2}, {3, 4}},
+		// Fifth row.
+		{{0, 1, 2, 3, 4}, {}},
 	}
 
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
+	// Test for each row, that the obtained column refinement is correct.
+	for row, expectedRefinement := range expectedColRefinement {
+		// Obtain the expected refinement of the row.
+		expectedC0 := set.NewIntSetFromValues(expectedRefinement[0])
+		expectedC1 := set.NewIntSetFromValues(expectedRefinement[1])
 
-	// Check that the inverse order flag works.
-	obtainedC0, obtainedC1 = columnRefinement(m, 0, C, true)
+		// Obtained column refinement of the row.
+		obtainedC1, obtainedC0 := columnRefinement(m, row, C, false)
 
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
+		// Check that the column refinement is correct.
+		if !expectedC0.Equals(obtainedC0) {
+			t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
+		}
 
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
+		if !expectedC1.Equals(obtainedC1) {
+			t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
+		}
 
-	// Expected column refinement of the second row.
-	expectedC0 = set.NewIntSetFromValues([]int{0, 2, 3, 4})
+		// Check that the inverse order flag works.
+		obtainedC0, obtainedC1 = columnRefinement(m, row, C, true)
 
-	expectedC1 = set.NewIntSetFromValues([]int{1})
+		if !expectedC0.Equals(obtainedC0) {
+			t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
+		}
 
-	// Obtained column refinement of the second row.
-	obtainedC1, obtainedC0 = columnRefinement(m, 1, C, false)
-
-	// Check that the column refinement is correct.
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Check that the inverse order flag works.
-	obtainedC0, obtainedC1 = columnRefinement(m, 1, C, true)
-
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Expected column refinement of the third row.
-	expectedC0 = set.NewIntSetFromValues([]int{0, 1, 3})
-
-	expectedC1 = set.NewIntSetFromValues([]int{2, 4})
-
-	// Obtained column refinement of the third row.
-	obtainedC1, obtainedC0 = columnRefinement(m, 2, C, false)
-
-	// Check that the column refinement is correct.
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Check that the inverse order flag works.
-	obtainedC0, obtainedC1 = columnRefinement(m, 2, C, true)
-
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Expected column refinement of the fourth row.
-	expectedC0 = set.NewIntSetFromValues([]int{0, 1, 2})
-
-	expectedC1 = set.NewIntSetFromValues([]int{3, 4})
-
-	// Obtained column refinement of the fourth row.
-	obtainedC1, obtainedC0 = columnRefinement(m, 3, C, false)
-
-	// Check that the column refinement is correct.
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Check that the inverse order flag works.
-	obtainedC0, obtainedC1 = columnRefinement(m, 3, C, true)
-
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Expected column refinement of the fifth row.
-	expectedC0 = set.NewIntSetFromValues([]int{0, 1, 2, 3, 4})
-
-	expectedC1 = set.NewIntSet()
-
-	// Obtained column refinement of the fourth row.
-	obtainedC1, obtainedC0 = columnRefinement(m, 4, C, false)
-
-	// Check that the column refinement is correct.
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
-	}
-
-	// Check that the inverse order flag works.
-	obtainedC0, obtainedC1 = columnRefinement(m, 4, C, true)
-
-	if !expectedC0.Equals(obtainedC0) {
-		t.Errorf("Expected %v but got %v", expectedC0, obtainedC0)
-	}
-
-	if !expectedC1.Equals(obtainedC1) {
-		t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
+		if !expectedC1.Equals(obtainedC1) {
+			t.Errorf("Expected %v but got %v", expectedC1, obtainedC1)
+		}
 	}
 
 }
