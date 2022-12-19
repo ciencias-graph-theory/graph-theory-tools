@@ -27,11 +27,6 @@ import (
 // Type aliases to improve readability.
 type matrix = [][]byte
 
-// There is no built-in data structure to represent a set. To get around this we
-// will define a set as a boolean map where all the elements inside the map will
-// always point to a true.
-type numset = map[int]bool
-
 // Given a square (0,1)-matrix M, a row index, and a set of columns Cj of M. The
 // following function returns a column refinement of the given set Cj. A column
 // refinement divides the columns whose entries in the given row are 0 or 1. If
