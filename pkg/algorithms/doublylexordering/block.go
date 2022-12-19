@@ -1,5 +1,9 @@
 package doublylexordering
 
+import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
+)
+
 // Let M be a square (0,1)-matrix with indexed rows and columns, R = (R_1, ...,
 // R_n) and C = (C_1, ..., C_n) a partition of the indexed rows and columns
 // respectively. A Block is defined as an ordered pair, B = (R_i, C_j).
@@ -21,14 +25,32 @@ type Block struct {
 	rowBlocksSizes map[int]int
 }
 
-// NewBlock initializes a block.
-func NewBlock(Ri, Cj *OrderedBipartition) *Block {
+// NewBlockFromIntSet initializes a block given two ordered partitions.
+func NewBlockFromPartitions(Ri, Cj *OrderedBipartition) *Block {
 	return &Block{
 		R:              Ri,
 		C:              Cj,
 		size:           0,
 		rowBlocksSizes: nil,
 	}
+}
+
+// NewBlockFromIntSet initializes a block given two IntSets.
+func NewBlockFromIntSets(Ri, Cj *IntSet) *Block {
+	return &Block{
+		R:              NewOrderedBipartitionFromIntSet(Ri),
+		C:              NewOrderedBipartitionFromIntSet(Cj),
+		size:           0,
+		rowBlocksSizes: nil,
+	}
+}
+
+// NewBlockFromIndexes initializes a block given rows and columns indexes.
+func NewBlockFromIndexes(rowIndexes, colIndexes []int) *Block {
+	Ri := set.NewIntSetFromValues(rowIndexes)
+	Cj := set.NewIntSetFromValues(colIndexes)
+
+	return NewBlockFromIntSets(Ri, Cj)
 }
 
 // GetRowPart returns the row part of B. If B = (R_i, C_j) then the function
