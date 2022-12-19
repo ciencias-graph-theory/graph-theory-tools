@@ -138,40 +138,62 @@ func TestCalculateSize(t *testing.T) {
 		{0, 0, 0, 0, 0},
 	}
 
-	// Columns and rows indexes.
-	rowIndexes := []int{0, 1, 2, 3, 4}
-	colIndexes := []int{0, 1, 2, 3, 4}
-
-	// Columns and rows indexes sets.
-	rowIndexesSet := set.NewIntSetFromValues(rowIndexes)
-	colIndexesSet := set.NewIntSetFromValues(colIndexes)
-
-	// Columns and row parts.
-	rowPart := NewOrderedBipartitionFromIntSet(rowIndexesSet)
-	colPart := NewOrderedBipartitionFromIntSet(colIndexesSet)
-
-	// Block.
-	B := NewBlock(rowPart, colPart)
-
-	// Number of non-zero entries in B.
-	nonZeroEntries := 8
-	nonZeroEntriesRows := []int{3, 1, 2, 2, 0}
-
-	// Calculate block's size.
-	calculateSize(m, B)
-	sizeB := B.GetSize()
-
-	// Test if block's size has been calculated correctly.
-	if nonZeroEntries != sizeB {
-		t.Errorf("Expected %v but got %v", nonZeroEntries, sizeB)
+	// Multiple columns and rows indexes.
+	rowIndexesTests := [][]int{
+		{0, 1, 2, 3, 4},
+		{0, 1, 3},
+		{4},
+	}
+	colIndexesTests := [][]int{
+		{0, 1, 2, 3, 4},
+		{0, 1, 2},
+		{0},
 	}
 
-	// Test if the row blocks' size has been calculated correctly.
-	for i, r := range rowIndexes {
-		if nonZeroEntriesRows[i] != B.GetRowBlockSize(r) {
-			t.Errorf("Expected %v but got %v",
-				nonZeroEntriesRows[i],
-				B.GetRowBlockSize(r))
+	// Number of non-zero entries in the block conformed by the row and column
+	// indexes.
+	nonZeroEntries := [][]int{
+		{8, 3, 0},
+		{6, 2, 0},
+		{0, 0, 0},
+	}
+
+	nonZeroEntriesRows := [][][]int{
+		{{3, 1, 2, 2, 0}, {1, 1, 1, 0, 0}, {0, 0, 0, 0, 0}},
+		{{3, 1, 2}, {1, 1, 0}, {0, 0, 0}},
+		{{0}, {0}, {0}},
+	}
+
+	for ri, rowIndexes := range rowIndexesTests {
+		for cj, colIndexes := range colIndexesTests {
+			// Columns and rows indexes sets.
+			rowIndexesSet := set.NewIntSetFromValues(rowIndexes)
+			colIndexesSet := set.NewIntSetFromValues(colIndexes)
+
+			// Columns and row parts.
+			rowPart := NewOrderedBipartitionFromIntSet(rowIndexesSet)
+			colPart := NewOrderedBipartitionFromIntSet(colIndexesSet)
+
+			// Block.
+			B := NewBlock(rowPart, colPart)
+
+			// Calculate block's size.
+			calculateSize(m, B)
+			sizeB := B.GetSize()
+
+			// Test if block's size has been calculated correctly.
+			if nonZeroEntries[ri][cj] != sizeB {
+				t.Errorf("Expected %v but got %v", nonZeroEntries[ri][cj], sizeB)
+			}
+
+			// Test if the row blocks' size has been calculated correctly.
+			for i, r := range rowIndexes {
+				if nonZeroEntriesRows[ri][cj][i] != B.GetRowBlockSize(r) {
+					t.Errorf("Expected %v but got %v",
+						nonZeroEntriesRows[ri][cj][i],
+						B.GetRowBlockSize(r))
+				}
+			}
 		}
 	}
 }
