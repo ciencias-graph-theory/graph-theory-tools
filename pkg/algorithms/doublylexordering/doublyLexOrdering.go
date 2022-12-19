@@ -137,3 +137,25 @@ func calculateSize(M matrix, B *Block) {
 	// Set the size of all the row blocks.
 	B.SetRowBlocksSizes(rowBlocks)
 }
+
+// A splitting row of a block B = (R_i, C_j) is a row r in R_i such that the row
+// slice M(r, C_j) is non-constant. getSplittingRow returns the index of a
+// splitting row of B, if B has no splitting row then it returns -1. This
+// function requires that the block's size has already been calculated.
+func getSplittingRow(M matrix, B *Block) int {
+	// Get the indexes contained in the row part.
+	rowIndexes := B.GetRowPart().GetSet().GetValues()
+
+	// Get the amount of columns in the block.
+	numCols := B.GetColumnPart().GetSet().Cardinality()
+
+	// Traverse each row block in search of a non-constant one.
+	for _, r := range rowIndexes {
+		if (B.GetRowBlockSize(r) > 0) && (B.GetRowBlockSize(r) < numCols) {
+			return r
+		}
+	}
+
+	// If all row blocks are constant then there is no splitting row.
+	return -1
+}
