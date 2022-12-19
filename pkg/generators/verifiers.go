@@ -106,21 +106,3 @@ func AreFullyNonAdjacent(g Graph, x, y []int) bool {
 	}
 	return true
 }
-
-/*
-type pair struct {
-	i, j int
-}
-
-func getPairs(vertices []int) []pair {
-	pairs := []pair{}
-	for _, i := range vertices {
-		fmt.Println(vertices)
-		vertices = vertices[1:]
-		for _, j := range vertices {
-			pairs = append(pairs, pair{i, j})
-		}
-	}
-	return pairs
-}
-*/
