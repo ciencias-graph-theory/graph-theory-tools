@@ -10,12 +10,23 @@ func IsClique(g Graph, vertices []int) bool {
 	if !sliceutils.WithinIntervalSlice(vertices, 0, g.Order()) {
 		return false
 	}
-	for _, v := range vertices {
-		s := g.NeighboursSet(v)
-		vertices = vertices[1:]
-		for _, n := range vertices {
-			if !s.Contains(n) {
-				return false
+	if matrix, err := g.Matrix(); err == nil {
+		for _, i := range vertices {
+			vertices = vertices[1:]
+			for _, j := range vertices {
+				if matrix[i][j] != 1 {
+					return false
+				}
+			}
+		}
+	} else {
+		for _, v := range vertices {
+			s := g.NeighboursSet(v)
+			vertices = vertices[1:]
+			for _, n := range vertices {
+				if !s.Contains(n) {
+					return false
+				}
 			}
 		}
 	}
@@ -28,12 +39,23 @@ func IsStable(g Graph, vertices []int) bool {
 	if !sliceutils.WithinIntervalSlice(vertices, 0, g.Order()) {
 		return false
 	}
-	for _, v := range vertices {
-		s := g.NeighboursSet(v)
-		vertices = vertices[1:]
-		for _, n := range vertices {
-			if s.Contains(n) {
-				return false
+	if matrix, err := g.Matrix(); err == nil {
+		for _, i := range vertices {
+			vertices = vertices[1:]
+			for _, j := range vertices {
+				if matrix[i][j] == 1 {
+					return false
+				}
+			}
+		}
+	} else {
+		for _, v := range vertices {
+			s := g.NeighboursSet(v)
+			vertices = vertices[1:]
+			for _, n := range vertices {
+				if s.Contains(n) {
+					return false
+				}
 			}
 		}
 	}
@@ -84,3 +106,21 @@ func AreFullyNonAdjacent(g Graph, x, y []int) bool {
 	}
 	return true
 }
+
+/*
+type pair struct {
+	i, j int
+}
+
+func getPairs(vertices []int) []pair {
+	pairs := []pair{}
+	for _, i := range vertices {
+		fmt.Println(vertices)
+		vertices = vertices[1:]
+		for _, j := range vertices {
+			pairs = append(pairs, pair{i, j})
+		}
+	}
+	return pairs
+}
+*/
