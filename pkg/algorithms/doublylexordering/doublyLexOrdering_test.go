@@ -36,11 +36,11 @@ func TestColumnRefinement(t *testing.T) {
 
 	// Test for each row, that the obtained column refinement is correct.
 	for row, expectedRefinement := range expectedColRefinement {
-		// Obtain the expected refinement of the row.
+		// Expected column refinement.
 		expectedC0 := set.NewIntSetFromValues(expectedRefinement[0])
 		expectedC1 := set.NewIntSetFromValues(expectedRefinement[1])
 
-		// Obtained column refinement of the row.
+		// Obtained column refinement.
 		obtainedC1, obtainedC0 := columnRefinement(m, row, C, false)
 
 		// Check that the column refinement is correct.
@@ -81,7 +81,7 @@ func TestRowRefinement(t *testing.T) {
 	// The rows indexes.
 	R := set.NewIntSetFromValues([]int{0, 1, 2, 3, 4})
 
-	// Expected row refinements for each row.
+	// Expected row refinements for each column.
 	expectedRowRefinement := [][][]int{
 		// First row.
 		{{0, 1, 2, 3, 4}, {}},
@@ -95,16 +95,16 @@ func TestRowRefinement(t *testing.T) {
 		{{1, 4}, {0, 2, 3}},
 	}
 
-	// Test for each row, that the obtained column refinement is correct.
+	// Test for each column, that the obtained row refinement is correct.
 	for col, expectedRefinement := range expectedRowRefinement {
-		// Obtain the expected refinement of the row.
+		// Expected row refinement.
 		expectedR0 := set.NewIntSetFromValues(expectedRefinement[0])
 		expectedR1 := set.NewIntSetFromValues(expectedRefinement[1])
 
-		// Obtained column refinement of the first row.
+		// Obtained row refinement.
 		obtainedR1, obtainedR0 := rowRefinement(m, col, R, false)
 
-		// Check that the column refinement is correct.
+		// Check that the row refinement is correct.
 		if !expectedR0.Equals(obtainedR0) {
 			t.Errorf("Expected %v but got %v", expectedR0, obtainedR0)
 		}
