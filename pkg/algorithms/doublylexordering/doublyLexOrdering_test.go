@@ -317,3 +317,53 @@ func TestRowRefinement(t *testing.T) {
 		t.Errorf("Expected %v but got %v", expectedR1, obtainedR1)
 	}
 }
+
+// This function calls calculateSize with a matrix, and a block. Tests if
+// block's size has been calculated correctly.
+func TestCalculateSize(t *testing.T) {
+	// Arbitrary matrix.
+	m := [][]byte{
+		{0, 1, 0, 1, 1},
+		{0, 1, 0, 0, 0},
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	// Columns and rows indexes.
+	rowIndexes := []int{0, 1, 2, 3, 4}
+	colIndexes := []int{0, 1, 2, 3, 4}
+
+	// Columns and rows indexes sets.
+	rowIndexesSet := set.NewIntSetFromValues(rowIndexes)
+	colIndexesSet := set.NewIntSetFromValues(colIndexes)
+
+	// Columns and row parts.
+	rowPart := NewOrderedBipartitionFromIntSet(rowIndexesSet)
+	colPart := NewOrderedBipartitionFromIntSet(colIndexesSet)
+
+	// Block.
+	B := NewBlock(rowPart, colPart)
+
+	// Number of non-zero entries in B.
+	nonZeroEntries := 8
+	nonZeroEntriesRows := []int{3, 1, 2, 2, 0}
+
+	// Calculate block's size.
+	calculateSize(m, B)
+	sizeB := B.GetSize()
+
+	// Test if block's size has been calculated correctly.
+	if nonZeroEntries != sizeB {
+		t.Errorf("Expected %v but got %v", nonZeroEntries, sizeB)
+	}
+
+	// Test if the row blocks' size has been calculated correctly.
+	for i, r := range rowIndexes {
+		if nonZeroEntriesRows[i] != B.GetRowBlockSize(r) {
+			t.Errorf("Expected %v but got %v",
+				nonZeroEntriesRows[i],
+				B.GetRowBlockSize(r))
+		}
+	}
+}
