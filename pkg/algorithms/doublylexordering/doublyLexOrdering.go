@@ -97,36 +97,43 @@ func rowRefinement(M matrix, col int, Ri *IntSet, inverseOrder bool) (*IntSet, *
 
 }
 
-// The size of a block B = (Ri, Cj) is the amount of non-zero entries in
-// sub-matrix defined by B. Given a square (0,1)-matrix M, a a set of rows Ri
-// and columns Cj of M, and a map size. The following function calculates the
-// size of the block B = (Ri, Cj) and the blocks (r, Cj) for each r in Ri.
-// func calculateSize(M matrix, Ri, Cj numset, size map[block]int) {
-// 	// Define the block B = (Ri, Cj).
-// 	B := block{Ri, Cj}
-//
-// 	// Size of B.
-// 	sizeB := 0
-//
-// 	// Traverse each row r in Ri and calculate the size of the block (r, Cj).
-// 	for r, _ := range Ri {
-// 		// Define a unitary set for r.
-// 		rUnit := numset{r: true}
-//
-// 		// Define block (r, Cj).
-// 		rowBlock := block{rUnit, Cj}
-//
-// 		// Size of (r, Cj).
-// 		sizeR := 0
-//
-// 		for c, _ := range Cj {
-// 			sizeR += int(M[r][c])
-// 		}
-//
-// 		size[rowBlock] = sizeR
-//
-// 		sizeB += sizeR
-// 	}
-//
-// 	size[B] = sizeB
-// }
+// calculateSize calculates the size of the block B = (Ri, Cj) and the blocks
+// (r, Cj) for each r in Ri.
+func calculateSize(M matrix, B *Block) {
+	// Get the row part and column part of the block B.
+	rowPart := B.GetRowPart()
+	colPart := B.GetColumnPart()
+
+	// Number of rows in the block.
+	numRows := rowPart.GetSet().Cardinality()
+
+	// Get the indexes contained in the row and column part.
+	rowIndexes := rowPart.GetSet().GetValues()
+	colIndexes := colPart.GetSet().GetValues()
+
+	// Define a map for the row blocks.
+	rowBlocks := make(map[int]int, numRows)
+
+	// Total size of B.
+	sizeB := 0
+
+	// Traverse each row r in Ri and calculate the size of the block (r, Cj).
+	for _, r := range rowIndexes {
+		// Total size of (r, Cj).
+		sizeR := 0
+
+		for _, c := range colIndexes {
+			sizeR += int(M[r][c])
+		}
+
+		rowBlocks[r] = sizeR
+
+		sizeB += sizeR
+	}
+
+	// Set the total size of B.
+	B.SetSize(sizeB)
+
+	// Set the size of all the row blocks.
+	B.SetRowBlocksSizes(rowBlocks)
+}
