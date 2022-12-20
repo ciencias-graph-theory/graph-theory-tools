@@ -151,3 +151,67 @@ func getSplittingRow(M matrix, B *Block) int {
 	// If all row blocks are constant then there is no splitting row.
 	return -1
 }
+
+// updateAffectedBlocksColumns updates the size of the blocks affected by a
+// column refinement.
+func updateAffectedBlocksColumns(M matrix, lRef, rRef *IntSet, B *Block, sizeMap *BlockMap) {
+	// SC is the smaller partition of the refinement, BC is the bigger partition
+	// of the refinement.
+	var SC, BC *IntSet
+
+	// Indicate which partition is smaller.
+	if lRef.Cardinality() <= rRef.Cardinality() {
+		SC, BC = lRef, rRef
+	} else {
+		SC, BC = rRef, lRef
+	}
+
+	// Columns indexes set of the current block.
+	Cj := B.GetColumnPart().GetSet()
+
+	// Update all of the affected blocks.
+	rowPart := B.GetRowPart()
+	for rowPart != nil {
+		// Row indexes set of the current block.
+		R := rowPart.GetSet()
+
+		// Current block defined by (R, Cj)
+		current := sizeMap.Get(R, Cj)
+
+		// Define a block for the smaller refinement.
+		smallerBlock := NewBlockFromIntSets(R, SC)
+
+		// Calculate the small block's size.
+		size, rowBlocksMap := calculateSize(M, R, SC)
+
+		// Set small block's size and row blocks' sizes.
+		smallerBlock.SetSize(size)
+		smallerBlock.SetRowBlocksMap(rowBlocksMap)
+
+		// Define a block for the bigger refinement.
+		biggerBlock := NewBlockFromIntSets(R, BC)
+
+		// Calculate the bigger block's size using the smaller one.
+		sizeBg := 0
+		for _, r := range R.GetValues() {
+			// Set the bigger block's row blocks using the following formula.
+			// size(r, BC) = size(r, Cj) - size(r, SC)
+			currentRowSize := current.GetRowBlockSize(r)
+			smallerRowSize := smallerBlock.GetRowBlockSize(r)
+			biggerRowSize := currentRowSize - smallerRowSize
+			biggerBlock.SetRowBlockSize(r, biggerRowSize)
+
+			sizeBg += biggerRowSize
+		}
+
+		// Set the bigger block's size.
+		biggerBlock.SetSize(sizeBg)
+
+		// Add the blocks (R, SC) and (R, BC) to the map.
+		sizeMap.Add(R, SC, smallerBlock)
+		sizeMap.Add(R, BC, biggerBlock)
+
+		// Move to the next row.
+		rowPart = rowPart.GetNext()
+	}
+}
