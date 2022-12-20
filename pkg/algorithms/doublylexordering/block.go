@@ -31,7 +31,7 @@ func NewBlockFromPartitions(Ri, Cj *OrderedBipartition) *Block {
 		R:              Ri,
 		C:              Cj,
 		size:           0,
-		rowBlocksSizes: nil,
+		rowBlocksSizes: make(map[int]int),
 	}
 }
 
@@ -41,7 +41,7 @@ func NewBlockFromIntSets(Ri, Cj *IntSet) *Block {
 		R:              NewOrderedBipartitionFromIntSet(Ri),
 		C:              NewOrderedBipartitionFromIntSet(Cj),
 		size:           0,
-		rowBlocksSizes: nil,
+		rowBlocksSizes: make(map[int]int),
 	}
 }
 
@@ -76,8 +76,12 @@ func (B *Block) GetSize() int {
 }
 
 // SetRowBlocksSizes sets the size for the row blocks.
-func (B *Block) SetRowBlocksSizes(sizes map[int]int) {
+func (B *Block) SetRowBlocksMap(sizes map[int]int) {
 	B.rowBlocksSizes = sizes
+}
+
+func (B *Block) SetRowBlockSize(row, size int) {
+	B.rowBlocksSizes[row] = size
 }
 
 // GetRowBlocksSizes returns the map which contains the sizes of all the row
