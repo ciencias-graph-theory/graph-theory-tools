@@ -89,3 +89,9 @@ func (B *Block) SetRowBlockSize(row, size int) {
 func (B *Block) GetRowBlockSize(row int) int {
 	return B.rowBlocksSizes[row]
 }
+
+// GetRowBlockMap returns the map which contains the sizes of all the row
+// blocks of B.
+func (B *Block) GetRowBlockMap() map[int]int {
+	return B.rowBlocksSizes
+}
