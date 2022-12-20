@@ -99,17 +99,13 @@ func rowRefinement(M matrix, col int, Ri *IntSet, inverseOrder bool) (*IntSet, *
 
 // calculateSize calculates the size of the block B = (Ri, Cj) and the blocks
 // (r, Cj) for each r in Ri.
-func calculateSize(M matrix, B *Block) {
-	// Get the row part and column part of the block B.
-	rowPart := B.GetRowPart()
-	colPart := B.GetColumnPart()
-
+func calculateSize(M matrix, Ri, Cj *IntSet) (int, map[int]int) {
 	// Number of rows in the block.
-	numRows := rowPart.GetSet().Cardinality()
+	numRows := Ri.Cardinality()
 
 	// Get the indexes contained in the row and column part.
-	rowIndexes := rowPart.GetSet().GetValues()
-	colIndexes := colPart.GetSet().GetValues()
+	rowIndexes := Ri.GetValues()
+	colIndexes := Cj.GetValues()
 
 	// Define a map for the row blocks.
 	rowBlocks := make(map[int]int, numRows)
@@ -131,17 +127,13 @@ func calculateSize(M matrix, B *Block) {
 		sizeB += sizeR
 	}
 
-	// Set the total size of B.
-	B.SetSize(sizeB)
-
-	// Set the size of all the row blocks.
-	B.SetRowBlocksSizes(rowBlocks)
+	return sizeB, rowBlocks
 }
 
-// A splitting row of a block B = (R_i, C_j) is a row r in R_i such that the row
-// slice M(r, C_j) is non-constant. getSplittingRow returns the index of a
-// splitting row of B, if B has no splitting row then it returns -1. This
-// function requires that the block's size has already been calculated.
+// getSplittingRow returns the index of a splitting row of B, if B has no
+// splitting row then it returns -1. This function requires that the block's
+// size has already been calculated. A splitting row of a block B = (R_i, C_j)
+// is a row r in R_i such that the row slice M(r, C_j) is non-constant.
 func getSplittingRow(M matrix, B *Block) int {
 	// Get the indexes contained in the row part.
 	rowIndexes := B.GetRowPart().GetSet().GetValues()

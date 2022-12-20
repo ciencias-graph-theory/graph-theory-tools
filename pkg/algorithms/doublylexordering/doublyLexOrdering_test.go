@@ -166,12 +166,12 @@ func TestCalculateSize(t *testing.T) {
 
 	for ri, rowIndexes := range rowIndexesTests {
 		for cj, colIndexes := range colIndexesTests {
-			// Block.
-			B := NewBlockFromIndexes(rowIndexes, colIndexes)
+			// Set Ri and Cj of row and column indexes respectively.
+			Ri := set.NewIntSetFromValues(rowIndexes)
+			Cj := set.NewIntSetFromValues(colIndexes)
 
-			// Calculate block's size.
-			calculateSize(m, B)
-			sizeB := B.GetSize()
+			// Calculate block B=(Ri, Cj) size.
+			sizeB, rowBlocksMapB := calculateSize(m, Ri, Cj)
 
 			// Test if block's size has been calculated correctly.
 			if nonZeroEntries[ri][cj] != sizeB {
@@ -180,10 +180,10 @@ func TestCalculateSize(t *testing.T) {
 
 			// Test if the row blocks' size has been calculated correctly.
 			for i, r := range rowIndexes {
-				if nonZeroEntriesRows[ri][cj][i] != B.GetRowBlockSize(r) {
+				if nonZeroEntriesRows[ri][cj][i] != rowBlocksMapB[r] {
 					t.Errorf("Expected %v but got %v",
 						nonZeroEntriesRows[ri][cj][i],
-						B.GetRowBlockSize(r))
+						rowBlocksMapB[r])
 				}
 			}
 		}
@@ -221,14 +221,18 @@ func TestObtainSplittingRow(t *testing.T) {
 
 	for i, pair := range pairIndexes {
 		// Obtain the row and column indexes.
-		rowIndexes := pair[0]
-		colIndexes := pair[1]
+		Ri := set.NewIntSetFromValues(pair[0])
+		Cj := set.NewIntSetFromValues(pair[1])
 
 		// Create the respective block.
-		B := NewBlockFromIndexes(rowIndexes, colIndexes)
+		B := NewBlockFromIntSets(Ri, Cj)
 
 		// Calculate B's size.
-		calculateSize(m, B)
+		sizeB, rowBlocksMapB := calculateSize(m, Ri, Cj)
+
+		// Set B size and row blocks.
+		B.SetSize(sizeB)
+		B.SetRowBlocksMap(rowBlocksMapB)
 
 		// Get the possible splitting rows as a set.
 		possibleSplittingRows := set.NewIntSetFromValues(allSplittingRows[i])
