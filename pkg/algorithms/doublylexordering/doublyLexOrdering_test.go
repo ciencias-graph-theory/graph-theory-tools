@@ -416,3 +416,164 @@ func TestUpdateAffectedBlocksColumns(t *testing.T) {
 		}
 	}
 }
+
+// TestUpdateAffectedBlocksRows tests if the function updates correctly the
+// size of the affected blocks by a column refinement.
+func TestUpdateAffectedBlocksRows(t *testing.T) {
+	// Let's suppose we have the following matrix:
+	//
+	// {0, 1, 0, 1, 1},
+	// {0, 1, 0, 0, 0},
+	// {0, 0, 1, 0, 1},
+	// {0, 0, 0, 1, 1},
+	// {0, 0, 0, 0, 0},
+	//
+	// With the following partition.
+	//
+	//     C1    C2    C3
+	//    ┌────┐┌────┐┌─┐
+	//    │0, 1││1, 1││1│ r0
+	//    │0, 1││0, 0││0│ r1
+	// R1 │0, 0││1, 0││1│ r2
+	//    │0, 0││0, 1││1│ r3
+	//    │0, 0││0, 0││0│ r4
+	//    └────┘└────┘└─┘
+	//
+	// Let's suppose the following row partition is given:
+	// {0, 1, 4}, {2, 3}
+	//
+	// Then the row refinement would produce the following blocks:
+	//
+	//     C1    C2    C3
+	//    ┌────┐┌────┐┌─┐
+	// R1 │0, 1││1, 1││1│ r0
+	//    │0, 1││0, 0││0│ r1
+	//    │0, 0││0, 0││0│ r4
+	//    └────┘└────┘└─┘
+	//    ┌────┐┌────┐┌─┐
+	// R2 │0, 0││1, 0││1│ r2
+	//    │0, 0││0, 1││1│ r3
+	//    └────┘└────┘└─┘
+	//
+	// Then the size of the affected blocks are the following (from left to right
+	// and top to bottom): (2, 2, 1, 0, 2, 2).
+	//
+	// The following test simulates the previous example.
+
+	// Arbitrary matrix.
+	m := [][]byte{
+		{0, 1, 0, 1, 1},
+		{0, 1, 0, 0, 0},
+		{0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	// Define column parts.
+	C1 := NewOrderedBipartitionFromIntSlice([]int{0, 1})
+	C2 := NewOrderedBipartitionFromIntSlice([]int{2, 3})
+	C3 := NewOrderedBipartitionFromIntSlice([]int{4})
+
+	// Define order. (Only the next values matter here).
+	C1.SetNext(C2)
+	C2.SetNext(C3)
+
+	// Define row part.
+	R := NewOrderedBipartitionFromIntSlice([]int{0, 1, 2, 3, 4})
+
+	// Define a block map.
+	sizeMap := NewBlockMap()
+
+	// Define the of the blocks (R, C1), (R, C2), (R, C3)
+	B1 := NewBlockFromPartitions(R, C1)
+	B2 := NewBlockFromPartitions(R, C2)
+	B3 := NewBlockFromPartitions(R, C3)
+
+	// Define the size of the previous blocks.
+	B1.SetSize(2)
+	B1.SetRowBlockSize(0, 1)
+	B1.SetRowBlockSize(1, 1)
+	B1.SetRowBlockSize(2, 0)
+	B1.SetRowBlockSize(3, 0)
+	B1.SetRowBlockSize(4, 0)
+
+	B2.SetSize(4)
+	B2.SetRowBlockSize(0, 2)
+	B2.SetRowBlockSize(1, 0)
+	B2.SetRowBlockSize(2, 1)
+	B2.SetRowBlockSize(3, 1)
+	B2.SetRowBlockSize(4, 0)
+
+	B3.SetSize(3)
+	B3.SetRowBlockSize(0, 1)
+	B3.SetRowBlockSize(1, 0)
+	B3.SetRowBlockSize(2, 1)
+	B3.SetRowBlockSize(3, 1)
+	B3.SetRowBlockSize(4, 0)
+
+	// Add the previous blocks to the map.
+	sizeMap.Add(R.GetSet(), C1.GetSet(), B1)
+	sizeMap.Add(R.GetSet(), C2.GetSet(), B2)
+	sizeMap.Add(R.GetSet(), C3.GetSet(), B3)
+
+	// Define row refinement.
+	R1 := set.NewIntSetFromValues([]int{0, 1, 4})
+	R2 := set.NewIntSetFromValues([]int{2, 3})
+
+	// Update the blocks affected by the refinement.
+	updateAffectedBlocksRows(m, R1, R2, B1, sizeMap)
+
+	// Rows and columns partitions.
+	rowPartitions := [][]int{
+		{0, 1, 4}, {2, 3},
+	}
+
+	colPartitions := [][]int{
+		{0, 1}, {2, 3}, {4},
+	}
+
+	// Sizes of the produces blocks.
+	expectedSizes := []int{2, 2, 1, 0, 2, 2}
+
+	// Expected row blocks of each produced block.
+	expectedRowBlocks := [][][]int{
+		{{1, 1, 0}, {2, 0, 0}, {1, 0, 0}},
+		{{0, 0}, {1, 1}, {1, 1}},
+	}
+
+	// Build every posible block and check if its size is correct.
+	k := 0
+	for i, rp := range rowPartitions {
+		for j, cp := range colPartitions {
+
+			// Create integer sets to contain the indexes.
+			Ri := set.NewIntSetFromValues(rp)
+			Cj := set.NewIntSetFromValues(cp)
+
+			// If the block was not added, return error.
+			if !sizeMap.Contains(Ri, Cj) {
+				t.Errorf("Expected map to contain block (%v, %v)", Ri, Cj)
+			}
+
+			// Get the block defined by (Ri, Cj).
+			B := sizeMap.Get(Ri, Cj)
+
+			// Check if block's size is the expected.
+			if B.GetSize() != expectedSizes[k] {
+				t.Errorf("Expected block (%v, %v) size to be %v but got %v",
+					Ri, Cj, expectedSizes[k], B.GetSize())
+			}
+
+			// Check if row blocks size are correct.
+			for l, r := range rp {
+				if B.GetRowBlockSize(r) != expectedRowBlocks[i][j][l] {
+					t.Errorf("Expected block (%v, %v) size to be %v but got %v",
+						r, Cj, expectedRowBlocks[i][j][l], B.GetRowBlockSize(r))
+				}
+			}
+
+			k++
+		}
+	}
+
+}
