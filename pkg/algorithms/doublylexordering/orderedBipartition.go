@@ -80,12 +80,18 @@ func (O *OrderedBipartition) SetPartition(left, right *OrderedBipartition) {
 	previousPart := O.GetPrevious()
 	nextPart := O.GetNext()
 
-	previousPart.SetNext(left)
+	if previousPart != nil {
+		previousPart.SetNext(left)
+	}
+
 	left.SetPrevious(previousPart)
 	left.SetNext(right)
 	right.SetPrevious(left)
 	right.SetNext(nextPart)
-	nextPart.SetPrevious(right)
+
+	if nextPart != nil {
+		nextPart.SetPrevious(right)
+	}
 
 	// If the original part was at the start, then the left partition is now at
 	// the start.
