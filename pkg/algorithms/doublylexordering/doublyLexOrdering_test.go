@@ -232,7 +232,7 @@ func TestObtainSplittingRow(t *testing.T) {
 
 		// Set B size and row blocks.
 		B.SetSize(sizeB)
-		B.SetRowBlocksMap(rowBlocksMapB)
+		B.SetRowBlockMap(rowBlocksMapB)
 
 		// Get the possible splitting rows as a set.
 		possibleSplittingRows := set.NewIntSetFromValues(allSplittingRows[i])

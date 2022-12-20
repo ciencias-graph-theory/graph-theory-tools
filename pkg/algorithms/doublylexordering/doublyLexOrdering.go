@@ -186,7 +186,7 @@ func updateAffectedBlocksColumns(M matrix, lRef, rRef *IntSet, B *Block, sizeMap
 
 		// Set small block's size and row blocks' sizes.
 		smallerBlock.SetSize(size)
-		smallerBlock.SetRowBlocksMap(rowBlocksMap)
+		smallerBlock.SetRowBlockMap(rowBlocksMap)
 
 		// Define a block for the bigger refinement.
 		biggerBlock := NewBlockFromIntSets(R, BC)
