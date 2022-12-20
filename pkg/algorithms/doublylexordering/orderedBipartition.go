@@ -137,6 +137,28 @@ func (O *OrderedBipartition) IsStart() bool {
 	return O.start
 }
 
+// Equals returns if an ordered partition is equal to the given.
+func (O *OrderedBipartition) Equals(P *OrderedBipartition) bool {
+	// If P is nil, return false.
+	if P == nil {
+		return false
+	}
+
+	// If O has partition and P doesn't, or vice-versa, return false.
+	if (O.HasPartition() && !P.HasPartition()) ||
+		(!O.HasPartition() && P.HasPartition()) {
+		return false
+	}
+
+	// If they have different sets, return false.
+	if !(O.GetSet().Equals(P.GetSet())) {
+		return false
+	}
+
+	// Otherwise they are equal.
+	return true
+}
+
 // GetOrderedPartitionAsSlice returns the ordered partition as an int slice.
 func GetOrderedPartitionAsSlice(start *OrderedBipartition) []int {
 	// Define a slice to save the order.
