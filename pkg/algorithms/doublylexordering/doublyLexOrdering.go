@@ -215,3 +215,64 @@ func updateAffectedBlocksColumns(M matrix, lRef, rRef *IntSet, B *Block, sizeMap
 		rowPart = rowPart.GetNext()
 	}
 }
+
+// updateAffectedBlocksRows updates the size of the blocks affected by a
+// row refinement.
+func updateAffectedBlocksRows(M matrix, lRef, rRef *IntSet, B *Block, sizeMap *BlockMap) {
+	// SC is the smaller partition of the refinement, BC is the bigger partition
+	// of the refinement.
+	var SR, BR *IntSet
+
+	// Indicate which partition is smaller.
+	if lRef.Cardinality() <= rRef.Cardinality() {
+		SR, BR = lRef, rRef
+	} else {
+		SR, BR = rRef, lRef
+	}
+
+	// Row indexes set of the current block.
+	Ri := B.GetRowPart().GetSet()
+
+	// Update all of the affected blocks.
+	colPart := B.GetColumnPart()
+	for colPart != nil {
+		// Column indexes set of the current block.
+		C := colPart.GetSet()
+
+		// Current block defined by (Ri, C)
+		current := sizeMap.Get(Ri, C)
+
+		// Define a block for the smaller refinement.
+		smallerBlock := NewBlockFromIntSets(SR, C)
+
+		// Determine the small block's size traversing the row blocks of (Ri, C)
+		// that will be in (SR, C).
+		sizeSmall := 0
+		for _, r := range SR.GetValues() {
+			rbs := current.GetRowBlockSize(r)
+			smallerBlock.SetRowBlockSize(r, rbs)
+			sizeSmall += rbs
+		}
+		// Set small block's size and row blocks' sizes.
+		smallerBlock.SetSize(sizeSmall)
+
+		// Define a block for the bigger refinement.
+		biggerBlock := NewBlockFromIntSets(BR, C)
+
+		// Determine the bigger block's size using the smaller one.
+		sizeBig := current.GetSize() - smallerBlock.GetSize()
+		biggerBlock.SetSize(sizeBig)
+
+		// To avoid traversing all of the rows in BR, simply indicate that the row
+		// blocks map of (BR, C) is the same as (Ri, C).
+		currentRowBlockMap := current.GetRowBlockMap()
+		biggerBlock.SetRowBlockMap(currentRowBlockMap)
+
+		// Add the blocks (R, SC) and (R, BC) to the map.
+		sizeMap.Add(SR, C, smallerBlock)
+		sizeMap.Add(BR, C, biggerBlock)
+
+		// Move to the next row.
+		colPart = colPart.GetNext()
+	}
+}
