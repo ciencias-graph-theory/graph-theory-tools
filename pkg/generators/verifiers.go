@@ -73,11 +73,22 @@ func AreFullyAdjacent(g Graph, x, y []int) bool {
 	if !sliceutils.DisjointIntSlices(x, y) {
 		return false
 	}
-	for _, v := range x {
-		s := g.NeighboursSet(v)
-		for _, w := range y {
-			if !s.Contains(w) {
-				return false
+	if matrix, err := g.Matrix(); err == nil {
+		for _, i := range x {
+			x = x[1:]
+			for _, j := range y {
+				if matrix[i][j] != 1 {
+					return false
+				}
+			}
+		}
+	} else {
+		for _, v := range x {
+			s := g.NeighboursSet(v)
+			for _, w := range y {
+				if !s.Contains(w) {
+					return false
+				}
 			}
 		}
 	}
@@ -96,11 +107,22 @@ func AreFullyNonAdjacent(g Graph, x, y []int) bool {
 	if !sliceutils.DisjointIntSlices(x, y) {
 		return false
 	}
-	for _, v := range x {
-		s := g.NeighboursSet(v)
-		for _, w := range y {
-			if s.Contains(w) {
-				return false
+	if matrix, err := g.Matrix(); err == nil {
+		for _, i := range x {
+			x = x[1:]
+			for _, j := range y {
+				if matrix[i][j] == 1 {
+					return false
+				}
+			}
+		}
+	} else {
+		for _, v := range x {
+			s := g.NeighboursSet(v)
+			for _, w := range y {
+				if s.Contains(w) {
+					return false
+				}
 			}
 		}
 	}
