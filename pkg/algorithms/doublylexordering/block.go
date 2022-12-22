@@ -9,10 +9,10 @@ import (
 // respectively. A Block is defined as an ordered pair, B = (R_i, C_j).
 type Block struct {
 	// Row part of the block. Contains row's indexes.
-	R *OrderedBipartition
+	R *IntSet
 
 	// Column part of the block. Contains column's indexes.
-	C *OrderedBipartition
+	C *IntSet
 
 	// The size of a block is the amount of non-zero entries in sub-matrix of M
 	// defined by the rows and columns of B.
@@ -25,21 +25,11 @@ type Block struct {
 	rowBlocksSizes map[int]int
 }
 
-// NewBlockFromIntSet initializes a block given two ordered partitions.
-func NewBlockFromPartitions(Ri, Cj *OrderedBipartition) *Block {
-	return &Block{
-		R:              Ri,
-		C:              Cj,
-		size:           0,
-		rowBlocksSizes: make(map[int]int),
-	}
-}
-
 // NewBlockFromIntSet initializes a block given two IntSets.
 func NewBlockFromIntSets(Ri, Cj *IntSet) *Block {
 	return &Block{
-		R:              NewOrderedBipartitionFromIntSet(Ri),
-		C:              NewOrderedBipartitionFromIntSet(Cj),
+		R:              Ri,
+		C:              Cj,
 		size:           0,
 		rowBlocksSizes: make(map[int]int),
 	}
@@ -53,15 +43,15 @@ func NewBlockFromIndexes(rowIndexes, colIndexes []int) *Block {
 	return NewBlockFromIntSets(Ri, Cj)
 }
 
-// GetRowPart returns the row part of B. If B = (R_i, C_j) then the function
+// GetRows returns the row part of B. If B = (R_i, C_j) then the function
 // returns R_i.
-func (B *Block) GetRowPart() *OrderedBipartition {
+func (B *Block) GetRows() *IntSet {
 	return B.R
 }
 
-// GetColumnPart returns the column part of B. If B = (R_i, C_j) then the function
+// GetColumns returns the column part of B. If B = (R_i, C_j) then the function
 // returns C_j.
-func (B *Block) GetColumnPart() *OrderedBipartition {
+func (B *Block) GetColumns() *IntSet {
 	return B.C
 }
 
@@ -80,6 +70,7 @@ func (B *Block) SetRowBlockMap(sizes map[int]int) {
 	B.rowBlocksSizes = sizes
 }
 
+// SetRowBlockSize sets the size of the row block (r, Cj) of B = (Ri, Cj).
 func (B *Block) SetRowBlockSize(row, size int) {
 	B.rowBlocksSizes[row] = size
 }
@@ -94,4 +85,14 @@ func (B *Block) GetRowBlockSize(row int) int {
 // blocks of B.
 func (B *Block) GetRowBlockMap() map[int]int {
 	return B.rowBlocksSizes
+}
+
+// IsConstant returns if a block is constant. A block B = (Ri, Cj) is constant
+// if and only if size(B) = 0 or size(B) = |Ri||Cj|.
+func (B *Block) IsConstant() bool {
+	numRows := B.GetRows().Cardinality()
+	numCols := B.GetColumns().Cardinality()
+	sizeB := B.GetSize()
+
+	return (sizeB == 0) || (sizeB == (numRows * numCols))
 }
