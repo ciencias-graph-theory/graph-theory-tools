@@ -315,24 +315,23 @@ func TestUpdateAffectedBlocksColumns(t *testing.T) {
 	}
 
 	// Define row parts.
-	R1 := NewOrderedBipartitionFromIntSlice([]int{0})
-	R2 := NewOrderedBipartitionFromIntSlice([]int{1, 2})
-	R3 := NewOrderedBipartitionFromIntSlice([]int{3, 4})
+	R1 := set.NewIntSetFromValues([]int{0})
+	R2 := set.NewIntSetFromValues([]int{1, 2})
+	R3 := set.NewIntSetFromValues([]int{3, 4})
 
 	// Define order. (Only the next values matter here)
-	R1.SetNext(R2)
-	R2.SetNext(R3)
+	orderedRows := []*IntSet{R1, R2, R3}
 
 	// Define column part.
-	C := NewOrderedBipartitionFromIntSlice([]int{0, 1, 2, 3, 4})
+	C := set.NewIntSetFromValues([]int{0, 1, 2, 3, 4})
 
 	// Define a block map.
 	sizeMap := NewBlockMap()
 
 	// Define the size of the blocks (R1, C), (R2, C), (R3, C).
-	B1 := NewBlockFromPartitions(R1, C)
-	B2 := NewBlockFromPartitions(R2, C)
-	B3 := NewBlockFromPartitions(R3, C)
+	B1 := NewBlockFromIntSets(R1, C)
+	B2 := NewBlockFromIntSets(R2, C)
+	B3 := NewBlockFromIntSets(R3, C)
 
 	B1.SetSize(3)
 	B1.SetRowBlockSize(0, 3)
@@ -344,9 +343,9 @@ func TestUpdateAffectedBlocksColumns(t *testing.T) {
 	B3.SetRowBlockSize(4, 0)
 
 	// Add the previous blocks to the map.
-	sizeMap.Add(R1.GetSet(), C.GetSet(), B1)
-	sizeMap.Add(R2.GetSet(), C.GetSet(), B2)
-	sizeMap.Add(R3.GetSet(), C.GetSet(), B3)
+	sizeMap.Add(R1, C, B1)
+	sizeMap.Add(R2, C, B2)
+	sizeMap.Add(R3, C, B3)
 
 	// Define column refinement.
 	C1 := set.NewIntSetFromValues([]int{0, 1, 2})
@@ -360,7 +359,7 @@ func TestUpdateAffectedBlocksColumns(t *testing.T) {
 	// (R2, C2) - size: 1,
 	// (R3, C1) - size: 0,
 	// (R3, C2) - size: 2,
-	updateAffectedBlocksColumns(m, C1, C2, B1, sizeMap)
+	updateAffectedBlocksColumns(m, C1, C2, C, 0, sizeMap, orderedRows)
 
 	// Rows and columns partitions.
 	rowPartitions := [][]int{
@@ -470,24 +469,23 @@ func TestUpdateAffectedBlocksRows(t *testing.T) {
 	}
 
 	// Define column parts.
-	C1 := NewOrderedBipartitionFromIntSlice([]int{0, 1})
-	C2 := NewOrderedBipartitionFromIntSlice([]int{2, 3})
-	C3 := NewOrderedBipartitionFromIntSlice([]int{4})
+	C1 := set.NewIntSetFromValues([]int{0, 1})
+	C2 := set.NewIntSetFromValues([]int{2, 3})
+	C3 := set.NewIntSetFromValues([]int{4})
 
 	// Define order. (Only the next values matter here).
-	C1.SetNext(C2)
-	C2.SetNext(C3)
+	orderedColumns := []*IntSet{C1, C2, C3}
 
 	// Define row part.
-	R := NewOrderedBipartitionFromIntSlice([]int{0, 1, 2, 3, 4})
+	R := set.NewIntSetFromValues([]int{0, 1, 2, 3, 4})
 
 	// Define a block map.
 	sizeMap := NewBlockMap()
 
 	// Define the of the blocks (R, C1), (R, C2), (R, C3)
-	B1 := NewBlockFromPartitions(R, C1)
-	B2 := NewBlockFromPartitions(R, C2)
-	B3 := NewBlockFromPartitions(R, C3)
+	B1 := NewBlockFromIntSets(R, C1)
+	B2 := NewBlockFromIntSets(R, C2)
+	B3 := NewBlockFromIntSets(R, C3)
 
 	// Define the size of the previous blocks.
 	B1.SetSize(2)
@@ -512,16 +510,16 @@ func TestUpdateAffectedBlocksRows(t *testing.T) {
 	B3.SetRowBlockSize(4, 0)
 
 	// Add the previous blocks to the map.
-	sizeMap.Add(R.GetSet(), C1.GetSet(), B1)
-	sizeMap.Add(R.GetSet(), C2.GetSet(), B2)
-	sizeMap.Add(R.GetSet(), C3.GetSet(), B3)
+	sizeMap.Add(R, C1, B1)
+	sizeMap.Add(R, C2, B2)
+	sizeMap.Add(R, C3, B3)
 
 	// Define row refinement.
 	R1 := set.NewIntSetFromValues([]int{0, 1, 4})
 	R2 := set.NewIntSetFromValues([]int{2, 3})
 
 	// Update the blocks affected by the refinement.
-	updateAffectedBlocksRows(m, R1, R2, B1, sizeMap)
+	updateAffectedBlocksRows(m, R1, R2, R, sizeMap, orderedColumns)
 
 	// Rows and columns partitions.
 	rowPartitions := [][]int{
