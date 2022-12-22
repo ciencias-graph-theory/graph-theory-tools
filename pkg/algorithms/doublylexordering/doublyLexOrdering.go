@@ -282,3 +282,166 @@ func updateAffectedBlocksRows(
 
 	}
 }
+
+// buildMatrixFromOrderedPartitions returns a matrix where the rows and columns
+// follow the order specified by the partitions.
+func buildMatrixFromOrderedParts(M matrix, orderedRows, orderedCols []*IntSet) (matrix, []int, []int) {
+	// Build an ordered succesion of rows and columns.
+	var rows, cols []int
+	for _, rowPart := range orderedRows {
+		for _, r := range rowPart.GetValues() {
+			rows = append(rows, r)
+		}
+	}
+
+	for _, colPart := range orderedCols {
+		for _, c := range colPart.GetValues() {
+			cols = append(cols, c)
+		}
+	}
+
+	// Get the size of M.
+	n := len(M)
+
+	// Define the ordered matrix.
+	ordered := make([][]byte, n)
+
+	for i := 0; i < n; i++ {
+		ordered[i] = make([]byte, n)
+
+		for j := 0; j < n; j++ {
+			r := int(rows[i])
+			c := int(cols[j])
+			ordered[i][j] = M[r][c]
+		}
+	}
+
+	return ordered, rows, cols
+}
+
+// DoubleLexicographicalOrdering returns an double lexicographical ordering of a
+// given square (0,1)-matrix, i.e., it returns the ordered matrix M', and the
+// ordered partitions SR and SC corresponding to the row and column indexes.
+func DoubleLexicographicalOrdering(M matrix, inverseOrder bool) (matrix, []int, []int) {
+	// Get the amount of rows and columns in M.
+	n := len(M)
+
+	// Define a set of row and column indexes.
+	R := set.NewIntSet()
+	C := set.NewIntSet()
+	for i := 0; i < n; i++ {
+		R.Add(i)
+		C.Add(i)
+	}
+
+	// Define an ordered partition for rows and columns.
+	var orderedRowPartition, orderedColPartition []*IntSet
+	orderedRowPartition = append(orderedRowPartition, R)
+	orderedColPartition = append(orderedColPartition, C)
+
+	// Define a stack of column parts.
+	var pendingColParts []*IntSet
+	pendingColParts = append(pendingColParts, C)
+
+	// Define the initial block I = (R, C)
+	I := NewBlockFromIntSets(R, C)
+	sizeI, rowBlockMapI := calculateSize(M, R, C)
+	I.SetSize(sizeI)
+	I.SetRowBlockMap(rowBlockMapI)
+
+	// Define a size map to keep track of the block's sizes and add I.
+	sizeMap := NewBlockMap()
+	sizeMap.Add(R, C, I)
+
+	// Variables to keep track of the position we're at the ordered partition.
+	currentColPart := 0
+	currentRowPart := 0
+
+	// For every pending column part Cj, pair it with every row part Ri and check
+	// if the block (Ri, Cj) has a refinement. Unfortunately the break statement
+	// doesn't seem to work properly in the given scenario so a goto statement had
+	// to be used; it simulates a break.
+mainLoop:
+	for len(pendingColParts) > 0 {
+		// Head of the stack position.
+		h := len(pendingColParts) - 1
+
+		// Get the pending column part on the top of the stack.
+		Cj := pendingColParts[h]
+
+		for i := currentRowPart; i < len(orderedRowPartition); i++ {
+			Ri := orderedRowPartition[i]
+
+			// Get the block defined by B = (Ri, Cj).
+			B := sizeMap.Get(Ri, Cj)
+
+			// If B is not constant then it has an splitting row or column.
+			if !B.IsConstant() {
+				// Try to obtain a splitting row.
+				split := getSplittingRow(M, B)
+
+				// If B has a splitting row, define a column refinement.
+				if split != -1 {
+					Cjl, Cjr := columnRefinement(M, split, Cj, inverseOrder)
+
+					// Replace Cj by Cjl and Cjr in the ordered partition of columns.
+					var temp []*IntSet
+					temp = append(temp, orderedColPartition[:currentColPart]...)
+					temp = append(temp, Cjl)
+					temp = append(temp, Cjr)
+					temp = append(temp, orderedColPartition[currentColPart+1:]...)
+					orderedColPartition = temp
+
+					// Obtain the size of the produced blocks by the column refinement.
+					updateAffectedBlocksColumns(M, Cjl, Cjr, Cj, i, sizeMap, orderedRowPartition)
+
+					// Eliminate Cj from the stack and add Cjr and Cjl in this order.
+					pendingColParts = pendingColParts[:h]
+					pendingColParts = append(pendingColParts, Cjr)
+					pendingColParts = append(pendingColParts, Cjl)
+
+					// Terminate the loop to get the block (Ri, Cjl)
+					currentRowPart = i
+					goto mainLoop
+				} else {
+					// If B has no splitting row, then it has an splitting column, define
+					// a row refinement.
+
+					// Get any column index. As a partition can't be empty, a value must
+					// exist.
+					col := Cj.GetValues()[0]
+
+					// Define the row refinement.
+					Ril, Rir := rowRefinement(M, col, Ri, inverseOrder)
+
+					// Replace Ri by Ril and Rir in the ordered partition of columns.
+					var temp []*IntSet
+					temp = append(temp, orderedRowPartition[:i]...)
+					temp = append(temp, Ril)
+					temp = append(temp, Rir)
+					temp = append(temp, orderedRowPartition[i+1:]...)
+					orderedRowPartition = temp
+
+					// Obtain the size of the produced blocks by the column refinement.
+					updateAffectedBlocksRows(M, Ril, Rir, Ri, sizeMap, pendingColParts)
+
+					// Terminate the loop to get the block (Ril, Cj)
+					goto mainLoop
+				}
+			}
+		}
+
+		// If for all of the possible row blocks Ri, the block B = (Ri, Cj) is
+		// constant, then there's nothing left to do with the column part Cj. Remove
+		// it from the stack and start again from the first part of the ordered row
+		// partition.
+		pendingColParts = pendingColParts[:h]
+		currentRowPart = 0
+		currentColPart++
+	}
+
+	// Obtain the ordered partitions as slices and build the ordered matrix.
+	orMatrix, orRows, orCols := buildMatrixFromOrderedParts(M, orderedRowPartition, orderedColPartition)
+
+	return orMatrix, orRows, orCols
+}
