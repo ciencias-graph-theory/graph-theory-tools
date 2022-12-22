@@ -4,6 +4,8 @@ import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
 )
 
+type IntSet = set.IntSet
+
 // Let M be a square (0,1)-matrix with indexed rows and columns, R = (R_1, ...,
 // R_n) and C = (C_1, ..., C_n) a partition of the indexed rows and columns
 // respectively. A Block is defined as an ordered pair, B = (R_i, C_j).
