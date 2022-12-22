@@ -2,6 +2,7 @@ package doublylexordering
 
 import (
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
+	"math/rand"
 	"testing"
 )
 
@@ -721,7 +722,7 @@ func TestDoubleLexicographicalOrdering(t *testing.T) {
 	}
 
 	// Number of times the algorithm will be tested.
-	numTries := 10000
+	numTries := 1000
 
 	// Check that for every matrix the doubly lex algorithm works.
 	for _, m := range matrices {
@@ -735,13 +736,80 @@ func TestDoubleLexicographicalOrdering(t *testing.T) {
 			if !matchesOrders(m, ordered, rowOrder, colOrder) {
 				t.Errorf("Matrix entries do not match originalto be ordered, (%v, %v)",
 					m, ordered)
+
+				// Terminate loop.
+				break
 			}
 
 			// If the matrix is not ordered, return error.
 			if !isOrderedLexicographically(ordered, false) {
 				t.Errorf("Expected matrix to be ordered, but got %v", ordered)
+
+				// Terminate loop.
+				break
 			}
 		}
 	}
 
+}
+
+// buildRandomMatrix returns a square matrix of size n whose entries are
+// randomized.
+func buildRandomMatrix(size int) [][]byte {
+	m := make([][]byte, size)
+
+	for i := 0; i < size; i++ {
+		m[i] = make([]byte, size)
+
+		for j := 0; j < size; j++ {
+			if rand.Intn(100) < 50 {
+				m[i][j] = 0
+			} else {
+				m[i][j] = 1
+			}
+		}
+	}
+
+	return m
+}
+
+// TestDoubleLexicographicalOrderingRandom tests the Double Lexicographical
+// Ordering algorithm with random matrices of varying sizes and entries. The
+// output matrix should always be sorted lexicographically by rows and by
+// columns.
+func TestDoubleLexicographicalOrderingRandom(t *testing.T) {
+	// The amount of random matrices to be produced.
+	numRandMatrices := 5
+
+	// The amount of times the algorithm will be tested.
+	numTries := 100
+
+	// The max size a matrix can have.
+	maxSize := 50
+
+	for i := 0; i < numRandMatrices; i++ {
+		randomSize := rand.Intn(maxSize)
+		m := buildRandomMatrix(randomSize)
+
+		for j := 0; j < numTries; j++ {
+			ordered, rowOrder, colOrder := DoubleLexicographicalOrdering(m, false)
+
+			// If some entry was modified, return error.
+			if !matchesOrders(m, ordered, rowOrder, colOrder) {
+				t.Errorf("Matrix entries do not match originalto be ordered, (%v, %v)",
+					m, ordered)
+
+				// Terminate loop.
+				break
+			}
+
+			// If the matrix is not ordered, return error.
+			if !isOrderedLexicographically(ordered, false) {
+				t.Errorf("Expected matrix to be ordered, but got %v", ordered)
+
+				// Terminate loop.
+				break
+			}
+		}
+	}
 }
