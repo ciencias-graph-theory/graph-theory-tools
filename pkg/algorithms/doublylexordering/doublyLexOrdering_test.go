@@ -575,3 +575,173 @@ func TestUpdateAffectedBlocksRows(t *testing.T) {
 	}
 
 }
+
+func byteSliceToString(bytes []byte, inverseOrder bool) string {
+	str := ""
+
+	for _, b := range bytes {
+		if b == 1 {
+			str += "1"
+		} else {
+			str += "0"
+		}
+	}
+
+	return str
+}
+
+// isOrderedLexicographically is an auxiliary function to test if a matrix has
+// been correctly ordered.
+func isOrderedLexicographically(M matrix, inverseOrder bool) bool {
+	// Matrix size.
+	n := len(M)
+
+	// Check that the rows are ordered lexicographically. If the inverseOrder flag
+	// is false then the rows are compared from top to bottom, from left to
+	// right. If the flag is true then the rows are compared from bottom to top,
+	// right to left.
+	var i, j int
+	i = 0
+	for i < (n - 1) {
+		sa := byteSliceToString(M[i], inverseOrder)
+		sb := byteSliceToString(M[i+1], inverseOrder)
+
+		if sa < sb {
+			return false
+		}
+
+		i++
+	}
+
+	// Check that the columns are ordered lexicographically.
+	// Column bytes
+	ca := make([]byte, n)
+	cb := make([]byte, n)
+
+	j = 0
+	for j < (n - 1) {
+		i = 0
+		for i < (n - 1) {
+			ca[i] = M[i][j]
+			cb[i] = M[i][j+1]
+			i++
+		}
+
+		sa := byteSliceToString(ca, inverseOrder)
+		sb := byteSliceToString(cb, inverseOrder)
+
+		if sa < sb {
+			return false
+		}
+
+		j++
+	}
+
+	// If the rows and columns are ordered return true.
+	return true
+}
+
+// matchesOrders is an auxiliary function that returns if a sorted matrix
+// entries correspond to the original entries, i.e. it verifies that no new
+// entries were added.
+func matchesOrders(original, ordered matrix, rowOrder, colOrder []int) bool {
+	for i, r := range rowOrder {
+		for j, c := range colOrder {
+			if original[r][c] != ordered[i][j] {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// TestDoubleLexicographicalOrdering tests the DoubleLexicographicalOrdering
+// algorithm. The output matrix should be sorted lexicographically by rows and
+// by columns.
+func TestDoubleLexicographicalOrdering(t *testing.T) {
+	// Arbitrary matrices.
+	matrices := [][][]byte{
+		{
+			{1, 0, 1, 1},
+			{0, 0, 1, 0},
+			{1, 0, 0, 1},
+			{0, 0, 1, 1},
+		},
+		{
+			{0, 1, 0, 1, 1},
+			{0, 1, 0, 0, 0},
+			{0, 0, 1, 0, 1},
+			{0, 0, 0, 1, 1},
+			{0, 0, 0, 0, 0},
+		},
+		{
+			{0, 1, 1, 1, 1, 0, 1},
+			{1, 1, 0, 0, 1, 1, 1},
+			{0, 0, 0, 1, 1, 1, 0},
+			{1, 1, 1, 1, 0, 1, 1},
+			{0, 0, 1, 1, 0, 0, 1},
+			{1, 0, 1, 1, 1, 1, 1},
+			{0, 1, 1, 1, 0, 0, 1},
+		},
+		{
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+		},
+		{
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+			{1, 1, 1, 1},
+		},
+		{
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 1, 0, 0},
+			{0, 0, 0, 0, 0},
+			{0, 0, 0, 0, 0},
+		},
+		{
+			{1, 0, 0, 0, 0},
+			{0, 1, 0, 0, 0},
+			{0, 0, 1, 0, 0},
+			{0, 0, 0, 1, 0},
+			{0, 0, 0, 0, 1},
+		},
+		{
+			{0, 0, 0, 0, 1},
+			{0, 0, 0, 1, 0},
+			{0, 0, 1, 0, 0},
+			{0, 1, 0, 0, 0},
+			{1, 0, 0, 0, 0},
+		},
+	}
+
+	// Number of times the algorithm will be tested.
+	numTries := 10000
+
+	// Check that for every matrix the doubly lex algorithm works.
+	for _, m := range matrices {
+
+		// Try ordering the matrix multiple times to check for possible incorrect
+		// orderings.
+		for i := 0; i < numTries; i++ {
+			ordered, rowOrder, colOrder := DoubleLexicographicalOrdering(m, false)
+
+			// If some entry was modified, return error.
+			if !matchesOrders(m, ordered, rowOrder, colOrder) {
+				t.Errorf("Matrix entries do not match originalto be ordered, (%v, %v)",
+					m, ordered)
+			}
+
+			// If the matrix is not ordered, return error.
+			if !isOrderedLexicographically(ordered, false) {
+				t.Errorf("Expected matrix to be ordered, but got %v", ordered)
+			}
+		}
+	}
+
+}
