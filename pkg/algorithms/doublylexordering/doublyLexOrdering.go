@@ -136,10 +136,10 @@ func calculateSize(M matrix, Ri, Cj *IntSet) (int, map[int]int) {
 // is a row r in R_i such that the row slice M(r, C_j) is non-constant.
 func getSplittingRow(M matrix, B *Block) int {
 	// Get the indexes contained in the row part.
-	rowIndexes := B.GetRowPart().GetSet().GetValues()
+	rowIndexes := B.GetRows().GetValues()
 
 	// Get the amount of columns in the block.
-	numCols := B.GetColumnPart().GetSet().Cardinality()
+	numCols := B.GetColumns().Cardinality()
 
 	// Traverse each row block in search of a non-constant one.
 	for _, r := range rowIndexes {
@@ -154,7 +154,10 @@ func getSplittingRow(M matrix, B *Block) int {
 
 // updateAffectedBlocksColumns updates the size of the blocks affected by a
 // column refinement.
-func updateAffectedBlocksColumns(M matrix, lRef, rRef *IntSet, B *Block, sizeMap *BlockMap) {
+func updateAffectedBlocksColumns(
+	M matrix, lRef, rRef *IntSet, Cj *IntSet,
+	currentPosition int, sizeMap *BlockMap,
+	orderedRows []*IntSet) {
 	// SC is the smaller partition of the refinement, BC is the bigger partition
 	// of the refinement.
 	var SC, BC *IntSet
@@ -166,59 +169,70 @@ func updateAffectedBlocksColumns(M matrix, lRef, rRef *IntSet, B *Block, sizeMap
 		SC, BC = rRef, lRef
 	}
 
-	// Columns indexes set of the current block.
-	Cj := B.GetColumnPart().GetSet()
+	// Traverse all the affected blocks.
+	for i := 0; i < len(orderedRows); i++ {
+		Ri := orderedRows[i]
 
-	// Update all of the affected blocks.
-	rowPart := B.GetRowPart()
-	for rowPart != nil {
-		// Row indexes set of the current block.
-		R := rowPart.GetSet()
+		// Obtain block B = (Ri, Cj)
+		B := sizeMap.Get(Ri, Cj)
 
-		// Current block defined by (R, Cj)
-		current := sizeMap.Get(R, Cj)
+		// Let k be the current row part position. All the blocks above B = (Rk, Cj)
+		// are constant. Do not consider the block B' = (Ri, Cjl) for all i < k, as
+		// they are above (Rk, Cjl) then they are not considered; however blocks
+		// above B'' = (Ri, Cjr) have to be considered, and thus must have a size,
+		// as they're constant this operation is not heavy on performance.
+		if i < currentPosition {
+			constBlockL := NewBlockFromIntSets(Ri, lRef)
+			constBlockR := NewBlockFromIntSets(Ri, rRef)
+			if B.GetSize() > 0 {
+				constBlockL.SetSize(Ri.Cardinality() * lRef.Cardinality())
+				constBlockR.SetSize(Ri.Cardinality() * rRef.Cardinality())
+			} else {
+				constBlockL.SetSize(0)
+				constBlockR.SetSize(0)
+			}
 
-		// Define a block for the smaller refinement.
-		smallerBlock := NewBlockFromIntSets(R, SC)
+			sizeMap.Add(Ri, rRef, constBlockL)
+			sizeMap.Add(Ri, lRef, constBlockR)
+		} else {
+			// For all blocks B = (Ri, Cj) where i >= k. The size of the blocks B' =
+			// (Ri, Cjl) and B'' = (Ri, Cjr) can be determined using only the smallest
+			// refinement. This speeds ups the process detemining the size of produced
+			// blocks by the refinement.
+			smallBlock := NewBlockFromIntSets(Ri, SC)
+			bigBlock := NewBlockFromIntSets(Ri, BC)
 
-		// Calculate the small block's size.
-		size, rowBlocksMap := calculateSize(M, R, SC)
+			// Determine the size of the small block.
+			sizeSmall, rowBlockMapSmall := calculateSize(M, Ri, SC)
+			smallBlock.SetSize(sizeSmall)
+			smallBlock.SetRowBlockMap(rowBlockMapSmall)
 
-		// Set small block's size and row blocks' sizes.
-		smallerBlock.SetSize(size)
-		smallerBlock.SetRowBlockMap(rowBlocksMap)
+			// Use the previous information to determine the size of the big block.
+			sizeBig := 0
+			for _, r := range Ri.GetValues() {
+				currentRowSize := B.GetRowBlockSize(r)
+				smallRowSize := smallBlock.GetRowBlockSize(r)
+				bigRowSize := currentRowSize - smallRowSize
+				bigBlock.SetRowBlockSize(r, bigRowSize)
 
-		// Define a block for the bigger refinement.
-		biggerBlock := NewBlockFromIntSets(R, BC)
+				sizeBig += bigRowSize
+			}
 
-		// Calculate the bigger block's size using the smaller one.
-		sizeBg := 0
-		for _, r := range R.GetValues() {
-			// Set the bigger block's row blocks using the following formula.
-			// size(r, BC) = size(r, Cj) - size(r, SC)
-			currentRowSize := current.GetRowBlockSize(r)
-			smallerRowSize := smallerBlock.GetRowBlockSize(r)
-			biggerRowSize := currentRowSize - smallerRowSize
-			biggerBlock.SetRowBlockSize(r, biggerRowSize)
+			bigBlock.SetSize(sizeBig)
 
-			sizeBg += biggerRowSize
+			// Add blocks B' and B'' to the map.
+			sizeMap.Add(Ri, SC, smallBlock)
+			sizeMap.Add(Ri, BC, bigBlock)
 		}
 
-		// Set the bigger block's size.
-		biggerBlock.SetSize(sizeBg)
-
-		// Add the blocks (R, SC) and (R, BC) to the map.
-		sizeMap.Add(R, SC, smallerBlock)
-		sizeMap.Add(R, BC, biggerBlock)
-
-		// Move to the next row.
-		rowPart = rowPart.GetNext()
 	}
 }
 
 // updateAffectedBlocksRows updates the size of the blocks affected by a
 // row refinement.
-func updateAffectedBlocksRows(M matrix, lRef, rRef *IntSet, B *Block, sizeMap *BlockMap) {
+func updateAffectedBlocksRows(
+	M matrix, lRef, rRef *IntSet, Ri *IntSet,
+	sizeMap *BlockMap, pendingColParts []*IntSet) {
 	// SC is the smaller partition of the refinement, BC is the bigger partition
 	// of the refinement.
 	var SR, BR *IntSet
@@ -230,49 +244,41 @@ func updateAffectedBlocksRows(M matrix, lRef, rRef *IntSet, B *Block, sizeMap *B
 		SR, BR = rRef, lRef
 	}
 
-	// Row indexes set of the current block.
-	Ri := B.GetRowPart().GetSet()
+	// In the refinement of columns we have to take into consideration all of the
+	// new produced blocks to the right, even if these blocks are constant, we
+	// have to save their size to be consistent. In the refinement of rows this
+	// doesn't happen as all the produced blocks to the left are already constant
+	// and don't have to traversed again; thus only the blocks next to (Ri, Cj)
+	// have to be traversed.
+	for _, Cj := range pendingColParts {
+		// Get block B = (Ri, Cj).
+		B := sizeMap.Get(Ri, Cj)
 
-	// Update all of the affected blocks.
-	colPart := B.GetColumnPart()
-	for colPart != nil {
-		// Column indexes set of the current block.
-		C := colPart.GetSet()
+		// The size of the blocks B' = (Ril, Cj) and B'' = (Rir, Cj) can be
+		// determined using only the smallest refinement. This speeds ups the
+		// process detemining the size of produced blocks by the refinement.
+		smallBlock := NewBlockFromIntSets(SR, Cj)
+		bigBlock := NewBlockFromIntSets(BR, Cj)
 
-		// Current block defined by (Ri, C)
-		current := sizeMap.Get(Ri, C)
-
-		// Define a block for the smaller refinement.
-		smallerBlock := NewBlockFromIntSets(SR, C)
-
-		// Determine the small block's size traversing the row blocks of (Ri, C)
-		// that will be in (SR, C).
+		// Determine the small block's size by traversing the row blocks of (Ri, Cj)
+		// that will be (SR, Cj).
 		sizeSmall := 0
 		for _, r := range SR.GetValues() {
-			rbs := current.GetRowBlockSize(r)
-			smallerBlock.SetRowBlockSize(r, rbs)
+			rbs := B.GetRowBlockSize(r)
+			smallBlock.SetRowBlockSize(r, rbs)
 			sizeSmall += rbs
 		}
-		// Set small block's size and row blocks' sizes.
-		smallerBlock.SetSize(sizeSmall)
 
-		// Define a block for the bigger refinement.
-		biggerBlock := NewBlockFromIntSets(BR, C)
-
-		// Determine the bigger block's size using the smaller one.
-		sizeBig := current.GetSize() - smallerBlock.GetSize()
-		biggerBlock.SetSize(sizeBig)
+		smallBlock.SetSize(sizeSmall)
+		bigBlock.SetSize(B.GetSize() - sizeSmall)
 
 		// To avoid traversing all of the rows in BR, simply indicate that the row
 		// blocks map of (BR, C) is the same as (Ri, C).
-		currentRowBlockMap := current.GetRowBlockMap()
-		biggerBlock.SetRowBlockMap(currentRowBlockMap)
+		bigBlock.SetRowBlockMap(B.GetRowBlockMap())
 
-		// Add the blocks (R, SC) and (R, BC) to the map.
-		sizeMap.Add(SR, C, smallerBlock)
-		sizeMap.Add(BR, C, biggerBlock)
+		// Add the blocks (SR, Cj) and (BR, Cj) to the map.
+		sizeMap.Add(SR, Cj, smallBlock)
+		sizeMap.Add(BR, Cj, bigBlock)
 
-		// Move to the next row.
-		colPart = colPart.GetNext()
 	}
 }
