@@ -184,14 +184,8 @@ func updateAffectedBlocksColumns(
 		if i < currentPosition {
 			constBlockL := NewBlockFromIntSets(Ri, lRef)
 			constBlockR := NewBlockFromIntSets(Ri, rRef)
-			if B.GetSize() > 0 {
-				constBlockL.SetSize(Ri.Cardinality() * lRef.Cardinality())
-				constBlockR.SetSize(Ri.Cardinality() * rRef.Cardinality())
-			} else {
-				constBlockL.SetSize(0)
-				constBlockR.SetSize(0)
-			}
-
+			constBlockL.SetSize(0)
+			constBlockR.SetSize(0)
 			sizeMap.Add(Ri, rRef, constBlockL)
 			sizeMap.Add(Ri, lRef, constBlockR)
 		} else {
@@ -354,8 +348,8 @@ func DoubleLexicographicalOrdering(M matrix, inverseOrder bool) (matrix, []int, 
 	sizeMap.Add(R, C, I)
 
 	// Variables to keep track of the position we're at the ordered partition.
-	currentColPart := 0
-	currentRowPart := 0
+	i := 0 // Current row part.
+	j := 0 // Current col part.
 
 	// For every pending column part Cj, pair it with every row part Ri and check
 	// if the block (Ri, Cj) has a refinement. Unfortunately the break statement
@@ -369,7 +363,7 @@ mainLoop:
 		// Get the pending column part on the top of the stack.
 		Cj := pendingColParts[h]
 
-		for i := currentRowPart; i < len(orderedRowPartition); i++ {
+		for i < len(orderedRowPartition) {
 			Ri := orderedRowPartition[i]
 
 			// Get the block defined by B = (Ri, Cj).
@@ -386,10 +380,10 @@ mainLoop:
 
 					// Replace Cj by Cjl and Cjr in the ordered partition of columns.
 					var temp []*IntSet
-					temp = append(temp, orderedColPartition[:currentColPart]...)
+					temp = append(temp, orderedColPartition[:j]...)
 					temp = append(temp, Cjl)
 					temp = append(temp, Cjr)
-					temp = append(temp, orderedColPartition[currentColPart+1:]...)
+					temp = append(temp, orderedColPartition[j+1:]...)
 					orderedColPartition = temp
 
 					// Obtain the size of the produced blocks by the column refinement.
@@ -401,7 +395,6 @@ mainLoop:
 					pendingColParts = append(pendingColParts, Cjl)
 
 					// Terminate the loop to get the block (Ri, Cjl)
-					currentRowPart = i
 					goto mainLoop
 				} else {
 					// If B has no splitting row, then it has an splitting column, define
@@ -425,10 +418,15 @@ mainLoop:
 					// Obtain the size of the produced blocks by the column refinement.
 					updateAffectedBlocksRows(M, Ril, Rir, Ri, sizeMap, pendingColParts)
 
-					// Terminate the loop to get the block (Ril, Cj)
-					goto mainLoop
+					// The row parts in the i-th and (i+1)-th positions are now Ril and
+					// Rir. Thus, the next row part to work with is the one in the
+					// (i+2)-th position.
+					i++
 				}
 			}
+
+			// Get the next row part.
+			i++
 		}
 
 		// If for all of the possible row blocks Ri, the block B = (Ri, Cj) is
@@ -436,8 +434,8 @@ mainLoop:
 		// it from the stack and start again from the first part of the ordered row
 		// partition.
 		pendingColParts = pendingColParts[:h]
-		currentRowPart = 0
-		currentColPart++
+		i = 0
+		j++
 	}
 
 	// Obtain the ordered partitions as slices and build the ordered matrix.
