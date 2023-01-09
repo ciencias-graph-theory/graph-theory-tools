@@ -24,3 +24,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Image files
+*.svg
