@@ -147,7 +147,11 @@ func listToMatrix(list AdjacencyList) (*AdjacencyMatrix, error) {
 
 // Order returns the number of vertices in the graph.
 func (g *StaticGraph) Order() int {
-	return len(g.matrix)
+	if g.matrix == nil {
+		return len(g.list)
+	} else {
+		return len(g.matrix)
+	}
 }
 
 // DegreeSequence returns the degree sequence of the graph

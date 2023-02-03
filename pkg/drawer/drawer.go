@@ -19,7 +19,9 @@ type edge struct {
 	v int
 }
 
-func Circular(g graph.Graph, width int, height int) {
+// Implementation of circular graph drawing algorithm. Receives a graph and
+// returns the Svg object with the graph's SVG representation.
+func Circular(g graph.Graph, width int, height int) *svg.Svg {
 
 	verticesMap := make(map[int]vertex)
 	edgesSlice := []edge{}
@@ -32,6 +34,9 @@ func Circular(g graph.Graph, width int, height int) {
 	cx := 10 + (w / 2)
 	cy := 10 + (h / 2)
 	r := d / 2
+
+	var vertexRadius float64
+	vertexRadius = math.Sin(float64(math.Pi)/(2.0*float64(g.Order()))) * r
 
 	//angleDivision := 360.0 / float64(g.Order()) // fix graph order function
 
@@ -59,11 +64,12 @@ func Circular(g graph.Graph, width int, height int) {
 			s.DrawLine(x1, y1, x2, y2, "black", 1)
 		}
 		for _, info := range verticesMap {
-			s.DrawCircle(info.cx, info.cy, 5, "black", 1, info.color)
+			s.DrawCircle(info.cx, info.cy, vertexRadius, "black", 1, info.color)
 		}
-
 	}
-
+	// Refactor this!
 	data := []byte(s.Content())
 	writer.Write("test.svg", data)
+
+	return s
 }
