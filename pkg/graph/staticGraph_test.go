@@ -236,7 +236,6 @@ func TestDegreeSequence(t *testing.T) {
 	if !sliceutils.EqualIntSlice(want, got) {
 		t.Errorf("Expected %v, got %v", want, got)
 	}
-
 	list, _ := matrixToList(adjacency)
 	petersenII := NewFromList(*list)
 	if petersenII.degreeSequence != nil {
@@ -288,5 +287,19 @@ func TestSize(t *testing.T) {
 	gotD := petersen.DegreeSequence()
 	if !sliceutils.EqualIntSlice(wantD, gotD) {
 		t.Errorf("Expected %v, got %v", wantD, gotD)
+	}
+	// If using adjacency list, then the degree sequence is not calculated
+	// to yield an O(|V|) complexity.
+	list, _ := matrixToList(adjacency)
+	petersenII := NewFromList(*list)
+	if petersenII.degreeSequence != nil {
+		t.Errorf("The degree sequence was expected to be nil")
+	}
+	got = petersenII.Size()
+	if want != got {
+		t.Errorf("Expected %d, got %d", want, got)
+	}
+	if petersenII.degreeSequence != nil {
+		t.Errorf("The degree sequence was expected to be nil")
 	}
 }

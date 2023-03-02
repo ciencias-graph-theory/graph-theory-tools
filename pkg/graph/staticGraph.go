@@ -185,17 +185,25 @@ func (g *StaticGraph) Size() int {
 	if g.degreeSequence != nil {
 		return sliceutils.SumIntSlice(g.degreeSequence) / 2
 	}
-	size := 0
-	degreeSequence := make([]int, len(g.matrix))
-	for i, v := range g.matrix {
-		for j := 0; j < i+1; j++ {
-			if v[j] != 0 {
-				degreeSequence[i]++
-				degreeSequence[j]++
-				size++
+	if g.matrix != nil {
+		size := 0
+		degreeSequence := make([]int, len(g.matrix))
+		for i, v := range g.matrix {
+			for j := 0; j < i+1; j++ {
+				if v[j] != 0 {
+					degreeSequence[i]++
+					degreeSequence[j]++
+					size++
+				}
 			}
 		}
+		g.degreeSequence = degreeSequence
+		return size
+	} else {
+		size := 0
+		for _, v := range g.list {
+			size += len(v)
+		}
+		return size / 2
 	}
-	g.degreeSequence = degreeSequence
-	return size
 }
