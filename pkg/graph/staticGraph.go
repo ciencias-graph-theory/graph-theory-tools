@@ -159,7 +159,7 @@ func (g *StaticGraph) Order() int {
 func (g *StaticGraph) DegreeSequence() []int {
 	if g.degreeSequence != nil {
 		return g.degreeSequence
-	} else {
+	} else if g.matrix != nil {
 		degreeSequence := make([]int, len(g.matrix))
 		for i, v := range g.matrix {
 			for _, n := range v {
@@ -167,6 +167,13 @@ func (g *StaticGraph) DegreeSequence() []int {
 					degreeSequence[i] += 1
 				}
 			}
+		}
+		g.degreeSequence = degreeSequence
+		return degreeSequence
+	} else {
+		degreeSequence := make([]int, len(g.list))
+		for i, v := range g.list {
+			degreeSequence[i] = len(v)
 		}
 		g.degreeSequence = degreeSequence
 		return degreeSequence

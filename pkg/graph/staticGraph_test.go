@@ -236,6 +236,20 @@ func TestDegreeSequence(t *testing.T) {
 	if !sliceutils.EqualIntSlice(want, got) {
 		t.Errorf("Expected %v, got %v", want, got)
 	}
+
+	list, _ := matrixToList(adjacency)
+	petersenII := NewFromList(*list)
+	if petersenII.degreeSequence != nil {
+		t.Errorf("The degree sequence was expected to be nil")
+	}
+	got = petersenII.DegreeSequence()
+	if !sliceutils.EqualIntSlice(want, got) {
+		t.Errorf("Expected %v, got %v", want, got)
+	}
+	got = petersenII.degreeSequence
+	if !sliceutils.EqualIntSlice(want, got) {
+		t.Errorf("Expected %v, got %v", want, got)
+	}
 }
 
 // TestSize calls Size on a matrix and checks that is correctly computed
