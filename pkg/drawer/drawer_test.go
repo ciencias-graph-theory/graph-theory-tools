@@ -52,4 +52,5 @@ func TestCircular(t *testing.T) {
 	petersen := graph.NewFromMatrix(adjacency)
 
 	Circular(petersen, 200, 200)
+	Circular(g, 200, 200)
 }

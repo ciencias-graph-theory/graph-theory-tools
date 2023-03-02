@@ -43,3 +43,11 @@ func (s *Svg) DrawLine(x1 float64, y1 float64, x2 float64, y2 float64,
 	s.content = fmt.Sprintf(s.content, line+"\n%s")
 
 }
+
+// DrawCurve adds a curve (path) element to the SVG image.
+func (s *Svg) DrawCurve(x1 float64, y1 float64, qx float64, qy float64,
+	x2 float64, y2 float64, stroke string, strokeWidth int) {
+	line := fmt.Sprintf("<path d=\" M %f %f Q %f %f %f %f \" stroke=\"%s\" stroke-width=\"%d\" fill=\"transparent\"/>",
+		x1, y1, qx, qy, x2, y2, stroke, strokeWidth)
+	s.content = fmt.Sprintf(s.content, line+"\n%s")
+}
