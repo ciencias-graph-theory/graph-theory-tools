@@ -4,21 +4,43 @@ import (
 	"math"
 
 	"github.com/ciencias-graph-theory/graph-theory-tools/internal/fileutils/svg"
-	"github.com/ciencias-graph-theory/graph-theory-tools/internal/fileutils/writer"
 	"github.com/ciencias-graph-theory/graph-theory-tools/pkg/graph"
 )
 
+// vertex struct to represent vertex drawings.
 type vertex struct {
 	cx    float64
 	cy    float64
 	color string
 }
 
+// newVertex initializes a vertex drawing. Receives the coordinates of the center
+// of the vertex.
+func newVertex(cx float64, cy float64) *vertex {
+	return &vertex{
+		cx:    cx,
+		cy:    cy,
+		color: "white",
+	}
+}
+
+// edge struct to represent edge drawings.
 type edge struct {
 	u     int
 	v     int
-	color string
 	curve bool
+	color string
+}
+
+// newEdge initializes an edge drawing. Receives the ends of the edge and a
+// boolean that indicates if the edge needs to be curved.
+func newEdge(u int, v int, curve bool) *edge {
+	return &edge{
+		u:     u,
+		v:     v,
+		curve: curve,
+		color: "black",
+	}
 }
 
 // Implementation of circular graph drawing algorithm. Receives a graph and
@@ -52,13 +74,13 @@ func Circular(g graph.Graph, width int, height int) *svg.Svg {
 			x := cx - (r * math.Sin(math.Pi*2*angle/360))
 			y := cy - (r * math.Cos(math.Pi*2*angle/360))
 			angle += angleDivision
-			verticesMap[i] = vertex{x, y, "white"}
+			verticesMap[i] = *newVertex(x, y)
 			for j, n := range v {
 				if n == 1 {
 					if math.Abs(float64(i-j)) == 1 {
-						edgesSlice = append(edgesSlice, edge{i, j, "black", false})
+						edgesSlice = append(edgesSlice, *newEdge(i, j, false))
 					} else {
-						edgesSlice = append(edgesSlice, edge{i, j, "black", true})
+						edgesSlice = append(edgesSlice, *newEdge(i, j, true))
 					}
 				}
 			}
@@ -68,12 +90,12 @@ func Circular(g graph.Graph, width int, height int) *svg.Svg {
 			x := cx - (r * math.Sin(math.Pi*2*angle/360))
 			y := cy - (r * math.Cos(math.Pi*2*angle/360))
 			angle += angleDivision
-			verticesMap[v] = vertex{x, y, "white"}
+			verticesMap[v] = *newVertex(x, y)
 			for _, u := range neighbours {
 				if math.Abs(float64(u-v)) == 1 {
-					edgesSlice = append(edgesSlice, edge{u, v, "black", false})
+					edgesSlice = append(edgesSlice, *newEdge(u, v, false))
 				} else {
-					edgesSlice = append(edgesSlice, edge{u, v, "black", true})
+					edgesSlice = append(edgesSlice, *newEdge(u, v, true))
 				}
 			}
 		}
@@ -106,8 +128,5 @@ func Circular(g graph.Graph, width int, height int) *svg.Svg {
 	for _, info := range verticesMap {
 		s.DrawCircle(info.cx, info.cy, vertexRadius, "black", 1, info.color)
 	}
-	// Refactor this!
-	data := []byte(s.Content())
-	writer.Write("test.svg", data)
 	return s
 }
