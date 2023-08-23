@@ -276,3 +276,39 @@ func TestSize(t *testing.T) {
 		t.Errorf("Expected %v, got %v", wantD, gotD)
 	}
 }
+
+// TestNeighbours calls NeighboursSet on a graph and checks that the neighbours
+// set is correctly computed for each vertex.
+func TestNeighboursSet(t *testing.T) {
+	m := [][]byte{
+		{1, 1, 1, 0},
+		{1, 0, 1, 1},
+		{1, 1, 0, 1},
+		{0, 1, 1, 1},
+	}
+	g1 := NewFromMatrix(m)
+	for i := 0; i < len(m); i++ {
+		s := g1.NeighboursSet(i)
+		for j := 0; j < len(m); j++ {
+			if m[i][j] == 1 && !s.Contains(j) {
+				t.Errorf("Neighbour %v expected but not present", j)
+			}
+		}
+	}
+	l := [][]int{
+		{0, 1, 2, 3},
+		{0, 2, 3},
+		{0, 1, 3},
+		{1, 2, 3},
+	}
+	g2 := NewFromList(l)
+	for i := 0; i < len(l); i++ {
+		s := g2.NeighboursSet(i)
+		want := l[i]
+		for _, n := range want {
+			if !s.Contains(n) {
+				t.Errorf("Neighbour %v expected but not present", n)
+			}
+		}
+	}
+}
