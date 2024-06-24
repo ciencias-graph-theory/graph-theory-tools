@@ -2,9 +2,14 @@
 // and handling graphs.
 package graph
 
+import (
+	"github.com/ciencias-graph-theory/graph-theory-tools/internal/set"
+)
+
 // Type aliases to improve code readability.
 type AdjacencyMatrix = [][]byte
 type AdjacencyList = [][]int
+type EfficientAdjacencyList = []set.IntSet
 
 type Graph interface {
 	// Order returns the number of vertices in the graph.
@@ -21,4 +26,7 @@ type Graph interface {
 
 	// Matrix returns the adjacency list of the graph.
 	List() (AdjacencyList, error)
+
+	// NeighboursSet returns a set of the neighbours to a given vertex in the graph.
+	NeighboursSet(v int) *set.IntSet
 }
