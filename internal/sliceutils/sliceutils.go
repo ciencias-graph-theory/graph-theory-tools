@@ -24,6 +24,21 @@ func EqualIntSlice(a, b []int) bool {
 	return true
 }
 
+// This function checks whether two string slices are equal.
+func EqualStringSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
 // This function checks whether two int slices are equal.
 func EqualByteSlice(a, b []byte) bool {
 	if len(a) != len(b) {
